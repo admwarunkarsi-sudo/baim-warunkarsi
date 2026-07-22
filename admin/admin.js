@@ -1111,6 +1111,7 @@ document.getElementById('bonus-form').addEventListener('submit', async (e) => {
         console.error(err);
         alert('Gagal menambah file bonus: ' + err.message);
     }
+});
 
 // ============================================================
 // MEMBERS MANAGEMENT
