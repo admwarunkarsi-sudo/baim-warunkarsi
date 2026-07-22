@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Baim Warunk Arsi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0B2447',
+                            light: '#193D71'
+                        },
+                        accent: '#F99417'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans h-screen flex flex-col">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 bg-navy flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <h2 class="text-2xl font-bold text-navy mb-6 text-center">Admin Login</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                        Password
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" id="password" type="password" placeholder="Enter password" required>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm mb-4 hidden">Password salah.</div>
+                <button class="bg-accent hover:bg-orange-500 text-white font-bold py-2 px-4 rounded w-full transition" type="submit">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Content (Hidden initially) -->
+    <div id="dashboard" class="hidden flex-1 flex flex-col">
+        <!-- Navbar -->
+        <nav class="bg-navy text-white p-4 shadow-md flex justify-between items-center">
+            <div class="font-bold text-xl">Baim<span class="text-accent">.</span> Admin</div>
+            <div class="flex gap-4">
+                <button id="btn-publish" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded text-sm transition shadow-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    Simpan & Publikasikan (GitHub)
+                </button>
+                <button id="btn-logout" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm transition">Logout</button>
+            </div>
+        </nav>
+
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-white border-r shadow-sm flex flex-col">
+                <ul class="p-4 flex-1">
+                    <li class="mb-2">
+                        <button id="tab-products" class="tab-btn w-full text-left px-4 py-3 rounded bg-gray-100 text-navy font-semibold transition hover:bg-gray-200">📦 Manajemen Produk</button>
+                    </li>
+                    <li class="mb-2">
+                        <button id="tab-articles" class="tab-btn w-full text-left px-4 py-3 rounded text-gray-600 font-semibold transition hover:bg-gray-200">📝 Manajemen Artikel</button>
+                    </li>
+                    <li class="mb-2">
+                        <button id="tab-lms" class="tab-btn w-full text-left px-4 py-3 rounded text-gray-600 font-semibold transition hover:bg-gray-200">🎓 Manajemen LMS</button>
+                    </li>
+                    <li class="mb-2">
+                        <button id="tab-discussions" class="tab-btn w-full text-left px-4 py-3 rounded text-gray-600 font-semibold transition hover:bg-gray-200">💬 Manajemen Diskusi</button>
+                    </li>
+                    <li class="mb-2">
+                        <button id="tab-bonus" class="tab-btn w-full text-left px-4 py-3 rounded text-gray-600 font-semibold transition hover:bg-gray-200">🎁 File Bonus</button>
+                    </li>
+                    <li>
+                        <button id="tab-settings" class="tab-btn w-full text-left px-4 py-3 rounded text-gray-600 font-semibold transition hover:bg-gray-200">⚙️ Pengaturan</button>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-8 overflow-y-auto bg-gray-50">
+                <!-- Status Message -->
+                <div id="status-msg" class="hidden mb-4 p-4 rounded text-sm font-semibold"></div>
+
+                <!-- Products Section -->
+                <section id="section-products" class="section-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-navy">Manajemen Produk</h2>
+                        <button onclick="window.admin.openProductForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah Produk</button>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <table class="min-w-full leading-normal">
+                            <thead>
+                                <tr>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Judul</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tipe</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Harga</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-list">
+                                <!-- Rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Articles Section -->
+                <section id="section-articles" class="section-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-navy">Manajemen Artikel</h2>
+                        <button onclick="window.admin.openArticleForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah Artikel</button>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <table class="min-w-full leading-normal">
+                            <thead>
+                                <tr>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Judul</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Kategori</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="article-list">
+                                <!-- Rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- LMS Section -->
+                <section id="section-lms" class="section-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-navy">Manajemen LMS</h2>
+                        <button onclick="window.admin.openModuleForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah Modul</button>
+                    </div>
+
+                    <div id="lms-container" class="space-y-4">
+                        <!-- Module items rendered via JS -->
+                        <div class="bg-white shadow rounded-lg p-6 text-center text-gray-500">Memuat data LMS...</div>
+                    </div>
+                </section>
+
+                <!-- Discussions Section -->
+                <section id="section-discussions" class="section-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-navy">Manajemen Diskusi</h2>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <table class="min-w-full leading-normal">
+                            <thead>
+                                <tr>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Member</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Materi (Bab)</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pertanyaan</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="discussion-list">
+                                <!-- Rendered via JS -->
+                                <tr><td colspan="5" class="px-5 py-5 text-center text-gray-500">Memuat data diskusi...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Bonus Files Section -->
+                <section id="section-bonus" class="section-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-navy">File Bonus Eksklusif</h2>
+                        <button onclick="window.admin.openBonusForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah File Bonus</button>
+                    </div>
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <table class="min-w-full leading-normal">
+                            <thead>
+                                <tr>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Judul</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tipe</th>
+                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bonus-list">
+                                <tr><td colspan="3" class="px-5 py-5 text-center text-gray-500">Memuat...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="section-settings" class="section-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-navy">Pengaturan Situs</h2>
+                    </div>
+                    <div class="bg-white shadow rounded-lg p-8 max-w-xl">
+                        <h3 class="font-bold text-navy mb-4">Link Grup Komunitas</h3>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Link WhatsApp Grup</label>
+                            <input type="url" id="wa-group-url" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="https://chat.whatsapp.com/...">
+                            <p class="text-xs text-gray-500 mt-1">Masukkan link undangan grup WhatsApp. Member akan langsung diarahkan ke link ini saat mengklik 'Grup Komunitas'.</p>
+                        </div>
+                        <button onclick="window.admin.saveSettings()" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-6 rounded transition">Simpan Pengaturan</button>
+                        <div id="settings-status" class="mt-3 text-sm font-semibold"></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Product Form Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+            <button onclick="window.admin.closeProductForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-navy mb-6" id="product-modal-title">Tambah Produk</h2>
+            <form id="product-form">
+                <input type="hidden" id="p-id">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Judul Produk</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-title" type="text" required>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Slug (URL Path)</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-slug" type="text" placeholder="otomatis-terisi-dari-judul" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Tipe (paid/free)</label>
+                        <select class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-type" required>
+                            <option value="paid">Premium (Berbayar)</option>
+                            <option value="free">Gratis</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Harga (Text)</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-price" type="text" placeholder="Rp 99.000 atau Gratis" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Kategori (Label abu-abu)</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-category" type="text" placeholder="Ebook Panduan" required>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Gambar Cover (Otomatis Upload ke Cloudinary)</label>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-2 items-center">
+                                <input type="file" id="p-image-file" accept="image/*" class="shadow border rounded py-2 px-3 text-gray-700 bg-gray-50 flex-1">
+                                <span id="p-image-loading" class="hidden text-accent text-sm font-bold">Uploading...</span>
+                            </div>
+                            <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-100" id="p-image" type="text" placeholder="URL gambar dari Cloudinary akan muncul di sini" readonly required>
+                            <img id="p-image-preview" class="hidden mt-2 rounded border" style="max-height: 150px; object-fit: contain;">
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi Singkat (Home)</label>
+                        <textarea class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-description" rows="2" required></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi Lengkap (Rich Text)</label>
+                        <textarea id="p-full-description"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">URL Link CTA</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="p-url" type="text" placeholder="https://lynk.id/..." required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="window.admin.closeProductForm()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Batal</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded">Simpan Produk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Article Form Modal -->
+    <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+            <button onclick="window.admin.closeArticleForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-navy mb-6" id="article-modal-title">Tambah Artikel</h2>
+            <form id="article-form">
+                <input type="hidden" id="a-id">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Judul Artikel</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="a-title" type="text" required>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Slug (URL Path)</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="a-slug" type="text" placeholder="otomatis-terisi-dari-judul" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Kategori/Tag</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="a-tag" type="text" placeholder="Digital Marketing" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Tanggal Rilis</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="a-date" type="date" required>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Gambar Cover (Otomatis Upload ke Cloudinary)</label>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-2 items-center">
+                                <input type="file" id="a-image-file" accept="image/*" class="shadow border rounded py-2 px-3 text-gray-700 bg-gray-50 flex-1">
+                                <span id="a-image-loading" class="hidden text-accent text-sm font-bold">Uploading...</span>
+                            </div>
+                            <input class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-100" id="a-image" type="text" placeholder="URL gambar dari Cloudinary akan muncul di sini" readonly required>
+                            <img id="a-image-preview" class="hidden mt-2 rounded border" style="max-height: 150px; object-fit: contain;">
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Cuplikan (Excerpt)</label>
+                        <textarea class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="a-excerpt" rows="2" required></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Tautkan Produk (Soft Selling) - Opsional</label>
+                        <select class="shadow border rounded w-full py-2 px-3 text-gray-700 bg-gray-50" id="a-related-product">
+                            <option value="">-- Tidak ada produk yang ditautkan --</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Produk yang dipilih akan muncul di akhir artikel untuk menarik pembeli.</p>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Konten Artikel Lengkap (Rich Text)</label>
+                        <textarea id="a-content"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="window.admin.closeArticleForm()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Batal</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded">Simpan Artikel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LMS Module Form Modal -->
+    <div id="module-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative my-auto">
+            <button onclick="window.admin.closeModuleForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 id="module-modal-title" class="text-2xl font-bold text-navy mb-6">Tambah Modul Baru</h2>
+            <form id="module-form">
+                <input type="hidden" id="module-id">
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Judul Modul</label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" id="module-title" type="text" placeholder="Misal: Modul 1: Mindset" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Urutan (Order Index)</label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" id="module-order" type="number" placeholder="1" required>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="window.admin.closeModuleForm()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition">Batal</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded transition">Simpan Modul</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LMS Lesson Form Modal -->
+    <div id="lesson-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl relative my-auto">
+            <button onclick="window.admin.closeLessonForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 id="lesson-modal-title" class="text-2xl font-bold text-navy mb-6">Tambah Bab (Lesson) Baru</h2>
+            <form id="lesson-form">
+                <input type="hidden" id="lesson-id">
+                <input type="hidden" id="lesson-module-id">
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Judul Bab</label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" id="lesson-title" type="text" placeholder="Misal: Bab 1: Menghitung HPP" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Provider Video</label>
+                        <select id="lesson-provider" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" required>
+                            <option value="youtube_unlisted">YouTube</option>
+                            <option value="vimeo">Vimeo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">ID Video</label>
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" id="lesson-video-id" type="text" placeholder="Misal: dQw4w9WgXcQ" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Urutan (Order Index)</label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-navy" id="lesson-order" type="number" placeholder="1" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi Teks / Rangkuman</label>
+                    <textarea id="lesson-content" class="summernote"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="window.admin.closeLessonForm()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition">Batal</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded transition">Simpan Bab</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Attachment Modal -->
+    <div id="attachment-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+            <button onclick="window.admin.closeAttachmentModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-navy mb-4">Kelola Lampiran: <span id="attach-lesson-title" class="text-gray-500"></span></h2>
+            
+            <div class="bg-gray-50 p-4 rounded-lg mb-6 border">
+                <h3 class="font-bold text-sm mb-3">Daftar Lampiran Saat Ini</h3>
+                <div id="attachment-list" class="space-y-2">
+                    <!-- JS -->
+                </div>
+            </div>
+
+            <form id="attachment-form" class="border-t pt-4">
+                <h3 class="font-bold text-sm mb-3">Tambah Lampiran Baru</h3>
+                <input type="hidden" id="attach-lesson-id">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nama File</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700" id="attach-name" type="text" placeholder="Misal: Template Excel HPP" required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Tipe File</label>
+                        <select id="attach-type" class="shadow border rounded w-full py-2 px-3 text-gray-700" required>
+                            <option value="pdf">PDF</option>
+                            <option value="xlsx">Excel</option>
+                            <option value="other">Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">URL File (Google Drive / Lainnya)</label>
+                    <input class="shadow border rounded w-full py-2 px-3 text-gray-700" id="attach-url" type="url" placeholder="https://..." required>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="window.admin.closeAttachmentModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Tutup</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded">Tambah Lampiran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reply Discussion Modal -->
+    <div id="reply-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+            <button onclick="window.admin.closeReplyModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-navy mb-4">Balas Diskusi</h2>
+            
+            <div class="bg-gray-50 p-4 rounded-lg mb-6 border">
+                <p class="text-xs text-gray-500 mb-1"><span id="reply-member-name" class="font-bold text-gray-700"></span> bertanya di materi <span id="reply-lesson-title" class="font-bold text-gray-700"></span>:</p>
+                <p class="text-gray-800 italic" id="reply-question-text"></p>
+            </div>
+
+            <form id="reply-form">
+                <input type="hidden" id="reply-discussion-id">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Jawaban Anda</label>
+                    <textarea class="shadow border rounded w-full py-2 px-3 text-gray-700 font-sans" id="reply-content" rows="5" required></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="window.admin.closeReplyModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Batal</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded">Kirim Jawaban</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bonus File Modal -->
+    <div id="bonus-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+            <button onclick="window.admin.closeBonusForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
+            <h2 class="text-2xl font-bold text-navy mb-6" id="bonus-modal-title">Tambah File Bonus</h2>
+            <form id="bonus-form">
+                <input type="hidden" id="bonus-id">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Judul File</label>
+                    <input class="shadow border rounded w-full py-2 px-3 text-gray-700" id="bonus-title" type="text" placeholder="Misal: Template HPP Bisnis F&B" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi (opsional)</label>
+                    <input class="shadow border rounded w-full py-2 px-3 text-gray-700" id="bonus-desc" type="text" placeholder="Keterangan singkat tentang file ini">
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Tipe File</label>
+                        <select id="bonus-type" class="shadow border rounded w-full py-2 px-3 text-gray-700" required>
+                            <option value="pdf">PDF</option>
+                            <option value="xlsx">Excel</option>
+                            <option value="other">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">URL File</label>
+                        <input class="shadow border rounded w-full py-2 px-3 text-gray-700" id="bonus-url" type="url" placeholder="https://..." required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="window.admin.closeBonusForm()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">Batal</button>
+                    <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-4 rounded">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-client.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
+

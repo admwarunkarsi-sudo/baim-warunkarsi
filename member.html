@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Area | Masterclass F&amp;B</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Outfit:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/member.css?v=6">
+</head>
+<body>
+    <div class="mobile-header">
+        <button class="mobile-toggle" id="mobile-toggle">&#9776;</button>
+        <div class="mobile-avatar-wrapper" id="btn-open-profile-mobile" style="cursor:pointer;">
+            <img id="mobile-profile-avatar-img" src="https://ui-avatars.com/api/?name=M&amp;background=E8A020&amp;color=fff&amp;size=40" alt="Profile" class="mobile-profile-avatar">
+        </div>
+    </div>
+    <div class="dashboard-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="avatar-wrapper" id="btn-open-profile" style="cursor:pointer;position:relative;display:inline-block;">
+                    <img id="profile-avatar-img" src="https://ui-avatars.com/api/?name=M&amp;background=E8A020&amp;color=fff&amp;size=80" alt="Profile" class="profile-avatar">
+                    <div style="position:absolute;bottom:4px;right:4px;background:#E8A020;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid #0B2447;">&#9998;</div>
+                </div>
+                <h3 class="profile-name" id="profile-name-display" style="color:#ffffff;font-size:1.1rem;font-weight:700;margin:0.75rem 0 0.25rem;font-family:var(--font-heading,Outfit,sans-serif);">Memuat...</h3>
+                <p class="profile-status" style="color:#E8A020;font-size:0.8rem;margin:0;">&#11088; Premium Access</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item" id="nav-dashboard"><span class="icon">&#128202;</span><span>Dashboard</span></a>
+                <div class="nav-section-title">Modul Pembelajaran</div>
+                <div id="module-list-container"><p style="padding:1rem;color:#94a3b8;font-size:0.9rem;text-align:center;">Memuat modul...</p></div>
+                <div class="nav-section-title">Sumber Daya</div>
+                <a href="#" class="nav-item" id="nav-download"><span class="icon">&#128193;</span><span>Download Area</span></a>
+                <a href="#" class="nav-item" id="nav-community"><span class="icon">&#128172;</span><span>Grup Komunitas</span></a>
+                <a href="#" class="nav-item" style="margin-top:2rem;color:#f87171;" id="btn-logout"><span class="icon">&#128682;</span><span>Keluar</span></a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <!-- PANEL: DASHBOARD -->
+            <div id="panel-dashboard" class="main-panel hidden">
+                <div class="content-header">
+                    <h1 class="content-title">Dashboard Belajar</h1>
+                    <p style="color:var(--text-muted);margin-top:0.25rem;" id="dash-greeting">Selamat datang!</p>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.5rem;margin-bottom:2rem;">
+                    <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:var(--shadow-sm);border-left:4px solid var(--accent-color);">
+                        <div style="font-size:1.8rem;margin-bottom:0.5rem;">&#127891;</div>
+                        <div style="font-size:2rem;font-weight:800;color:var(--navy);" id="stat-total-lessons">-</div>
+                        <div style="font-size:0.85rem;color:var(--text-muted);">Total Materi</div>
+                    </div>
+                    <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:var(--shadow-sm);border-left:4px solid #10b981;">
+                        <div style="font-size:1.8rem;margin-bottom:0.5rem;">&#9989;</div>
+                        <div style="font-size:2rem;font-weight:800;color:var(--navy);" id="stat-completed">-</div>
+                        <div style="font-size:0.85rem;color:var(--text-muted);">Materi Selesai</div>
+                    </div>
+                    <div style="background:white;border-radius:12px;padding:1.5rem;box-shadow:var(--shadow-sm);border-left:4px solid #6366f1;">
+                        <div style="font-size:1.8rem;margin-bottom:0.5rem;">&#128200;</div>
+                        <div style="font-size:2rem;font-weight:800;color:var(--navy);" id="stat-progress">0%</div>
+                        <div style="font-size:0.85rem;color:var(--text-muted);">Progress</div>
+                    </div>
+                </div>
+                <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);margin-bottom:1.5rem;">
+                    <h3 style="margin-top:0;margin-bottom:1.5rem;">Progress per Modul</h3>
+                    <div id="dash-module-progress"><p style="color:var(--text-muted);">Memuat...</p></div>
+                </div>
+                <div id="dash-continue-card" style="display:none;background:linear-gradient(135deg,var(--navy),#193D71);color:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-md);">
+                    <h3 style="margin-top:0;margin-bottom:0.5rem;">&#9654; Lanjutkan Belajar</h3>
+                    <p id="dash-continue-title" style="font-size:1.1rem;margin:0 0 1rem;opacity:0.9;"></p>
+                    <button id="dash-continue-btn" class="btn" style="background:var(--accent-color);color:var(--navy);border:none;font-weight:700;padding:0.75rem 1.5rem;border-radius:8px;cursor:pointer;">Tonton Sekarang &#8594;</button>
+                </div>
+            </div>
+            <!-- PANEL: VIDEO / MATERI -->
+            <div id="panel-video" class="main-panel">
+                <div class="content-header">
+                    <div class="breadcrumb" id="lesson-breadcrumb"><a href="#">Memuat...</a></div>
+                    <h1 class="content-title" id="lesson-title">Memuat Materi...</h1>
+                </div>
+                <div class="player-container" id="video-container" style="display:flex;align-items:center;justify-content:center;background:#0f172a;color:white;border-radius:12px;overflow:hidden;"><p>Memuat video...</p></div>
+                <div class="action-bar">
+                    <div class="tab-nav">
+                        <button class="tab-btn active" data-target="tab-desc">Deskripsi &amp; Rangkuman</button>
+                        <button class="tab-btn" id="tab-btn-resource" data-target="tab-resource">Lampiran File</button>
+                    </div>
+                    <a href="#" class="btn-complete" id="btn-mark-complete">Tandai Selesai &amp; Lanjut &#8594;</a>
+                </div>
+                <div class="tab-content active" id="tab-desc"><p>Memuat deskripsi...</p></div>
+                <div class="tab-content" id="tab-resource">
+                    <h3>File Pendukung</h3>
+                    <div class="resource-list" id="attachment-list-container"><p>Memuat file...</p></div>
+                </div>
+                <div style="margin-top:3rem;background:white;padding:2rem;border-radius:12px;box-shadow:var(--shadow-sm);">
+                    <h3>Diskusi &amp; Pertanyaan</h3>
+                    <p style="color:var(--text-muted);margin-bottom:1.5rem;">Ada bagian yang kurang jelas? Tanyakan di bawah ini.</p>
+                    <div style="margin-bottom:2rem;">
+                        <textarea id="discussion-input" style="width:100%;padding:1rem;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:1rem;font-family:inherit;box-sizing:border-box;" rows="4" placeholder="Ketik pertanyaan Anda di sini..."></textarea>
+                        <button id="btn-submit-discussion" class="btn btn-primary">Kirim Pertanyaan</button>
+                        <div id="discussion-status" style="margin-top:0.5rem;font-size:0.9rem;font-weight:600;"></div>
+                    </div>
+                    <h4 style="margin-bottom:1rem;border-bottom:1px solid #e2e8f0;padding-bottom:0.5rem;">Riwayat Tanya-Jawab</h4>
+                    <div id="discussion-history" style="display:flex;flex-direction:column;gap:1.5rem;">
+                        <p style="color:var(--text-muted);font-style:italic;">Belum ada pertanyaan untuk materi ini.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- PANEL: DOWNLOAD AREA -->
+            <div id="panel-download" class="main-panel hidden">
+                <div class="content-header">
+                    <h1 class="content-title">&#128193; Download Area</h1>
+                    <p style="color:var(--text-muted);">Semua file materi dan bonus tersedia di sini.</p>
+                </div>
+                <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);margin-bottom:2rem;">
+                    <h3 style="margin-top:0;margin-bottom:1.5rem;">&#128196; Lampiran Materi per Bab</h3>
+                    <div id="download-attachments"><p style="color:var(--text-muted);">Memuat lampiran...</p></div>
+                </div>
+                <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);">
+                    <h3 style="margin-top:0;margin-bottom:1.5rem;">&#127873; File Bonus Eksklusif</h3>
+                    <div id="download-bonus"><p style="color:var(--text-muted);">Memuat file bonus...</p></div>
+                </div>
+            </div>
+            <!-- PANEL: PROFIL -->
+            <div id="panel-profile" class="main-panel hidden">
+                <div class="content-header"><h1 class="content-title">&#128100; Profil Saya</h1></div>
+                <div style="max-width:600px;">
+                    <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);margin-bottom:1.5rem;text-align:center;">
+                        <img id="profile-big-avatar" src="https://ui-avatars.com/api/?name=M&amp;background=E8A020&amp;color=fff&amp;size=120" alt="Avatar" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--accent-color);margin-bottom:1rem;">
+                        <div>
+                            <label for="avatar-upload" class="btn btn-outline" style="cursor:pointer;display:inline-block;margin-bottom:0.5rem;">&#128247; Ganti Foto Profil</label>
+                            <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
+                        </div>
+                        <div id="avatar-upload-status" style="font-size:0.85rem;color:var(--text-muted);min-height:1.2em;"></div>
+                    </div>
+                    <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);">
+                        <h3 style="margin-top:0;margin-bottom:1.5rem;">Data Diri</h3>
+                        <form id="profile-form">
+                            <div style="margin-bottom:1.25rem;">
+                                <label style="display:block;font-weight:600;margin-bottom:0.5rem;color:var(--navy);">Email</label>
+                                <input type="email" id="profile-email" style="width:100%;padding:0.75rem 1rem;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;color:#94a3b8;box-sizing:border-box;" disabled>
+                            </div>
+                            <div style="margin-bottom:1.25rem;">
+                                <label style="display:block;font-weight:600;margin-bottom:0.5rem;color:var(--navy);">Nama Lengkap</label>
+                                <input type="text" id="profile-fullname" style="width:100%;padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-family:inherit;box-sizing:border-box;" placeholder="Nama lengkap Anda">
+                            </div>
+                            <div style="margin-bottom:1.5rem;">
+                                <label style="display:block;font-weight:600;margin-bottom:0.5rem;color:var(--navy);">Nomor WhatsApp</label>
+                                <input type="text" id="profile-wa" style="width:100%;padding:0.75rem 1rem;border:1px solid #cbd5e1;border-radius:8px;font-family:inherit;box-sizing:border-box;" placeholder="Contoh: 08123456789">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;padding:0.9rem;">&#128190; Simpan Perubahan</button>
+                            <div id="profile-status" style="margin-top:0.75rem;text-align:center;font-weight:600;font-size:0.9rem;min-height:1.2em;"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/member.js?v=8"></script>
+</body>
+</html>

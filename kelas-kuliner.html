@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kelas Digital Marketing F&B oleh Baim Warunk Arsi.">
+    <title>Kelas Digital Marketing F&B | Baim Warunk Arsi</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css?v=4">
+    
+    <!-- Specific CSS for Sales Page Accordions -->
+    <style>
+        .accordion-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .accordion-item {
+            background: var(--bg-white);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .accordion-header {
+            width: 100%;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.3s ease;
+        }
+        .accordion-header:hover {
+            background: var(--bg-light);
+        }
+        .accordion-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: var(--bg-white);
+        }
+        .accordion-content-inner {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-muted);
+        }
+        .accordion-item.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+        .accordion-item.open .accordion-content {
+            max-height: 500px; /* arbitrary max height */
+            border-top: 1px solid #e2e8f0;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            margin: 3rem auto;
+            background: #000;
+        }
+        .video-container iframe, .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .bonus-card {
+            background: var(--bg-white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            border-top: 4px solid var(--accent-color);
+        }
+        .bonus-card h4 {
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+        .pricing-section {
+            background: var(--primary-color);
+            color: white;
+            padding: 5rem 0;
+        }
+        .pricing-card {
+            background: white;
+            color: var(--text-main);
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .price-strike {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+        .price-promo {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+        .btn-wa {
+            background-color: #25D366;
+            color: white;
+            width: 100%;
+            font-size: 1.2rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-wa:hover {
+            background-color: #1DA851;
+            transform: scale(1.02);
+            color: white;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        @media (max-width: 992px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .hero-grid .badge {
+                margin: 0 auto 1.5rem;
+            }
+            .hero-grid h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="/" class="logo">Baim<span>.</span></a>
+            <nav class="nav-links">
+                <a href="/#products">Produk</a>
+                <a href="#kurikulum">Kurikulum</a>
+                <a href="#pricing">Daftar</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="section-padding" style="padding-top: 120px;">
+        <div class="container reveal">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <span class="badge badge-accent" style="font-size: 0.9rem; padding: 0.5rem 1rem; display: inline-block; margin-bottom: 1.5rem;">🚀 Eksklusif untuk Owner Bisnis Kuliner & F&B</span>
+                    <h1 style="font-size: 3rem; margin-bottom: 1.5rem; line-height: 1.2;">Bongkar Rahasia Mengubah <span>Warung & Cafe Sepi</span><br>Jadi <span>Ramai Pembeli</span> Tanpa Harus Bakar Uang Iklan</h1>
+                    <p style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-muted);">
+                        Kuasai ekosistem pertumbuhan bisnis F&B secara terstruktur lewat metode Mindset > Skillset > Toolset. Praktis, teruji, dan dirancang khusus untuk skala UMKM.
+                    </p>
+                    <a href="#pricing" class="btn btn-primary btn-large">Dapatkan Akses Kelas Sekarang</a>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">🔒 Akses Seumur Hidup + Resource & Template Siap Pakai</p>
+                </div>
+                <div class="hero-image">
+                    <img src="images/baim_illustration.png" alt="Ilustrasi Baim F&B" style="width: 100%; border-radius: 16px; box-shadow: var(--shadow-lg);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain Points Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header text-center reveal">
+                <h2>Pernahkah Anda Mengalami Hal Ini di <span>Bisnis Kuliner Anda?</span></h2>
+            </div>
+            <div class="reveal delay-1" style="max-width: 800px; margin: 0 auto;">
+                <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 1.8;">
+                    <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem;">
+                        <span style="color: #ef4444; font-size: 1.5rem;">❌</span>
+                        <span>Makanan & minuman sudah enak, tapi outlet tetap sepi karena tidak ada yang tahu.</span>
+                    </li>
+                    <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem;">
+                        <span style="color: #ef4444; font-size: 1.5rem;">❌</span>
+                        <span>Bingung bikin ide konten reels/TikTok harian, sekalinya posting sepi penonton.</span>
+                    </li>
+                    <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem;">
+                        <span style="color: #ef4444; font-size: 1.5rem;">❌</span>
+                        <span>Coba pasang iklan tapi malah 'bocor'—biaya promosi membengkak tapi omzet tak kunjung naik.</span>
+                    </li>
+                    <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem;">
+                        <span style="color: #ef4444; font-size: 1.5rem;">❌</span>
+                        <span>Bikin promo diskon malah buntung, karena bingung menghitung HPP dan margin yang aman.</span>
+                    </li>
+                    <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem;">
+                        <span style="color: #ef4444; font-size: 1.5rem;">❌</span>
+                        <span>Pembeli cuma datang sekali dan tidak pernah balik lagi (repeat order rendah).</span>
+                    </li>
+                </ul>
+                <div style="background-color: var(--bg-light); border-left: 4px solid var(--accent-color); padding: 1.5rem; margin-top: 2rem; border-radius: 8px;">
+                    <p style="margin: 0; font-weight: 600; color: var(--primary-color); font-size: 1.2rem; text-align: center;">
+                        "Masalahnya bukan produk Anda yang jelek, tapi sistem pemasaran dan strategi konversinya yang belum berjalan dengan tepat!"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kurikulum Section -->
+    <section class="section-padding bg-light" id="kurikulum">
+        <div class="container">
+            <div class="section-header text-center reveal">
+                <h2>Memperkenalkan: <span>Masterclass Digital Marketing F&B</span></h2>
+                <p>Strategi riil dari praktisi kuliner langsung. Bukan sekadar teori, tapi panduan langkah-demi-langkah yang bisa dieksekusi hari ini juga.</p>
+            </div>
+
+            <div class="accordion-container">
+                <!-- Modul 1 -->
+                <div class="accordion-item reveal delay-1">
+                    <button class="accordion-header">
+                        Modul 1: 🧠 MINDSET (Pondasi Bisnis & Keuangan)
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                                <li>Membedakan Bisnis F&B Bertahan Lama vs sekadar Viral Sesaat</li>
+                                <li>Cara Hitung HPP, Margin Promosi, & Unit Economics Agar Diskon Tidak Merugi</li>
+                                <li>Membangun Positioning Brand F&B Lokal yang Sulit Ditiru Kompetitor</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modul 2 -->
+                <div class="accordion-item reveal delay-2">
+                    <button class="accordion-header">
+                        Modul 2: ⚡ SKILLSET (Traffic, Konversi, & Retention)
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                                <li>Traffic: Konten Video Pendek 'Bikin Ngiler' & Strategy Iklan Lokal (Radius 3–5 KM)</li>
+                                <li>Conversion: Desain Menu Digital, Copywriting PAS Model, & Local SEO Google My Business</li>
+                                <li>Retention: Database Pelanggan via WhatsApp Marketing untuk Memicu Repeat Order</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modul 3 -->
+                <div class="accordion-item reveal delay-3">
+                    <button class="accordion-header">
+                        Modul 3: 🛠️ TOOLSET (Otomasi & Template Siap Pakai)
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                                <li>Template Canva Siap Edit Khusus Promo & Katalog F&B</li>
+                                <li>Spreadsheet Kalkulator HPP & Manajemen Stok Otomatis</li>
+                                <li>Cheat Sheet Prompt AI untuk Generate Ide Konten & Skrip Video Instant</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value & Bonus Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header text-center reveal">
+                <h2>Fasilitas & <span>Bonus Eksklusif</span></h2>
+                <p>Bukan hanya teori, Anda mendapatkan seluruh alat tempur yang kami gunakan.</p>
+            </div>
+            
+            <div class="bonus-grid">
+                <div class="bonus-card reveal delay-1">
+                    <div style="font-size: 3rem;">🎥</div>
+                    <h4>10+ Video Pembelajaran HD</h4>
+                    <p class="text-muted">To-the-point & mudah dipahami untuk langsung dipraktikkan.</p>
+                </div>
+                <div class="bonus-card reveal delay-2">
+                    <div style="font-size: 3rem;">📊</div>
+                    <h4>File Excel & Sheet Interaktif</h4>
+                    <p class="text-muted">Kalkulator HPP & Template Operasional untuk mempermudah manajemen.</p>
+                </div>
+                <div class="bonus-card reveal delay-3">
+                    <div style="font-size: 3rem;">🤖</div>
+                    <h4>Script & Prompt AI Kit</h4>
+                    <p class="text-muted">Otomatisasi pembuatan skrip video dan ide konten dengan AI.</p>
+                </div>
+                <div class="bonus-card reveal delay-4">
+                    <div style="font-size: 3rem;">💬</div>
+                    <h4>Komunitas / Grup Eksklusif</h4>
+                    <p class="text-muted">Networking dan tanya-jawab khusus sesama owner F&B.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <div class="pricing-card reveal">
+                <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">Investasi Terbaik untuk Pertumbuhan Bisnis Kuliner Anda</h3>
+                
+                <div style="margin: 2rem 0;">
+                    <div style="display: inline-block; background-color: #fef08a; color: #a16207; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.9rem; margin-bottom: 0.5rem;">Promo Launching Eksklusif</div>
+                    <div class="price-strike">Rp 499.000</div>
+                    <div class="price-promo">Rp 149.000</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">(Sekali bayar, Akses Seumur Hidup)</div>
+                </div>
+
+                <ul style="text-align: left; margin: 0 auto 2rem; max-width: 350px; line-height: 1.8; list-style: none;">
+                    <li>✅ Akses Seluruh Modul (Mindset, Skillset, Toolset)</li>
+                    <li>✅ Semua Template Canva, Excel HPP, & Prompt AI</li>
+                    <li>✅ Gratis Update Materi di Masa Depan</li>
+                </ul>
+
+                <a href="#" id="btn-checkout-wa" class="btn btn-wa">
+                    Amankan Promo Launching via WhatsApp
+                </a>
+                
+                <!-- Demo Login Button -->
+                <a href="login.html" id="btn-login-page" class="btn btn-outline" style="width: 100%; margin-top: 1rem; border-color: #cbd5e1; color: var(--text-muted); display: inline-block;">
+                    Masuk Member Area (Login)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2026 Baim Warunk Arsi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Supabase SDK -->
+    <script src="js/supabase.js"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/kelas-kuliner.js?v=5"></script>
+</body>
+</html>

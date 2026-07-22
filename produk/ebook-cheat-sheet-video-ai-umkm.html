@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" id="meta-desc" content="Mau bikin video promosi estetik tapi gak punya waktu buat ngedit? 🎬✨
+
+E-book "Cheat Sheet Video AI untuk UMKM" ini dirancang khusus buat pemilik usah...">
+    <meta name="keywords" content="produk digital, ebook kuliner, tools bisnis, baim warunk arsi">
+    <meta name="author" content="Baim Warunk Arsi">
+    <meta name="robots" content="index, follow">
+    <title id="meta-title">E-book Cheat Sheet Video AI UMKM | Baim Warunk Arsi</title>
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" id="og-url" content="https://baim.warunkarsi.com/produk">
+    <meta property="og:title" id="og-title" content="E-book Cheat Sheet Video AI UMKM | Baim Warunk Arsi">
+    <meta property="og:description" id="og-desc" content="Mau bikin video promosi estetik tapi gak punya waktu buat ngedit? 🎬✨
+
+E-book "Cheat Sheet Video AI untuk UMKM" ini dirancang khusus buat pemilik usah...">
+    <meta property="og:image" id="og-image" content="https://res.cloudinary.com/heswgpdc/image/upload/v1784105600/jharx0cfniusgjxrogqx.webp">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" id="tw-url" content="https://baim.warunkarsi.com/produk">
+    <meta property="twitter:title" id="tw-title" content="E-book Cheat Sheet Video AI UMKM | Baim Warunk Arsi">
+    <meta property="twitter:description" id="tw-desc" content="Mau bikin video promosi estetik tapi gak punya waktu buat ngedit? 🎬✨
+
+E-book "Cheat Sheet Video AI untuk UMKM" ini dirancang khusus buat pemilik usah...">
+    <meta property="twitter:image" id="tw-image" content="https://res.cloudinary.com/heswgpdc/image/upload/v1784105600/jharx0cfniusgjxrogqx.webp">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css?v=3">
+
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Specific styles for markdown content in landing page */
+        .markdown-body {
+            font-family: var(--font-body);
+            color: var(--text-main);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        .markdown-body h2 {
+            font-size: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        .markdown-body h3 {
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+        .markdown-body p {
+            margin-bottom: 1.2rem;
+        }
+        .markdown-body ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+        .markdown-body li {
+            margin-bottom: 0.5rem;
+        }
+        .markdown-body strong {
+            color: var(--primary-color);
+        }
+        
+        .product-detail-hero {
+            padding-top: 120px;
+            padding-bottom: 3rem;
+            background-color: var(--bg-light);
+        }
+        
+        .product-detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .product-detail-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .product-sticky-img {
+                position: static !important;
+            }
+        }
+        
+        .product-sticky-img {
+            position: sticky;
+            top: 100px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+        <div class="container nav-content">
+            <a href="/" class="logo">Baim<span>.</span></a>
+            <nav class="nav-links">
+                <a href="/#about">Tentang Saya</a>
+                <a href="/#products">Produk Digital</a>
+                <a href="/#blog">Edukasi</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content (Rendered dynamically) -->
+    <main id="product-main-content">
+        <div class="container" style="padding: 150px 0; text-align: center;">
+            <p>Memuat produk...</p>
+        </div>
+    </main>
+
+    <!-- Modal Form (Fonnte dummy for Free products) -->
+    <div class="modal-overlay" id="modal-form">
+        <div class="modal-content">
+            <button class="modal-close" id="btn-close-modal">&times;</button>
+            
+            <div id="form-view">
+                <div class="modal-header">
+                    <h3>Dapatkan Akses Gratis!</h3>
+                    <p>Silakan masukkan nama dan nomor WhatsApp Anda. Sistem otomatis kami akan segera mengirimkan link materi ke WA Anda.</p>
+                </div>
+                <form id="lead-form">
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap</label>
+                        <input type="text" id="nama" placeholder="Masukkan nama Anda" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="whatsapp">Nomor WhatsApp</label>
+                        <input type="tel" id="whatsapp" placeholder="Contoh: 08123456789" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Kirim Sekarang</button>
+                </form>
+            </div>
+
+            <div class="modal-success hidden" id="success-view">
+                <div class="success-icon">✓</div>
+                <h4>Berhasil!</h4>
+                <p>Data Anda telah tersimpan. Silakan cek WhatsApp Anda dalam beberapa saat untuk menerima materi.</p>
+                <button class="btn btn-outline btn-block mt-4" id="btn-close-success">Tutup Halaman</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Section 5: Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h2>Baim<span>.</span></h2>
+                <p>Menjembatani Bisnis Kuliner & Digital Marketing untuk pertumbuhan maksimal.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Sitemap</h3>
+                <ul>
+                    <li><a href="index.html">Beranda</a></li>
+                    <li><a href="index.html#products">Katalog Produk</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Baim - Warunk Arsi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Floating Chat Widget -->
+    <div class="chat-widget" id="chat-widget">
+        <div class="chat-window hidden" id="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <img src="/images/hero-profile.png" alt="Baim">
+                    <div>
+                        <h4>Baim <span style="color:var(--accent-color)">.</span></h4>
+                        <p>Typically replies in a few minutes</p>
+                    </div>
+                </div>
+                <button id="close-chat">&times;</button>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="chat-message bot">
+                    Halo, Kak! 👋<br><br>Ada yang bisa Baim bantu terkait produk digital atau strategi marketing Warunk Arsi?
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" id="chat-input" placeholder="Type your message...">
+                <button id="send-chat">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+        <button class="chat-toggle" id="chat-toggle">
+            <svg id="chat-icon-open" viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="white" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <svg id="chat-icon-close" class="hidden" viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    </div>
+
+    <!-- JS -->
+    <script src="/js/produk.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+</html>

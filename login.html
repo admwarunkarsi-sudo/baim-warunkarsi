@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Member | Baim Warunk Arsi</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css?v=4">
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body {
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-logo {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .login-logo span {
+            color: var(--accent-color);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(11, 36, 71, 0.1);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container reveal">
+        <a href="/" class="login-logo">Baim<span>.</span></a>
+        <h2 style="margin-top: 0; margin-bottom: 0.5rem;">Masuk Member Area</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Silakan masuk menggunakan email terdaftar.</p>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" placeholder="nama@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-login" id="btn-submit">Masuk</button>
+            <div id="error-message" class="error-msg">Email atau password salah.</div>
+        </form>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted);">
+            Belum punya akun? <a href="kelas-kuliner.html" style="color: var(--primary-color); font-weight: 600;">Daftar Kelas</a>
+        </p>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="js/supabase.js"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/login.js?v=4"></script>
+</body>
+</html>
