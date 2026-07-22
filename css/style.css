@@ -189,6 +189,39 @@ span.highlight, h1 span, h2 span { color: var(--accent-color); }
     width: 100%;
 }
 
+/* Hamburger Button */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 5px;
+    z-index: 101;
+}
+
+.hamburger span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Mobile overlay */
+.nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 98;
+}
+.nav-overlay.active {
+    display: block;
+}
+
 /* Hero Section */
 .hero {
     padding-top: 120px;
@@ -1030,29 +1063,38 @@ span.highlight, h1 span, h2 span { color: var(--accent-color); }
         width: 100%;
         gap: 0.8rem;
     }
-    .hero-cta .btn {
-        width: 100%;
-        padding: 0.8rem 1rem;
-    }
     .nav-content {
-        flex-direction: column;
-        height: auto;
-        padding: 1rem 0;
-        gap: 1rem;
+        height: 70px;
+        padding: 0;
+    }
+    .hamburger {
+        display: flex;
     }
     .nav-links {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-        font-size: 0.9rem;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 250px;
+        height: 100vh;
+        background-color: white;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 80px;
+        padding-left: 2rem;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        transition: right 0.3s ease;
+        z-index: 99;
+        font-size: 1.1rem;
     }
-    .navbar {
-        position: relative; /* Avoid overlapping content since height changed */
+    .nav-links.active {
+        right: 0;
     }
-    .section-padding:first-of-type {
-        padding-top: 2rem !important; /* Adjust since navbar is no longer fixed over it */
-    }
+    .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+    
+    .navbar { position: fixed; }
+    .section-padding:first-of-type { padding-top: 120px !important; }
     .hero-text h1 { font-size: 1.8rem; }
     .section-padding { padding: 3rem 0; }
     .section-header h2 { font-size: 2rem; }

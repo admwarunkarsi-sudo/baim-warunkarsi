@@ -29,19 +29,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
+    <!-- Nav Overlay -->
+    <div class="nav-overlay" id="nav-overlay"></div>
+    
     <!-- Navbar -->
     <header class="navbar">
         <div class="container nav-content">
             <a href="#" class="logo">Baim<span>.</span></a>
-            <nav class="nav-links">
+            <nav class="nav-links" id="nav-links">
                 <a href="#about">Tentang Saya</a>
                 <a href="#products">Produk Digital</a>
                 <a href="#testimonials">Testimoni</a>
-                <a href="blog" class="btn btn-primary" style="padding: 0.4rem 1rem; color: white;">Blog/Artikel</a>
+                <a href="/edukasi" class="btn btn-primary" style="padding: 0.4rem 1rem; color: white;">Blog/Artikel</a>
             </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -323,5 +331,32 @@
     <!-- JS -->
     <script src="js/main.js"></script>
     <script src="/js/chat.js"></script>
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        const navOverlay = document.getElementById('nav-overlay');
+
+        function closeMenu() {
+            hamburger.classList.remove('active');
+            navLinks.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+        });
+
+        navOverlay.addEventListener('click', closeMenu);
+
+        // Close menu when a nav link is clicked
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
 </body>
 </html>
