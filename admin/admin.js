@@ -1124,7 +1124,7 @@ window.admin.loadMembers = async function(filter = 'pending') {
 
     try {
         const { data, error } = await window.supabaseClient
-            .from('members')
+            .from('kelas_members')
             .select('*')
             .order('created_at', { ascending: false });
 
@@ -1207,7 +1207,7 @@ window.admin.renderMembers = function(filter) {
 window.admin.approveMember = async function(id) {
     if (!confirm('Aktifkan akun member ini? Pastikan pembayaran sudah diterima.')) return;
     try {
-        const { error } = await window.supabaseClient.from('members').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', id);
+        const { error } = await window.supabaseClient.from('kelas_members').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', id);
         if (error) throw error;
         showStatus('✅ Akun member berhasil diaktifkan!');
         window.admin.loadMembers(currentFilter);
@@ -1219,7 +1219,7 @@ window.admin.approveMember = async function(id) {
 window.admin.rejectMember = async function(id) {
     if (!confirm('Tolak/cabut akses member ini?')) return;
     try {
-        const { error } = await window.supabaseClient.from('members').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('id', id);
+        const { error } = await window.supabaseClient.from('kelas_members').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('id', id);
         if (error) throw error;
         showStatus('Akses member berhasil dicabut.', false);
         window.admin.loadMembers(currentFilter);

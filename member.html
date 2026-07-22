@@ -169,7 +169,7 @@
             }
 
             const { data: memberData } = await client
-                .from('members')
+                .from('kelas_members')
                 .select('status')
                 .eq('user_id', session.user.id)
                 .single();

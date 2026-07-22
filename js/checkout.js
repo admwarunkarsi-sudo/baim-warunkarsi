@@ -174,9 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const userId = authData?.user?.id;
             const memberStatus = isFreeAccess ? 'active' : 'pending';
 
-            // 2. Simpan ke tabel members
+            // 2. Simpan ke tabel kelas_members
             const { error: dbError } = await window.supabaseClient
-                .from('members')
+                .from('kelas_members')
                 .insert({
                     user_id: userId,
                     full_name: name,
