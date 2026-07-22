@@ -156,6 +156,61 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=4"></script>
+    <script>
+        // Guard: Cek status member sebelum membuka halaman
+        (async function() {
+            const client = window.supabaseClient;
+            if (!client) return;
+
+            const { data: { session } } = await client.auth.getSession();
+            if (!session) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const { data: memberData } = await client
+                .from('members')
+                .select('status')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (!memberData) {
+                // Tidak ada record di tabel members (bisa karena akun lama / admin)
+                // Biarkan masuk - js/member.js akan menangani selebihnya
+                return;
+            }
+
+            if (memberData.status === 'pending') {
+                document.body.innerHTML = `
+                    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;font-family:sans-serif;text-align:center;padding:2rem;">
+                        <div style="background:white;border-radius:16px;padding:3rem;max-width:480px;box-shadow:0 10px 40px rgba(0,0,0,0.1);border-top:5px solid #F99417;">
+                            <div style="font-size:4rem;margin-bottom:1rem;">⏳</div>
+                            <h1 style="font-size:1.5rem;font-weight:800;color:#0B2447;margin-bottom:0.75rem;">Akun Sedang Diverifikasi</h1>
+                            <p style="color:#6b7280;margin-bottom:2rem;">Pembayaran Anda sedang diverifikasi oleh Admin. Biasanya selesai dalam 1×24 jam kerja.<br><br>Jika sudah mengirim bukti transfer, silakan tunggu konfirmasi dari kami.</p>
+                            <a href="https://wa.me/6285179660408?text=Halo%20Admin%2C%20saya%20ingin%20mengkonfirmasi%20status%20pembayaran%20Kelas%20Kuliner%20saya." style="display:inline-block;background:#25D366;color:white;text-decoration:none;font-weight:700;padding:0.75rem 1.5rem;border-radius:8px;margin-bottom:1rem;">💬 Hubungi Admin via WA</a>
+                            <br>
+                            <button onclick="window.supabaseClient.auth.signOut().then(()=>window.location.href='/login')" style="background:none;border:none;color:#9ca3af;font-size:0.85rem;cursor:pointer;margin-top:0.5rem;">Keluar</button>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            if (memberData.status === 'rejected') {
+                document.body.innerHTML = `
+                    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;font-family:sans-serif;text-align:center;padding:2rem;">
+                        <div style="background:white;border-radius:16px;padding:3rem;max-width:480px;box-shadow:0 10px 40px rgba(0,0,0,0.1);border-top:5px solid #ef4444;">
+                            <div style="font-size:4rem;margin-bottom:1rem;">❌</div>
+                            <h1 style="font-size:1.5rem;font-weight:800;color:#0B2447;margin-bottom:0.75rem;">Akses Ditolak</h1>
+                            <p style="color:#6b7280;margin-bottom:2rem;">Maaf, akses akun Anda telah ditolak atau dicabut oleh Admin. Silakan hubungi Admin untuk informasi lebih lanjut.</p>
+                            <a href="https://wa.me/6285179660408" style="display:inline-block;background:#25D366;color:white;text-decoration:none;font-weight:700;padding:0.75rem 1.5rem;border-radius:8px;margin-bottom:1rem;">💬 Hubungi Admin</a>
+                            <br>
+                            <button onclick="window.supabaseClient.auth.signOut().then(()=>window.location.href='/login')" style="background:none;border:none;color:#9ca3af;font-size:0.85rem;cursor:pointer;margin-top:0.5rem;">Keluar</button>
+                        </div>
+                    </div>`;
+                return;
+            }
+        })();
+    </script>
     <script src="js/member.js?v=8"></script>
 </body>
 </html>

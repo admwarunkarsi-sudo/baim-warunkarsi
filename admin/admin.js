@@ -65,6 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tab-settings').addEventListener('click', () => {
         switchTab('settings');
     });
+    document.getElementById('tab-members').addEventListener('click', () => {
+        switchTab('members');
+    });
 
     // Publish Button
     document.getElementById('btn-publish').addEventListener('click', publishChanges);
@@ -170,8 +173,8 @@ document.getElementById('a-title').addEventListener('input', (e) => {
 // --- End Auto Slug Logic ---
 
 function switchTab(tab) {
-    const sections = ['section-products', 'section-articles', 'section-lms', 'section-discussions', 'section-bonus', 'section-settings'];
-    const tabs = ['tab-products', 'tab-articles', 'tab-lms', 'tab-discussions', 'tab-bonus', 'tab-settings'];
+    const sections = ['section-products', 'section-articles', 'section-lms', 'section-discussions', 'section-bonus', 'section-settings', 'section-members'];
+    const tabs = ['tab-products', 'tab-articles', 'tab-lms', 'tab-discussions', 'tab-bonus', 'tab-settings', 'tab-members'];
 
     sections.forEach(s => {
         const el = document.getElementById(s);
@@ -201,6 +204,7 @@ function switchTab(tab) {
     else if (tab === 'discussions') activate('section-discussions', 'tab-discussions', () => { if (window.admin?.loadDiscussions) window.admin.loadDiscussions(); });
     else if (tab === 'bonus') activate('section-bonus', 'tab-bonus', () => { if (window.admin?.loadBonusFiles) window.admin.loadBonusFiles(); });
     else if (tab === 'settings') activate('section-settings', 'tab-settings', () => { if (window.admin?.loadSettings) window.admin.loadSettings(); });
+    else if (tab === 'members') activate('section-members', 'tab-members', () => { if (window.admin?.loadMembers) window.admin.loadMembers(); });
 }
 
 function showStatus(msg, isError = false) {
@@ -1106,5 +1110,120 @@ document.getElementById('bonus-form').addEventListener('submit', async (e) => {
         console.error(err);
         alert('Gagal menambah file bonus: ' + err.message);
     }
-});
 
+// ============================================================
+// MEMBERS MANAGEMENT
+// ============================================================
+let allMembersData = [];
+let currentFilter = 'pending';
+
+window.admin.loadMembers = async function(filter = 'pending') {
+    currentFilter = filter;
+    const tbody = document.getElementById('member-list');
+    tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-gray-400">Memuat data...</td></tr>`;
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('members')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        allMembersData = data || [];
+
+        // Update pending badge
+        const pendingCount = allMembersData.filter(m => m.status === 'pending').length;
+        const badge = document.getElementById('pending-badge');
+        if (badge) {
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        window.admin.renderMembers(filter);
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-red-500">Gagal memuat data: ${err.message}</td></tr>`;
+    }
+};
+
+window.admin.filterMembers = function(status) {
+    currentFilter = status;
+    // Highlight active filter button
+    document.querySelectorAll('.member-filter-btn').forEach(btn => {
+        btn.className = 'member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold';
+    });
+    const activeMap = {
+        pending: 'filter-pending',
+        active: 'filter-active',
+        rejected: 'filter-rejected',
+        all: 'filter-all'
+    };
+    const activeBtn = document.getElementById(activeMap[status]);
+    if (activeBtn) activeBtn.className = 'member-filter-btn bg-navy text-white border border-navy px-4 py-1.5 rounded-full text-sm font-semibold';
+    window.admin.renderMembers(status);
+};
+
+window.admin.renderMembers = function(filter) {
+    const tbody = document.getElementById('member-list');
+    const filtered = filter === 'all' ? allMembersData : allMembersData.filter(m => m.status === filter);
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-gray-400">Tidak ada data dengan status "${filter}".</td></tr>`;
+        return;
+    }
+
+    const statusMap = {
+        pending: `<span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">⏳ Pending</span>`,
+        active: `<span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">✅ Aktif</span>`,
+        rejected: `<span class="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">❌ Ditolak</span>`
+    };
+
+    tbody.innerHTML = filtered.map(m => {
+        const date = new Date(m.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const status = statusMap[m.status] || m.status;
+        const actions = m.status === 'pending'
+            ? `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded mr-1 transition">✅ Terima</button>
+               <button onclick="window.admin.rejectMember('${m.id}')" class="bg-red-500 hover:bg-red-400 text-white text-xs font-bold px-3 py-1 rounded transition">❌ Tolak</button>`
+            : m.status === 'active'
+            ? `<button onclick="window.admin.rejectMember('${m.id}')" class="bg-gray-400 hover:bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded transition">Cabut Akses</button>`
+            : `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded transition">✅ Aktifkan</button>`;
+
+        return `<tr class="hover:bg-gray-50">
+            <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold">${m.full_name}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">${m.email}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">
+                <a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 hover:underline">📞 ${m.whatsapp}</a>
+            </td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-500">${date}</td>
+            <td class="px-5 py-4 border-b border-gray-200">${status}</td>
+            <td class="px-5 py-4 border-b border-gray-200">${actions}</td>
+        </tr>`;
+    }).join('');
+};
+
+window.admin.approveMember = async function(id) {
+    if (!confirm('Aktifkan akun member ini? Pastikan pembayaran sudah diterima.')) return;
+    try {
+        const { error } = await window.supabaseClient.from('members').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', id);
+        if (error) throw error;
+        showStatus('✅ Akun member berhasil diaktifkan!');
+        window.admin.loadMembers(currentFilter);
+    } catch (err) {
+        alert('Gagal mengaktifkan: ' + err.message);
+    }
+};
+
+window.admin.rejectMember = async function(id) {
+    if (!confirm('Tolak/cabut akses member ini?')) return;
+    try {
+        const { error } = await window.supabaseClient.from('members').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('id', id);
+        if (error) throw error;
+        showStatus('Akses member berhasil dicabut.', false);
+        window.admin.loadMembers(currentFilter);
+    } catch (err) {
+        alert('Gagal menolak: ' + err.message);
+    }
+};

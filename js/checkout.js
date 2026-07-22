@@ -8,71 +8,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPrice = document.getElementById('total-price');
     const paymentSection = document.getElementById('payment-section');
     const btnConfirm = document.getElementById('btn-confirm');
-    
-    // Timer & QRIS elements
     const countdownTimer = document.getElementById('countdown-timer');
     const btnSaveQris = document.getElementById('btn-save-qris');
     const qrisImage = document.getElementById('qris-image');
-    
+
+    // =========================================================
+    // CONFIG
+    // =========================================================
+    const FONNTE_TOKEN = 'q5fXFifuQdFfhmRprTUs';
+    const ADMIN_WA_NUMBER = '6285179660408';
+    const ADMIN_WA_FOR_FONNTE = '085179660408';
+
     let isFreeAccess = false;
     const ORIGINAL_PRICE = 149000;
-    
-    // Countdown Logic (15 minutes)
-    let timeRemaining = 15 * 60; // 15 minutes in seconds
+
+    // =========================================================
+    // COUNTDOWN TIMER (15 menit)
+    // =========================================================
+    let timeRemaining = 15 * 60;
     let timerInterval;
 
     function startTimer() {
         timerInterval = setInterval(() => {
             const minutes = Math.floor(timeRemaining / 60);
             const seconds = timeRemaining % 60;
-            
-            // Format to MM:SS
-            countdownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
+            if (countdownTimer) {
+                countdownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
             if (timeRemaining <= 0) {
                 clearInterval(timerInterval);
-                countdownTimer.textContent = "00:00";
+                if (countdownTimer) countdownTimer.textContent = '00:00';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Waktu Habis',
-                    text: 'Waktu pembayaran Anda telah habis. Silakan muat ulang halaman jika ingin melanjutkan.',
+                    text: 'Waktu pembayaran Anda telah habis. Silakan muat ulang halaman untuk melanjutkan.',
                     confirmButtonText: 'Muat Ulang'
-                }).then(() => {
-                    window.location.reload();
-                });
+                }).then(() => window.location.reload());
             }
             timeRemaining--;
         }, 1000);
     }
-    
-    // Start timer on load
     startTimer();
 
-    // Save QRIS to Gallery Logic
+    // =========================================================
+    // SIMPAN QRIS KE GALERI
+    // =========================================================
     if (btnSaveQris && qrisImage) {
         btnSaveQris.addEventListener('click', () => {
-            const imageSrc = qrisImage.src;
-            // Create a temporary anchor element
             const link = document.createElement('a');
-            link.href = imageSrc;
+            link.href = qrisImage.src;
             link.download = 'QRIS_Baim_Warunk_Arsi.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // Show toast/alert
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'QRIS berhasil disimpan ke Galeri',
-                showConfirmButton: false,
-                timer: 2000
-            });
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'QRIS berhasil disimpan!', showConfirmButton: false, timer: 2000 });
         });
     }
 
-    // Simple hardcoded coupons for demo/team access
+    // =========================================================
+    // KUPON
+    // =========================================================
     const VALID_COUPONS = {
         'TEAMBAIM': { discount: 1, label: 'Diskon 100% (Akses Tim)' },
         'GRATIS100': { discount: 1, label: 'Diskon 100% (Akses Gratis)' }
@@ -84,50 +79,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnApplyCoupon.addEventListener('click', () => {
         const code = couponInput.value.trim().toUpperCase();
-        
         if (!code) {
             couponMessage.textContent = 'Masukkan kode kupon terlebih dahulu.';
             couponMessage.className = 'coupon-message error';
             return;
         }
-
         if (VALID_COUPONS[code]) {
             const coupon = VALID_COUPONS[code];
             isFreeAccess = coupon.discount === 1;
-            
-            // Update UI
-            couponMessage.textContent = `Kupon berhasil diterapkan: ${coupon.label}`;
+            couponMessage.textContent = `✅ Kupon berhasil: ${coupon.label}`;
             couponMessage.className = 'coupon-message success';
-            
             discountRow.style.display = 'flex';
             discountAmount.textContent = `-${formatRupiah(ORIGINAL_PRICE * coupon.discount)}`;
-            
-            const newTotal = ORIGINAL_PRICE - (ORIGINAL_PRICE * coupon.discount);
-            totalPrice.textContent = formatRupiah(newTotal);
-            
+            totalPrice.textContent = formatRupiah(ORIGINAL_PRICE - (ORIGINAL_PRICE * coupon.discount));
             if (isFreeAccess) {
                 paymentSection.style.display = 'none';
                 btnConfirm.textContent = 'Buat Akun & Masuk Kelas';
-                clearInterval(timerInterval); // Stop timer if free
+                clearInterval(timerInterval);
             }
         } else {
             isFreeAccess = false;
-            couponMessage.textContent = 'Kode kupon tidak valid atau sudah kedaluwarsa.';
+            couponMessage.textContent = '❌ Kode kupon tidak valid atau sudah kedaluwarsa.';
             couponMessage.className = 'coupon-message error';
-            
             discountRow.style.display = 'none';
             totalPrice.textContent = formatRupiah(ORIGINAL_PRICE);
             paymentSection.style.display = 'block';
             btnConfirm.textContent = 'Konfirmasi Sudah Bayar';
-            
-            // Restart timer if it was stopped
-            if (!timerInterval || timeRemaining <= 0) {
-                timeRemaining = 15 * 60;
-                startTimer();
-            }
+            if (!timerInterval || timeRemaining <= 0) { timeRemaining = 15 * 60; startTimer(); }
         }
     });
 
+    // =========================================================
+    // FONNTE: Kirim notifikasi WA ke Admin
+    // =========================================================
+    async function sendFonnteNotification(name, email, wa) {
+        const message = `🔔 *PENDAFTAR BARU - Kelas Kuliner*\n\nNama: *${name}*\nEmail: ${email}\nWhatsApp: ${wa}\n\nStatus: ⏳ Menunggu Verifikasi\n\n👉 Konfirmasi di:\nhttps://baim.warunkarsi.com/admin`;
+        try {
+            await fetch('https://api.fonnte.com/send', {
+                method: 'POST',
+                headers: {
+                    'Authorization': FONNTE_TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    target: ADMIN_WA_FOR_FONNTE,
+                    message: message,
+                    countryCode: '62'
+                })
+            });
+        } catch (err) {
+            console.warn('Fonnte notification failed (non-critical):', err);
+        }
+    }
+
+    // =========================================================
+    // FORM SUBMIT
+    // =========================================================
     checkoutForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -140,76 +147,78 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire('Error', 'Mohon lengkapi semua data form.', 'error');
             return;
         }
-
         if (!window.supabaseClient) {
             Swal.fire('Error', 'Sistem sedang offline. Mohon refresh halaman.', 'error');
             return;
         }
 
-        // Change button state
         const originalBtnText = btnConfirm.textContent;
         btnConfirm.textContent = 'Memproses...';
         btnConfirm.disabled = true;
 
         try {
-            // Register user in Supabase
-            const { data, error } = await window.supabaseClient.auth.signUp({
+            // 1. Daftarkan akun di Supabase Auth
+            const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
                 email: email,
                 password: password,
-                options: {
-                    data: {
-                        full_name: name,
-                        whatsapp: wa
-                    }
-                }
+                options: { data: { full_name: name, whatsapp: wa } }
             });
 
-            if (error) {
-                // If email already exists
-                if (error.message.includes('already registered') || error.status === 422) {
-                    throw new Error('Email ini sudah terdaftar. Silakan gunakan email lain atau langsung Login jika ini akun Anda.');
+            if (authError) {
+                if (authError.message.includes('already registered') || authError.status === 422) {
+                    throw new Error('Email ini sudah terdaftar. Silakan gunakan email lain atau langsung Login.');
                 }
-                throw error;
+                throw authError;
             }
 
-            // Success logic based on payment method
-            if (isFreeAccess) {
-                // Free access -> Redirect directly to member dashboard
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pendaftaran Berhasil!',
-                    text: 'Kupon berhasil digunakan. Anda akan diarahkan ke Member Area.',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.href = 'member';
+            const userId = authData?.user?.id;
+            const memberStatus = isFreeAccess ? 'active' : 'pending';
+
+            // 2. Simpan ke tabel members
+            const { error: dbError } = await window.supabaseClient
+                .from('members')
+                .insert({
+                    user_id: userId,
+                    full_name: name,
+                    email: email,
+                    whatsapp: wa,
+                    status: memberStatus,
+                    payment_method: isFreeAccess ? 'coupon' : 'qris'
                 });
-            } else {
-                // Paid access -> Redirect to WhatsApp for manual verification
-                const waNumber = '6285179660408'; // Admin WA number
-                const text = `Halo Admin Baim,\n\nSaya sudah melakukan pembayaran untuk Kelas Kuliner via QRIS.\n\nNama: ${name}\nEmail: ${email}\n\nBerikut saya lampirkan bukti transfernya (TOLONG LAMPIRKAN GAMBAR BUKTI TRANSFER SEBELUM MENGIRIM PESAN INI).`;
-                const encodedText = encodeURIComponent(text);
-                const waUrl = `https://wa.me/${waNumber}?text=${encodedText}`;
-                
+
+            if (dbError) console.warn('DB Insert error (non-critical):', dbError.message);
+
+            // 3. Kirim notifikasi Fonnte ke admin (hanya untuk pendaftar berbayar)
+            if (!isFreeAccess) {
+                await sendFonnteNotification(name, email, wa);
+            }
+
+            // 4. Redirect
+            if (isFreeAccess) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Akun Dibuat!',
-                    html: 'Pendaftaran berhasil.<br><br><b>PENTING:</b><br>Sistem akan mengarahkan Anda ke WhatsApp Admin. Mohon kirimkan <b>Bukti Transfer QRIS</b> Anda agar akun bisa segera diaktifkan.',
-                    confirmButtonText: 'Kirim Bukti via WhatsApp',
+                    title: 'Pendaftaran Berhasil! 🎉',
+                    text: 'Kupon berhasil digunakan. Anda akan diarahkan ke Member Area.',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => { window.location.href = '/member'; });
+            } else {
+                const text = `Halo Admin Baim,\n\nSaya sudah melakukan pembayaran untuk Kelas Kuliner via QRIS.\n\nNama: ${name}\nEmail: ${email}\n\n*Mohon lampirkan screenshot bukti transfer sebelum mengirim pesan ini.*`;
+                const waUrl = `https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(text)}`;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Akun Berhasil Dibuat!',
+                    html: `Terima kasih, <b>${name}</b>!<br><br>Silakan kirimkan <b>bukti transfer QRIS</b> Anda ke Admin via WhatsApp untuk mengaktifkan akun Anda.<br><br><small style="color:#6b7280;">Admin akan mengaktifkan akun Anda dalam waktu singkat.</small>`,
+                    confirmButtonText: '📤 Kirim Bukti via WhatsApp',
                     confirmButtonColor: '#25D366',
                     allowOutsideClick: false
-                }).then(() => {
-                    window.location.href = waUrl;
-                });
+                }).then(() => { window.location.href = waUrl; });
             }
-            
+
         } catch (error) {
             console.error('Checkout Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Pendaftaran Gagal',
-                text: error.message || 'Terjadi kesalahan saat membuat akun. Silakan coba lagi.'
-            });
+            Swal.fire({ icon: 'error', title: 'Pendaftaran Gagal', text: error.message || 'Terjadi kesalahan. Silakan coba lagi.' });
             btnConfirm.textContent = originalBtnText;
             btnConfirm.disabled = false;
         }
