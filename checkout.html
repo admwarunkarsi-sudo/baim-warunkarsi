@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Baim Warunk Arsi</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/checkout.css?v=1">
+</head>
+<body style="background-color: #f8fafc;">
+    
+    <div class="checkout-container">
+        <!-- Left: Form -->
+        <div class="checkout-box">
+            <div class="checkout-header">
+                <h2><a href="kelas-kuliner" style="color: var(--primary-color);">←</a> Detail Pendaftaran</h2>
+                <p>Silakan lengkapi data diri Anda untuk membuat akun Member.</p>
+            </div>
+
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="name">Nama Lengkap</label>
+                    <input type="text" id="name" class="form-control" placeholder="Cth: Budi Santoso" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="wa">Nomor WhatsApp</label>
+                    <input type="tel" id="wa" class="form-control" placeholder="Cth: 081234567890" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email (Digunakan untuk Login)</label>
+                    <input type="email" id="email" class="form-control" placeholder="budi@gmail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Buat Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Minimal 6 karakter" minlength="6" required>
+                </div>
+
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label for="coupon">Punya Kode Kupon?</label>
+                    <div class="input-group">
+                        <input type="text" id="coupon" class="form-control" placeholder="Masukkan kode kupon">
+                        <button type="button" id="btn-apply-coupon" class="btn btn-outline" style="padding: 0.75rem 1.5rem;">Terapkan</button>
+                    </div>
+                    <div id="coupon-message" class="coupon-message"></div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right: Payment & Summary -->
+        <div class="checkout-box">
+            <div class="checkout-header">
+                <h2>Ringkasan Pesanan</h2>
+            </div>
+
+            <div class="order-summary">
+                <div class="summary-item">
+                    <span>Kelas Kuliner (Akses Selamanya)</span>
+                    <span>Rp 149.000</span>
+                </div>
+                <div class="summary-item" id="discount-row" style="display: none; color: #16a34a;">
+                    <span>Diskon Kupon</span>
+                    <span id="discount-amount">-Rp 0</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total Bayar</span>
+                    <span id="total-price">Rp 149.000</span>
+                </div>
+            </div>
+
+            <div id="payment-section" class="qris-section">
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Scan QRIS untuk Membayar</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Buka aplikasi m-Banking atau e-Wallet Anda (Gopay, OVO, Dana, dll) lalu scan kode di bawah ini.</p>
+                
+                <img src="images/dummy-qris.jpg" alt="QRIS Baim Warunk Arsi" class="qris-img">
+                
+                <p style="font-size: 0.85rem; color: #dc2626; margin-top: 1rem;">
+                    *Penting: Klik tombol konfirmasi HANYA JIKA Anda sudah mentransfer. Anda akan diminta mengirimkan screenshot bukti transfer via WhatsApp.
+                </p>
+            </div>
+
+            <button type="submit" form="checkout-form" id="btn-confirm" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">
+                Konfirmasi Sudah Bayar
+            </button>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="js/supabase.js"></script>
+    <script src="js/supabase-client.js?v=4"></script>
+    <script src="js/checkout.js?v=1"></script>
+</body>
+</html>
