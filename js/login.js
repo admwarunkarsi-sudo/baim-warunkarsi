@@ -52,8 +52,24 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Login Error:', error.message);
             if (error.message === 'Invalid login credentials' || error.message.includes('Invalid')) {
-                alert('Email belum terdaftar atau password salah.\nSilakan daftar Kelas Kuliner terlebih dahulu.');
-                window.location.href = 'kelas-kuliner#pricing';
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Belum Terdaftar',
+                        text: 'Email belum terdaftar atau password salah. Silakan daftar Kelas Kuliner terlebih dahulu.',
+                        confirmButtonText: 'Daftar Sekarang',
+                        confirmButtonColor: '#f59e0b',
+                        showCancelButton: true,
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'kelas-kuliner#pricing';
+                        }
+                    });
+                } else {
+                    alert('Email belum terdaftar atau password salah.\nSilakan daftar Kelas Kuliner terlebih dahulu.');
+                    window.location.href = 'kelas-kuliner#pricing';
+                }
             } else {
                 errorMsg.textContent = error.message === 'Email not confirmed' ? 'Email belum dikonfirmasi. Periksa email Anda.' : error.message;
                 errorMsg.style.display = 'block';
