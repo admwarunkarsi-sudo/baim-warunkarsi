@@ -85,14 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const { data: { session }, error } = await window.supabaseClient.auth.getSession();
             if (error || !session) {
                 alert('Sesi Anda telah berakhir atau Anda belum login. Silakan login kembali.');
-                window.location.href = 'login.html';
+                window.location.href = 'login';
                 return false;
             }
             currentUserId = session.user.id;
             return true;
         } catch (err) {
             console.error('Auth error:', err);
-            window.location.href = 'login.html';
+            window.location.href = 'login';
             return false;
         }
     };
@@ -708,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-logout').addEventListener('click', async (e) => {
         e.preventDefault();
         await window.supabaseClient.auth.signOut();
-        window.location.href = 'login.html';
+        window.location.href = 'login';
     });
 
     // ============================================================

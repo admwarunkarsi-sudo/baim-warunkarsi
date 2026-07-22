@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('blog-main-content').innerHTML = `
                 <div class="container" style="padding: 150px 0; text-align: center;">
                     <h2>Artikel tidak ditemukan</h2>
-                    <a href="index.html" class="btn btn-primary" style="margin-top:20px;">Kembali ke Beranda</a>
+                    <a href="" class="btn btn-primary" style="margin-top:20px;">Kembali ke Beranda</a>
                 </div>
             `;
             return;

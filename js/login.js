@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!window.supabaseClient) return;
         const { data: { session } } = await window.supabaseClient.auth.getSession();
         if (session) {
-            window.location.href = 'member.html';
+            window.location.href = 'member';
         }
     };
     checkSession();
@@ -46,14 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.session) {
                 // Login success, redirect to member area
-                window.location.href = 'member.html';
+                window.location.href = 'member';
             }
 
         } catch (error) {
             console.error('Login Error:', error.message);
-            // Menampilkan pesan error asli dari Supabase agar jelas
-            errorMsg.textContent = error.message === 'Email not confirmed' ? 'Email belum dikonfirmasi. Periksa email Anda atau aktifkan Auto-Confirm di Supabase.' : (error.message || 'Email atau password salah.');
-            errorMsg.style.display = 'block';
+            if (error.message === 'Invalid login credentials' || error.message.includes('Invalid')) {
+                alert('Email belum terdaftar atau password salah.\nSilakan daftar Kelas Kuliner terlebih dahulu.');
+                window.location.href = 'kelas-kuliner#pricing';
+            } else {
+                errorMsg.textContent = error.message === 'Email not confirmed' ? 'Email belum dikonfirmasi. Periksa email Anda.' : error.message;
+                errorMsg.style.display = 'block';
+            }
         } finally {
             // Reset button state
             btnSubmit.textContent = originalText;
