@@ -1034,8 +1034,24 @@ span.highlight, h1 span, h2 span { color: var(--accent-color); }
         width: 100%;
         padding: 0.8rem 1rem;
     }
+    .nav-content {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem 0;
+        gap: 1rem;
+    }
     .nav-links {
-        display: none; /* simple mobile nav hide for now, can add hamburger later if requested */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+    .navbar {
+        position: relative; /* Avoid overlapping content since height changed */
+    }
+    .section-padding:first-of-type {
+        padding-top: 2rem !important; /* Adjust since navbar is no longer fixed over it */
     }
     .hero-text h1 { font-size: 1.8rem; }
     .section-padding { padding: 3rem 0; }
