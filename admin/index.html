@@ -27,8 +27,18 @@
         .hidden { display: none !important; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Table only scrolls horizontally on desktop within its container */
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        td { white-space: nowrap; }
+        /* Prevent global horizontal overflow */
+        html, body { overflow-x: hidden; max-width: 100vw; }
+        /* Cards must not exceed viewport */
+        #product-cards, #article-cards, #bonus-cards, #member-cards {
+            width: 100%; box-sizing: border-box;
+        }
+        #product-cards > div, #article-cards > div,
+        #bonus-cards > div, #member-cards > div {
+            word-break: break-word; overflow-wrap: break-word;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans h-screen flex flex-col">
@@ -70,7 +80,7 @@
             </div>
         </nav>
 
-        <div class="flex flex-1 overflow-hidden relative w-full">
+        <div class="flex flex-1 overflow-hidden relative" style="max-width:100vw;">
             <!-- Mobile Backdrop -->
             <div id="sidebar-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
 
@@ -102,63 +112,63 @@
             </aside>
 
             <!-- Main Content -->
-            <main class="flex-1 p-4 md:p-8 overflow-y-auto bg-gray-50 w-full">
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto overflow-x-hidden bg-gray-50" style="min-width:0;">
                 <!-- Status Message -->
                 <div id="status-msg" class="hidden mb-4 p-4 rounded text-sm font-semibold"></div>
 
                 <!-- Products Section -->
                 <section id="section-products" class="section-content">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-navy">Manajemen Produk</h2>
-                        <button onclick="window.admin.openProductForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah Produk</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-navy">Manajemen Produk</h2>
+                        <button onclick="window.admin.openProductForm()" class="bg-navy hover:bg-navy-light text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-sm transition">+ Tambah</button>
                     </div>
-                    
-                    <div class="bg-white shadow rounded-lg table-responsive">
+                    <!-- Mobile Cards -->
+                    <div id="product-cards" class="md:hidden space-y-3">
+                        <div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Memuat...</div>
+                    </div>
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block bg-white shadow rounded-lg overflow-hidden">
                         <table class="min-w-full leading-normal">
-                            <thead class="hidden md:table-header-group">
-                                <tr>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Judul</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Tipe</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Harga</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="product-list">
-                                <!-- Rendered via JS -->
-                            </tbody>
+                            <thead><tr>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Judul</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Tipe</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Harga</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                            </tr></thead>
+                            <tbody id="product-list"></tbody>
                         </table>
                     </div>
                 </section>
 
                 <!-- Articles Section -->
                 <section id="section-articles" class="section-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-navy">Manajemen Artikel</h2>
-                        <button onclick="window.admin.openArticleForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah Artikel</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-navy">Manajemen Artikel</h2>
+                        <button onclick="window.admin.openArticleForm()" class="bg-navy hover:bg-navy-light text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-sm transition">+ Tambah</button>
                     </div>
-                    
-                    <div class="bg-white shadow rounded-lg table-responsive">
+                    <!-- Mobile Cards -->
+                    <div id="article-cards" class="md:hidden space-y-3">
+                        <div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Memuat...</div>
+                    </div>
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block bg-white shadow rounded-lg overflow-hidden">
                         <table class="min-w-full leading-normal">
-                            <thead class="hidden md:table-header-group">
-                                <tr>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Judul</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Kategori</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Tanggal</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="article-list">
-                                <!-- Rendered via JS -->
-                            </tbody>
+                            <thead><tr>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Judul</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Kategori</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Tanggal</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                            </tr></thead>
+                            <tbody id="article-list"></tbody>
                         </table>
                     </div>
                 </section>
 
                 <!-- LMS Section -->
                 <section id="section-lms" class="section-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-navy">Manajemen LMS</h2>
-                        <button onclick="window.admin.openModuleForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah Modul</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-navy">Manajemen LMS</h2>
+                        <button onclick="window.admin.openModuleForm()" class="bg-navy hover:bg-navy-light text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-sm transition">+ Tambah Modul</button>
                     </div>
 
                     <div id="lms-container" class="space-y-4">
@@ -169,23 +179,24 @@
 
                 <!-- Discussions Section -->
                 <section id="section-discussions" class="section-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-navy">Manajemen Diskusi</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-navy">Manajemen Diskusi</h2>
                     </div>
-                    
-                    <div class="bg-white shadow rounded-lg table-responsive">
+                    <!-- Mobile Cards -->
+                    <div id="discussion-cards" class="md:hidden space-y-3">
+                        <div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Memuat data diskusi...</div>
+                    </div>
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block bg-white shadow rounded-lg overflow-hidden">
                         <table class="min-w-full leading-normal">
-                            <thead>
-                                <tr>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Member</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Materi (Bab)</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Pertanyaan</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Status</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
+                            <thead><tr>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Member</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Materi (Bab)</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Pertanyaan</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                            </tr></thead>
                             <tbody id="discussion-list">
-                                <!-- Rendered via JS -->
                                 <tr><td colspan="5" class="px-5 py-5 text-center text-gray-500">Memuat data diskusi...</td></tr>
                             </tbody>
                         </table>
@@ -194,19 +205,22 @@
 
                 <!-- Bonus Files Section -->
                 <section id="section-bonus" class="section-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-navy">File Bonus Eksklusif</h2>
-                        <button onclick="window.admin.openBonusForm()" class="bg-navy hover:bg-navy-light text-white px-4 py-2 rounded text-sm transition">+ Tambah File Bonus</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-navy">File Bonus Eksklusif</h2>
+                        <button onclick="window.admin.openBonusForm()" class="bg-navy hover:bg-navy-light text-white px-3 py-1.5 md:px-4 md:py-2 rounded text-sm transition">+ Tambah</button>
                     </div>
-                    <div class="bg-white shadow rounded-lg table-responsive">
+                    <!-- Mobile Cards -->
+                    <div id="bonus-cards" class="md:hidden space-y-3">
+                        <div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Memuat...</div>
+                    </div>
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block bg-white shadow rounded-lg overflow-hidden">
                         <table class="min-w-full leading-normal">
-                            <thead class="hidden md:table-header-group">
-                                <tr>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Judul</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Tipe</th>
-                                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
+                            <thead><tr>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Judul</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Tipe</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                            </tr></thead>
                             <tbody id="bonus-list">
                                 <tr><td colspan="3" class="px-5 py-5 text-center text-gray-500">Memuat...</td></tr>
                             </tbody>
@@ -216,15 +230,15 @@
 
                 <!-- Settings Section -->
                 <section id="section-settings" class="section-content hidden">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-navy">Pengaturan Situs</h2>
+                    <div class="mb-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-navy">Pengaturan Situs</h2>
                     </div>
-                    <div class="bg-white shadow rounded-lg p-8 max-w-xl">
+                    <div class="bg-white shadow rounded-lg p-6 max-w-xl">
                         <h3 class="font-bold text-navy mb-4">Link Grup Komunitas</h3>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Link WhatsApp Grup</label>
                             <input type="url" id="wa-group-url" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="https://chat.whatsapp.com/...">
-                            <p class="text-xs text-gray-500 mt-1">Masukkan link undangan grup WhatsApp. Member akan langsung diarahkan ke link ini saat mengklik 'Grup Komunitas'.</p>
+                            <p class="text-xs text-gray-500 mt-1">Masukkan link undangan grup WhatsApp.</p>
                         </div>
                         <button onclick="window.admin.saveSettings()" class="bg-navy hover:bg-navy-light text-white font-bold py-2 px-6 rounded transition">Simpan Pengaturan</button>
                         <div id="settings-status" class="mt-3 text-sm font-semibold"></div>
@@ -233,31 +247,35 @@
 
                 <!-- Members Section -->
                 <section id="section-members" class="section-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-navy">🧑‍🎓 Pendaftar Kelas Kuliner</h2>
-                        <button onclick="window.admin.loadMembers()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm transition">🔄 Refresh</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-navy">🧑‍🎓 Pendaftar Kelas</h2>
+                        <button onclick="window.admin.loadMembers()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-sm transition">🔄 Refresh</button>
                     </div>
 
                     <!-- Filter Tabs -->
-                    <div class="flex gap-2 mb-4">
-                        <button onclick="window.admin.filterMembers('pending')" id="filter-pending" class="member-filter-btn bg-yellow-100 text-yellow-800 border border-yellow-300 px-4 py-1.5 rounded-full text-sm font-semibold">⏳ Pending</button>
-                        <button onclick="window.admin.filterMembers('active')" id="filter-active" class="member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold">✅ Aktif</button>
-                        <button onclick="window.admin.filterMembers('rejected')" id="filter-rejected" class="member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold">❌ Ditolak</button>
-                        <button onclick="window.admin.filterMembers('all')" id="filter-all" class="member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold">📋 Semua</button>
+                    <div class="flex gap-2 mb-4 flex-wrap">
+                        <button onclick="window.admin.filterMembers('pending')" id="filter-pending" class="member-filter-btn bg-yellow-100 text-yellow-800 border border-yellow-300 px-3 py-1 rounded-full text-xs font-semibold">⏳ Pending</button>
+                        <button onclick="window.admin.filterMembers('active')" id="filter-active" class="member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-3 py-1 rounded-full text-xs font-semibold">✅ Aktif</button>
+                        <button onclick="window.admin.filterMembers('rejected')" id="filter-rejected" class="member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-3 py-1 rounded-full text-xs font-semibold">❌ Ditolak</button>
+                        <button onclick="window.admin.filterMembers('all')" id="filter-all" class="member-filter-btn bg-gray-100 text-gray-600 border border-gray-300 px-3 py-1 rounded-full text-xs font-semibold">📋 Semua</button>
                     </div>
 
-                    <div class="bg-white shadow rounded-lg table-responsive">
+                    <!-- Mobile Cards -->
+                    <div id="member-cards" class="md:hidden space-y-3">
+                        <div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Klik tab untuk memuat data pendaftar...</div>
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block bg-white shadow rounded-lg overflow-hidden">
                         <table class="min-w-full leading-normal">
-                            <thead class="hidden md:table-header-group">
-                                <tr>
-                                    <th class="px-3 md:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Nama</th>
-                                    <th class="px-3 md:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Email</th>
-                                    <th class="px-3 md:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">WhatsApp</th>
-                                    <th class="px-3 md:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Tanggal</th>
-                                    <th class="px-3 md:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Status</th>
-                                    <th class="px-3 md:px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
+                            <thead><tr>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Nama</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Email</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">WhatsApp</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Tanggal</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                            </tr></thead>
                             <tbody id="member-list">
                                 <tr><td colspan="6" class="px-5 py-8 text-center text-gray-400">Klik tab untuk memuat data pendaftar...</td></tr>
                             </tbody>
@@ -269,8 +287,8 @@
     </div>
 
     <!-- Product Form Modal -->
-    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeProductForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-6" id="product-modal-title">Tambah Produk</h2>
             <form id="product-form">
@@ -332,8 +350,8 @@
     </div>
 
     <!-- Article Form Modal -->
-    <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+    <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeArticleForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-6" id="article-modal-title">Tambah Artikel</h2>
             <form id="article-form">
@@ -391,8 +409,8 @@
     </div>
 
     <!-- LMS Module Form Modal -->
-    <div id="module-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative my-auto">
+    <div id="module-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-md relative">
             <button onclick="window.admin.closeModuleForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 id="module-modal-title" class="text-2xl font-bold text-navy mb-6">Tambah Modul Baru</h2>
             <form id="module-form">
@@ -417,8 +435,8 @@
     </div>
 
     <!-- LMS Lesson Form Modal -->
-    <div id="lesson-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl relative my-auto">
+    <div id="lesson-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-3xl relative">
             <button onclick="window.admin.closeLessonForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 id="lesson-modal-title" class="text-2xl font-bold text-navy mb-6">Tambah Bab (Lesson) Baru</h2>
             <form id="lesson-form">
@@ -463,8 +481,8 @@
     </div>
 
     <!-- Attachment Modal -->
-    <div id="attachment-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+    <div id="attachment-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeAttachmentModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-4">Kelola Lampiran: <span id="attach-lesson-title" class="text-gray-500"></span></h2>
             
@@ -505,8 +523,8 @@
     </div>
 
     <!-- Reply Discussion Modal -->
-    <div id="reply-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+    <div id="reply-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeReplyModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-4">Balas Diskusi</h2>
             
@@ -530,8 +548,8 @@
     </div>
 
     <!-- Bonus File Modal -->
-    <div id="bonus-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 overflow-y-auto pt-20 pb-10">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative my-auto">
+    <div id="bonus-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+        <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeBonusForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-6" id="bonus-modal-title">Tambah File Bonus</h2>
             <form id="bonus-form">

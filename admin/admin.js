@@ -476,59 +476,88 @@ async function loadArticles() {
 // --- Rendering ---
 function renderProducts() {
     const tbody = document.getElementById('product-list');
-    tbody.innerHTML = productsData.map(p => {
+    const cards = document.getElementById('product-cards');
+    if (!productsData.length) {
+        const empty = '<div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Belum ada produk.</div>';
+        if(cards) cards.innerHTML = empty;
+        if(tbody) tbody.innerHTML = '<tr><td colspan="4" class="px-5 py-5 text-center text-gray-400">Belum ada produk.</td></tr>';
+        return;
+    }
+    productsData.forEach(p => {
         const badge = p.type === 'free'
             ? `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Gratis</span>`
             : `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Premium</span>`;
-        const actions = `<button onclick="window.admin.editProduct(${p.id})" class="text-blue-600 hover:text-blue-900 font-semibold text-sm mr-3">✏️ Edit</button><button onclick="window.admin.deleteProduct(${p.id})" class="text-red-600 hover:text-red-900 font-semibold text-sm">🗑️ Hapus</button>`;
-        return `
-        <!-- Mobile Card -->
-        <tr class="block md:hidden">
-            <td colspan="4" class="p-0 border-b border-gray-200">
-                <div class="bg-white p-4 space-y-2">
-                    <p class="font-semibold text-gray-900 text-sm">${p.title}</p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">${badge} <span class="text-sm text-gray-600">${p.price}</span></div>
-                        <div>${actions}</div>
-                    </div>
+        const editBtn = `<button onclick="window.admin.editProduct(${p.id})" class="text-blue-600 font-semibold text-sm mr-3">✏️ Edit</button>`;
+        const delBtn = `<button onclick="window.admin.deleteProduct(${p.id})" class="text-red-600 font-semibold text-sm">🗑️ Hapus</button>`;
+    });
+    // Mobile cards
+    if(cards) cards.innerHTML = productsData.map(p => {
+        const badge = p.type === 'free'
+            ? `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Gratis</span>`
+            : `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Premium</span>`;
+        return `<div class="bg-white rounded-lg shadow p-4">
+            <div class="flex justify-between items-start mb-2">
+                <p class="font-semibold text-gray-900 text-sm flex-1 mr-2">${p.title}</p>
+                ${badge}
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600 font-medium">${p.price}</span>
+                <div>
+                    <button onclick="window.admin.editProduct(${p.id})" class="text-blue-600 font-semibold text-sm mr-3">✏️ Edit</button>
+                    <button onclick="window.admin.deleteProduct(${p.id})" class="text-red-600 font-semibold text-sm">🗑️ Hapus</button>
                 </div>
+            </div>
+        </div>`;
+    }).join('');
+    // Desktop table
+    if(tbody) tbody.innerHTML = productsData.map(p => {
+        const badge = p.type === 'free'
+            ? `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Gratis</span>`
+            : `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Premium</span>`;
+        return `<tr class="hover:bg-gray-50">
+            <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold text-gray-900">${p.title}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">${badge}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-700">${p.price}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">
+                <button onclick="window.admin.editProduct(${p.id})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                <button onclick="window.admin.deleteProduct(${p.id})" class="text-red-600 hover:text-red-900">Hapus</button>
             </td>
-        </tr>
-        <!-- Desktop Row -->
-        <tr class="hidden md:table-row hover:bg-gray-50">
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm font-semibold text-gray-900">${p.title}</td>
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${badge}</td>
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-700">${p.price}</td>
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${actions}</td>
         </tr>`;
     }).join('');
 }
 
 function renderArticles() {
     const tbody = document.getElementById('article-list');
-    tbody.innerHTML = articlesData.map(a => {
-        const actions = `<button onclick="window.admin.editArticle(${a.id})" class="text-blue-600 hover:text-blue-900 font-semibold text-sm mr-3">✏️ Edit</button><button onclick="window.admin.deleteArticle(${a.id})" class="text-red-600 hover:text-red-900 font-semibold text-sm">🗑️ Hapus</button>`;
-        return `
-        <!-- Mobile Card -->
-        <tr class="block md:hidden">
-            <td colspan="4" class="p-0 border-b border-gray-200">
-                <div class="bg-white p-4 space-y-1">
-                    <p class="font-semibold text-gray-900 text-sm">${a.title}</p>
-                    <div class="flex items-center justify-between">
-                        <div class="text-xs text-gray-500">${a.tag} · ${a.date}</div>
-                        <div>${actions}</div>
-                    </div>
+    const cards = document.getElementById('article-cards');
+    if (!articlesData.length) {
+        const empty = '<div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Belum ada artikel.</div>';
+        if(cards) cards.innerHTML = empty;
+        if(tbody) tbody.innerHTML = '<tr><td colspan="4" class="px-5 py-5 text-center text-gray-400">Belum ada artikel.</td></tr>';
+        return;
+    }
+    // Mobile cards
+    if(cards) cards.innerHTML = articlesData.map(a => `
+        <div class="bg-white rounded-lg shadow p-4">
+            <p class="font-semibold text-gray-900 text-sm mb-1">${a.title}</p>
+            <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500">${a.tag} · ${a.date}</span>
+                <div>
+                    <button onclick="window.admin.editArticle(${a.id})" class="text-blue-600 font-semibold text-sm mr-3">✏️ Edit</button>
+                    <button onclick="window.admin.deleteArticle(${a.id})" class="text-red-600 font-semibold text-sm">🗑️ Hapus</button>
                 </div>
+            </div>
+        </div>`).join('');
+    // Desktop table
+    if(tbody) tbody.innerHTML = articlesData.map(a => `
+        <tr class="hover:bg-gray-50">
+            <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold text-gray-900">${a.title}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-700">${a.tag}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-500">${a.date}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">
+                <button onclick="window.admin.editArticle(${a.id})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                <button onclick="window.admin.deleteArticle(${a.id})" class="text-red-600 hover:text-red-900">Hapus</button>
             </td>
-        </tr>
-        <!-- Desktop Row -->
-        <tr class="hidden md:table-row hover:bg-gray-50">
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm font-semibold text-gray-900">${a.title}</td>
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-700">${a.tag}</td>
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-500">${a.date}</td>
-            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${actions}</td>
-        </tr>`;
-    }).join('');
+        </tr>`).join('');
 }
 
 // --- CRUD Forms ---
@@ -920,40 +949,61 @@ window.admin = {
             if(error) throw error;
             
             if(!data || data.length === 0) {
+                const dc = document.getElementById('discussion-cards');
+                if(dc) dc.innerHTML = '<div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Belum ada diskusi/pertanyaan masuk.</div>';
                 tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-5 text-center text-gray-500">Belum ada diskusi/pertanyaan masuk.</td></tr>';
                 return;
             }
-            
-            tbody.innerHTML = data.map(d => {
+
+            // Mobile cards
+            const dc = document.getElementById('discussion-cards');
+            if(dc) dc.innerHTML = data.map(d => {
                 const isReplied = !!d.reply;
-                const statusBadge = isReplied 
-                    ? `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">Terjawab</span>`
-                    : `<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-bold">Menunggu Balasan</span>`;
-                
+                const statusBadge = isReplied
+                    ? `<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-bold">✅ Terjawab</span>`
+                    : `<span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs font-bold">⏳ Menunggu</span>`;
                 const memberName = d.users ? (d.users.full_name || d.users.email) : 'Member';
                 const lessonTitle = d.lessons ? d.lessons.title : '-';
-                
+                return `<div class="bg-white rounded-lg shadow p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="font-bold text-gray-900 text-sm">${memberName}</p>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-xs text-gray-500">📚 ${lessonTitle}</p>
+                    <p class="text-sm text-gray-700 italic">"${d.question}"</p>
+                    <button onclick="window.admin.openReplyModal('${d.id}', \`${memberName.replace(/'/g, "\\'")}\`, \`${lessonTitle.replace(/'/g, "\\'")}\`, \`${d.question.replace(/'/g, "\\'")}\`, \`${(d.reply || '').replace(/'/g, "\\'")}\`)" class="bg-blue-100 text-blue-700 font-semibold px-3 py-1.5 rounded text-sm w-full text-center">💬 Balas</button>
+                </div>`;
+            }).join('');
+
+            // Desktop table
+            tbody.innerHTML = data.map(d => {
+                const isReplied = !!d.reply;
+                const statusBadge = isReplied
+                    ? `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">Terjawab</span>`
+                    : `<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-bold">Menunggu Balasan</span>`;
+                const memberName = d.users ? (d.users.full_name || d.users.email) : 'Member';
+                const lessonTitle = d.lessons ? d.lessons.title : '-';
                 return `
-                <tr>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                <tr class="hover:bg-gray-50">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <p class="text-gray-900 font-semibold">${memberName}</p>
                     </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <p class="text-gray-600">${lessonTitle}</p>
                     </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <p class="text-gray-800 italic">"${d.question}"</p>
                     </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         ${statusBadge}
                     </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <button onclick="window.admin.openReplyModal('${d.id}', \`${memberName.replace(/'/g, "\\'")}\`, \`${lessonTitle.replace(/'/g, "\\'")}\`, \`${d.question.replace(/'/g, "\\'")}\`, \`${(d.reply || '').replace(/'/g, "\\'")}\`)" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-semibold px-3 py-1 rounded transition">Balas</button>
                     </td>
                 </tr>
                 `;
             }).join('');
-            
+
         } catch(err) {
             console.error(err);
             tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-5 text-center text-red-500">Gagal memuat diskusi: ' + err.message + '</td></tr>';
@@ -981,43 +1031,43 @@ window.admin = {
             if (error) throw error;
 
             if (!data || data.length === 0) {
+                const empty = '<div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Belum ada file bonus.</div>';
+                const bc = document.getElementById('bonus-cards');
+                if(bc) bc.innerHTML = empty;
                 tbody.innerHTML = '<tr><td colspan="3" class="px-5 py-5 text-center text-gray-500">Belum ada file bonus.</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.map(f => `
-                <!-- Mobile Card -->
-                <tr class="block md:hidden">
-                    <td colspan="3" class="p-0 border-b border-gray-200">
-                        <div class="bg-white p-4 space-y-2">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <p class="font-semibold text-gray-900 text-sm">${f.title}</p>
-                                    ${f.description ? `<p class="text-gray-500 text-xs">${f.description}</p>` : ''}
-                                    <span class="mt-1 inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs uppercase font-bold">${f.file_type}</span>
-                                </div>
-                                <div class="flex flex-col items-end gap-1 flex-shrink-0 ml-2">
-                                    <a href="${f.file_url}" target="_blank" class="text-blue-600 font-semibold text-sm hover:underline">👁️ Lihat</a>
-                                    <button onclick="window.admin.deleteBonusFile('${f.id}')" class="text-red-600 font-semibold text-sm">🗑️ Hapus</button>
-                                </div>
-                            </div>
+            // Mobile cards
+            const bc = document.getElementById('bonus-cards');
+            if(bc) bc.innerHTML = data.map(f => `
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 mr-3">
+                            <p class="font-semibold text-gray-900 text-sm">${f.title}</p>
+                            ${f.description ? `<p class="text-gray-500 text-xs mt-0.5">${f.description}</p>` : ''}
+                            <span class="mt-1 inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs uppercase font-bold">${f.file_type}</span>
                         </div>
-                    </td>
-                </tr>
-                <!-- Desktop Row -->
-                <tr class="hidden md:table-row hover:bg-gray-50">
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                            <a href="${f.file_url}" target="_blank" class="text-blue-600 font-semibold text-sm">👁️ Lihat</a>
+                            <button onclick="window.admin.deleteBonusFile('${f.id}')" class="text-red-600 font-semibold text-sm">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+            // Desktop table
+            tbody.innerHTML = data.map(f => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <p class="text-gray-900 font-semibold">${f.title}</p>
                         ${f.description ? `<p class="text-gray-500 text-xs">${f.description}</p>` : ''}
                     </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs uppercase font-bold">${f.file_type}</span>
                     </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <a href="${f.file_url}" target="_blank" class="text-blue-600 hover:underline mr-3">Lihat</a>
                         <button onclick="window.admin.deleteBonusFile('${f.id}')" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
                     </td>
-                </tr>
-            `).join('');
+                </tr>`).join('');
         } catch(err) {
             tbody.innerHTML = `<tr><td colspan="3" class="px-5 py-5 text-center text-red-500">Gagal: ${err.message}</td></tr>`;
         }
@@ -1201,6 +1251,8 @@ window.admin.renderMembers = function(filter) {
 
     if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-gray-400">Tidak ada data dengan status "${filter}".</td></tr>`;
+        const mc = document.getElementById('member-cards');
+        if(mc) mc.innerHTML = `<div class="bg-white rounded-lg shadow p-4 text-center text-gray-400 text-sm">Tidak ada data dengan status "${filter}".</div>`;
         return;
     }
 
@@ -1210,41 +1262,42 @@ window.admin.renderMembers = function(filter) {
         rejected: `<span class="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">❌ Ditolak</span>`
     };
 
+    const mc = document.getElementById('member-cards');
+    // Mobile cards
+    if(mc) mc.innerHTML = filtered.map(m => {
+        const date = new Date(m.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        const status = statusMap[m.status] || m.status;
+        const actions = m.status === 'pending'
+            ? `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded mr-1">✅ Terima</button><button onclick="window.admin.rejectMember('${m.id}')" class="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded">❌ Tolak</button>`
+            : m.status === 'active'
+            ? `<button onclick="window.admin.rejectMember('${m.id}')" class="bg-gray-400 text-white text-xs font-bold px-3 py-1.5 rounded">Cabut Akses</button>`
+            : `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded">✅ Aktifkan</button>`;
+        return `<div class="bg-white rounded-lg shadow p-4 space-y-2">
+            <div class="flex items-center justify-between">
+                <p class="font-bold text-gray-900 text-sm">${m.full_name}</p>
+                ${status}
+            </div>
+            <p class="text-xs text-gray-500">${m.email}</p>
+            <div class="flex items-center justify-between">
+                <a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 text-xs font-semibold">📞 ${m.whatsapp}</a>
+                <span class="text-xs text-gray-400">${date}</span>
+            </div>
+            <div class="flex gap-2 pt-1">${actions}</div>
+        </div>`;
+    }).join('');
+    // Desktop table
     tbody.innerHTML = filtered.map(m => {
         const date = new Date(m.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         const status = statusMap[m.status] || m.status;
         const actions = m.status === 'pending'
-            ? `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded mr-1 transition">✅ Terima</button>
-               <button onclick="window.admin.rejectMember('${m.id}')" class="bg-red-500 hover:bg-red-400 text-white text-xs font-bold px-3 py-1 rounded transition">❌ Tolak</button>`
+            ? `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded mr-1 transition">✅ Terima</button><button onclick="window.admin.rejectMember('${m.id}')" class="bg-red-500 hover:bg-red-400 text-white text-xs font-bold px-3 py-1 rounded transition">❌ Tolak</button>`
             : m.status === 'active'
             ? `<button onclick="window.admin.rejectMember('${m.id}')" class="bg-gray-400 hover:bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded transition">Cabut Akses</button>`
             : `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded transition">✅ Aktifkan</button>`;
-
-        return `
-        <!-- Mobile Card -->
-        <tr class="block md:hidden">
-            <td colspan="6" class="p-0 border-b border-gray-200">
-                <div class="bg-white p-4 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <p class="font-semibold text-gray-900 text-sm">${m.full_name}</p>
-                        ${status}
-                    </div>
-                    <p class="text-xs text-gray-500">${m.email}</p>
-                    <div class="flex items-center justify-between">
-                        <a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 text-xs font-semibold">📞 ${m.whatsapp}</a>
-                        <span class="text-xs text-gray-400">${date}</span>
-                    </div>
-                    <div class="flex gap-2 pt-1">${actions}</div>
-                </div>
-            </td>
-        </tr>
-        <!-- Desktop Row -->
-        <tr class="hidden md:table-row hover:bg-gray-50">
+        return `<tr class="hover:bg-gray-50">
             <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold">${m.full_name}</td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm">${m.email}</td>
-            <td class="px-5 py-4 border-b border-gray-200 text-sm">
-                <a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 hover:underline">📞 ${m.whatsapp}</a>
-            </td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm"><a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 hover:underline">📞 ${m.whatsapp}</a></td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-500">${date}</td>
             <td class="px-5 py-4 border-b border-gray-200">${status}</td>
             <td class="px-5 py-4 border-b border-gray-200">${actions}</td>
