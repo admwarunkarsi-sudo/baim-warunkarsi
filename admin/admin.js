@@ -1,3 +1,4 @@
+window.admin = window.admin || {};
 const ADMIN_PASSWORD = 'baimdigital2026';
 let authToken = localStorage.getItem('adminToken') || null;
 // Validasi token yang tersimpan
