@@ -476,51 +476,59 @@ async function loadArticles() {
 // --- Rendering ---
 function renderProducts() {
     const tbody = document.getElementById('product-list');
-    tbody.innerHTML = productsData.map(p => `
-        <tr>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <div class="flex items-center">
-                    <div class="ml-3">
-                        <p class="text-gray-900 whitespace-no-wrap font-semibold">${p.title}</p>
+    tbody.innerHTML = productsData.map(p => {
+        const badge = p.type === 'free'
+            ? `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Gratis</span>`
+            : `<span class="inline-block px-2 py-0.5 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Premium</span>`;
+        const actions = `<button onclick="window.admin.editProduct(${p.id})" class="text-blue-600 hover:text-blue-900 font-semibold text-sm mr-3">✏️ Edit</button><button onclick="window.admin.deleteProduct(${p.id})" class="text-red-600 hover:text-red-900 font-semibold text-sm">🗑️ Hapus</button>`;
+        return `
+        <!-- Mobile Card -->
+        <tr class="block md:hidden">
+            <td colspan="4" class="p-0 border-b border-gray-200">
+                <div class="bg-white p-4 space-y-2">
+                    <p class="font-semibold text-gray-900 text-sm">${p.title}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">${badge} <span class="text-sm text-gray-600">${p.price}</span></div>
+                        <div>${actions}</div>
                     </div>
                 </div>
             </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <span class="relative inline-block px-3 py-1 font-semibold ${p.type === 'free' ? 'text-green-900 leading-tight' : 'text-blue-900 leading-tight'}">
-                    <span aria-hidden class="absolute inset-0 ${p.type === 'free' ? 'bg-green-200' : 'bg-blue-200'} opacity-50 rounded-full"></span>
-                    <span class="relative">${p.type === 'free' ? 'Gratis' : 'Premium'}</span>
-                </span>
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <p class="text-gray-900 whitespace-no-wrap">${p.price}</p>
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <button onclick="window.admin.editProduct(${p.id})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                <button onclick="window.admin.deleteProduct(${p.id})" class="text-red-600 hover:text-red-900">Hapus</button>
-            </td>
         </tr>
-    `).join('');
+        <!-- Desktop Row -->
+        <tr class="hidden md:table-row hover:bg-gray-50">
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm font-semibold text-gray-900">${p.title}</td>
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${badge}</td>
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-700">${p.price}</td>
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${actions}</td>
+        </tr>`;
+    }).join('');
 }
 
 function renderArticles() {
     const tbody = document.getElementById('article-list');
-    tbody.innerHTML = articlesData.map(a => `
-        <tr>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <p class="text-gray-900 whitespace-no-wrap font-semibold">${a.title}</p>
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <p class="text-gray-900 whitespace-no-wrap">${a.tag}</p>
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <p class="text-gray-900 whitespace-no-wrap">${a.date}</p>
-            </td>
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                <button onclick="window.admin.editArticle(${a.id})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                <button onclick="window.admin.deleteArticle(${a.id})" class="text-red-600 hover:text-red-900">Hapus</button>
+    tbody.innerHTML = articlesData.map(a => {
+        const actions = `<button onclick="window.admin.editArticle(${a.id})" class="text-blue-600 hover:text-blue-900 font-semibold text-sm mr-3">✏️ Edit</button><button onclick="window.admin.deleteArticle(${a.id})" class="text-red-600 hover:text-red-900 font-semibold text-sm">🗑️ Hapus</button>`;
+        return `
+        <!-- Mobile Card -->
+        <tr class="block md:hidden">
+            <td colspan="4" class="p-0 border-b border-gray-200">
+                <div class="bg-white p-4 space-y-1">
+                    <p class="font-semibold text-gray-900 text-sm">${a.title}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs text-gray-500">${a.tag} · ${a.date}</div>
+                        <div>${actions}</div>
+                    </div>
+                </div>
             </td>
         </tr>
-    `).join('');
+        <!-- Desktop Row -->
+        <tr class="hidden md:table-row hover:bg-gray-50">
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm font-semibold text-gray-900">${a.title}</td>
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-700">${a.tag}</td>
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-500">${a.date}</td>
+            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${actions}</td>
+        </tr>`;
+    }).join('');
 }
 
 // --- CRUD Forms ---
@@ -977,7 +985,26 @@ window.admin = {
                 return;
             }
             tbody.innerHTML = data.map(f => `
-                <tr>
+                <!-- Mobile Card -->
+                <tr class="block md:hidden">
+                    <td colspan="3" class="p-0 border-b border-gray-200">
+                        <div class="bg-white p-4 space-y-2">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <p class="font-semibold text-gray-900 text-sm">${f.title}</p>
+                                    ${f.description ? `<p class="text-gray-500 text-xs">${f.description}</p>` : ''}
+                                    <span class="mt-1 inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs uppercase font-bold">${f.file_type}</span>
+                                </div>
+                                <div class="flex flex-col items-end gap-1 flex-shrink-0 ml-2">
+                                    <a href="${f.file_url}" target="_blank" class="text-blue-600 font-semibold text-sm hover:underline">👁️ Lihat</a>
+                                    <button onclick="window.admin.deleteBonusFile('${f.id}')" class="text-red-600 font-semibold text-sm">🗑️ Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Desktop Row -->
+                <tr class="hidden md:table-row hover:bg-gray-50">
                     <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
                         <p class="text-gray-900 font-semibold">${f.title}</p>
                         ${f.description ? `<p class="text-gray-500 text-xs">${f.description}</p>` : ''}
@@ -1193,7 +1220,26 @@ window.admin.renderMembers = function(filter) {
             ? `<button onclick="window.admin.rejectMember('${m.id}')" class="bg-gray-400 hover:bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded transition">Cabut Akses</button>`
             : `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded transition">✅ Aktifkan</button>`;
 
-        return `<tr class="hover:bg-gray-50">
+        return `
+        <!-- Mobile Card -->
+        <tr class="block md:hidden">
+            <td colspan="6" class="p-0 border-b border-gray-200">
+                <div class="bg-white p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <p class="font-semibold text-gray-900 text-sm">${m.full_name}</p>
+                        ${status}
+                    </div>
+                    <p class="text-xs text-gray-500">${m.email}</p>
+                    <div class="flex items-center justify-between">
+                        <a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 text-xs font-semibold">📞 ${m.whatsapp}</a>
+                        <span class="text-xs text-gray-400">${date}</span>
+                    </div>
+                    <div class="flex gap-2 pt-1">${actions}</div>
+                </div>
+            </td>
+        </tr>
+        <!-- Desktop Row -->
+        <tr class="hidden md:table-row hover:bg-gray-50">
             <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold">${m.full_name}</td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm">${m.email}</td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm">
