@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=5">
     
     <!-- Specific CSS for Sales Page Accordions -->
     <style>
@@ -171,15 +171,24 @@
     </style>
 </head>
 <body>
+    <!-- Nav Overlay -->
+    <div class="nav-overlay" id="nav-overlay"></div>
+
     <!-- Navbar -->
     <header class="navbar">
         <div class="container nav-content">
             <a href="/" class="logo">Baim<span>.</span></a>
-            <nav class="nav-links">
+            <nav class="nav-links" id="nav-links">
                 <a href="/#products">Produk</a>
                 <a href="#kurikulum">Kurikulum</a>
                 <a href="#pricing">Daftar</a>
+                <a href="/login" class="btn btn-primary" style="padding: 0.4rem 1rem; color: white;">Login</a>
             </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -378,5 +387,31 @@
     <script src="js/supabase.js"></script>
     <script src="js/supabase-client.js?v=4"></script>
     <script src="js/kelas-kuliner.js?v=5"></script>
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        const navOverlay = document.getElementById('nav-overlay');
+
+        function closeMenu() {
+            hamburger.classList.remove('active');
+            navLinks.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+        });
+
+        navOverlay.addEventListener('click', closeMenu);
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
 </body>
 </html>
