@@ -19,11 +19,21 @@
 </head>
 <body style="background-color: #f8fafc;">
     
+    <!-- Topbar -->
+    <header class="checkout-topbar">
+        <div class="topbar-content">
+            <a href="kelas-kuliner" class="btn-back">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Kembali
+            </a>
+        </div>
+    </header>
+
     <div class="checkout-container">
         <!-- Left: Form -->
         <div class="checkout-box">
             <div class="checkout-header">
-                <h2><a href="kelas-kuliner" style="color: var(--primary-color);">←</a> Detail Pendaftaran</h2>
+                <h2>Detail Pendaftaran</h2>
                 <p>Silakan lengkapi data diri Anda untuk membuat akun Member.</p>
             </div>
 
@@ -81,10 +91,22 @@
             </div>
 
             <div id="payment-section" class="qris-section">
+                <div class="countdown-box">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Selesaikan dalam <span id="countdown-timer">15:00</span>
+                </div>
+                
                 <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Scan QRIS untuk Membayar</h3>
                 <p style="font-size: 0.9rem; color: var(--text-muted);">Buka aplikasi m-Banking atau e-Wallet Anda (Gopay, OVO, Dana, dll) lalu scan kode di bawah ini.</p>
                 
-                <img src="images/dummy-qris.jpg" alt="QRIS Baim Warunk Arsi" class="qris-img">
+                <div id="qris-wrapper">
+                    <img src="images/dummy-qris.jpg" alt="QRIS Baim Warunk Arsi" class="qris-img" id="qris-image">
+                </div>
+                
+                <button type="button" id="btn-save-qris" class="btn-save-qris">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Simpan QRIS ke Galeri
+                </button>
                 
                 <p style="font-size: 0.85rem; color: #dc2626; margin-top: 1rem;">
                     *Penting: Klik tombol konfirmasi HANYA JIKA Anda sudah mentransfer. Anda akan diminta mengirimkan screenshot bukti transfer via WhatsApp.

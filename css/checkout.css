@@ -1,8 +1,37 @@
 /* css/checkout.css */
 
+/* Top Bar */
+.checkout-topbar {
+    background: white;
+    padding: 1rem 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+.btn-back:hover {
+    color: var(--primary-color);
+}
+
 .checkout-container {
     max-width: 1000px;
-    margin: 120px auto 4rem;
+    margin: 2rem auto 4rem;
     padding: 0 20px;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -98,7 +127,6 @@
     color: var(--primary-color);
 }
 
-/* QRIS Section */
 .qris-section {
     text-align: center;
     background: #fff;
@@ -106,6 +134,41 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     margin-bottom: 1.5rem;
+}
+
+/* Countdown */
+.countdown-box {
+    background: #fef08a;
+    color: #a16207;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Save QRIS button */
+.btn-save-qris {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f1f5f9;
+    color: var(--text-main);
+    border: 1px solid #cbd5e1;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: all 0.2s;
+}
+.btn-save-qris:hover {
+    background-color: #e2e8f0;
 }
 
 .qris-img {
@@ -128,7 +191,7 @@
 @media (max-width: 768px) {
     .checkout-container {
         grid-template-columns: 1fr;
-        padding-top: 80px;
+        margin-top: 1.5rem;
     }
     
     .checkout-box {

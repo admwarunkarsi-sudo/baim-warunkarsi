@@ -9,9 +9,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentSection = document.getElementById('payment-section');
     const btnConfirm = document.getElementById('btn-confirm');
     
+    // Timer & QRIS elements
+    const countdownTimer = document.getElementById('countdown-timer');
+    const btnSaveQris = document.getElementById('btn-save-qris');
+    const qrisImage = document.getElementById('qris-image');
+    
     let isFreeAccess = false;
     const ORIGINAL_PRICE = 149000;
     
+    // Countdown Logic (15 minutes)
+    let timeRemaining = 15 * 60; // 15 minutes in seconds
+    let timerInterval;
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            
+            // Format to MM:SS
+            countdownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                countdownTimer.textContent = "00:00";
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Waktu Habis',
+                    text: 'Waktu pembayaran Anda telah habis. Silakan muat ulang halaman jika ingin melanjutkan.',
+                    confirmButtonText: 'Muat Ulang'
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+            timeRemaining--;
+        }, 1000);
+    }
+    
+    // Start timer on load
+    startTimer();
+
+    // Save QRIS to Gallery Logic
+    if (btnSaveQris && qrisImage) {
+        btnSaveQris.addEventListener('click', () => {
+            const imageSrc = qrisImage.src;
+            // Create a temporary anchor element
+            const link = document.createElement('a');
+            link.href = imageSrc;
+            link.download = 'QRIS_Baim_Warunk_Arsi.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show toast/alert
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'QRIS berhasil disimpan ke Galeri',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        });
+    }
+
     // Simple hardcoded coupons for demo/team access
     const VALID_COUPONS = {
         'TEAMBAIM': { discount: 1, label: 'Diskon 100% (Akses Tim)' },
@@ -48,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFreeAccess) {
                 paymentSection.style.display = 'none';
                 btnConfirm.textContent = 'Buat Akun & Masuk Kelas';
+                clearInterval(timerInterval); // Stop timer if free
             }
         } else {
             isFreeAccess = false;
@@ -58,6 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
             totalPrice.textContent = formatRupiah(ORIGINAL_PRICE);
             paymentSection.style.display = 'block';
             btnConfirm.textContent = 'Konfirmasi Sudah Bayar';
+            
+            // Restart timer if it was stopped
+            if (!timerInterval || timeRemaining <= 0) {
+                timeRemaining = 15 * 60;
+                startTimer();
+            }
         }
     });
 
