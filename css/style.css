@@ -168,6 +168,14 @@ span.highlight, h1 span, h2 span { color: var(--accent-color); }
 .nav-links {
     display: flex;
     gap: 2rem;
+    align-items: center;
+}
+
+/* Nav button pill - keeps same line height as text links */
+.nav-links .btn {
+    padding: 0.35rem 1.1rem !important;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 .nav-links a {
