@@ -24,19 +24,31 @@
         }
     </script>
     <style>
-        .hidden { display: none !important; }
+        /* Tailwind CDN's .hidden = display:none, md:block overrides it at md breakpoint */
+        /* We need to NOT use !important so md:block works on desktop */
+        /* For modals & sections hidden via JS, we add extra specificity */
+        .modal-wrap.hidden { display: none !important; }
+        .section-content.hidden { display: none !important; }
+        /* Status & login UI elements */
+        #status-msg.hidden,
+        #login-error.hidden,
+        #login-screen.hidden,
+        #dashboard.hidden,
+        #sidebar-backdrop.hidden { display: none !important; }
+        /* Image previews / loading spinners */
+        span.hidden, img.hidden { display: none !important; }
+        /* Notification badge */
+        .notification-badge.hidden { display: none !important; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* Table only scrolls horizontally on desktop within its container */
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         /* Prevent global horizontal overflow */
         html, body { overflow-x: hidden; max-width: 100vw; }
         /* Cards must not exceed viewport */
-        #product-cards, #article-cards, #bonus-cards, #member-cards {
+        #product-cards, #article-cards, #bonus-cards, #member-cards, #discussion-cards {
             width: 100%; box-sizing: border-box;
         }
         #product-cards > div, #article-cards > div,
-        #bonus-cards > div, #member-cards > div {
+        #bonus-cards > div, #member-cards > div, #discussion-cards > div {
             word-break: break-word; overflow-wrap: break-word;
         }
     </style>
@@ -287,7 +299,7 @@
     </div>
 
     <!-- Product Form Modal -->
-    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="product-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeProductForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-6" id="product-modal-title">Tambah Produk</h2>
@@ -350,7 +362,7 @@
     </div>
 
     <!-- Article Form Modal -->
-    <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="article-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeArticleForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-6" id="article-modal-title">Tambah Artikel</h2>
@@ -409,7 +421,7 @@
     </div>
 
     <!-- LMS Module Form Modal -->
-    <div id="module-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="module-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-md relative">
             <button onclick="window.admin.closeModuleForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 id="module-modal-title" class="text-2xl font-bold text-navy mb-6">Tambah Modul Baru</h2>
@@ -435,7 +447,7 @@
     </div>
 
     <!-- LMS Lesson Form Modal -->
-    <div id="lesson-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="lesson-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-3xl relative">
             <button onclick="window.admin.closeLessonForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 id="lesson-modal-title" class="text-2xl font-bold text-navy mb-6">Tambah Bab (Lesson) Baru</h2>
@@ -481,7 +493,7 @@
     </div>
 
     <!-- Attachment Modal -->
-    <div id="attachment-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="attachment-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeAttachmentModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-4">Kelola Lampiran: <span id="attach-lesson-title" class="text-gray-500"></span></h2>
@@ -523,7 +535,7 @@
     </div>
 
     <!-- Reply Discussion Modal -->
-    <div id="reply-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="reply-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeReplyModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-4">Balas Diskusi</h2>
@@ -548,7 +560,7 @@
     </div>
 
     <!-- Bonus File Modal -->
-    <div id="bonus-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
+    <div id="bonus-modal" class="modal-wrap fixed inset-0 bg-black bg-opacity-50 hidden flex items-start justify-center z-50 overflow-y-auto py-10 px-4">
         <div class="bg-white p-5 md:p-8 rounded-lg shadow-xl w-full max-w-2xl relative">
             <button onclick="window.admin.closeBonusForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 font-bold text-xl">&times;</button>
             <h2 class="text-2xl font-bold text-navy mb-6" id="bonus-modal-title">Tambah File Bonus</h2>
