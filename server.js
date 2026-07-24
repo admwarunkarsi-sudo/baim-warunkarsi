@@ -231,6 +231,17 @@ app.post('/api/webhook/mayar', async (req, res) => {
                 }, { onConflict: 'email' });
 
             if (dbError) console.error("Supabase Insert Error:", dbError);
+
+            // Also upsert into users table for legacy compatibility
+            const { error: userError } = await supabase
+                .from('users')
+                .upsert({
+                    id: userId,
+                    email: customerEmail,
+                    full_name: customerName,
+                    whatsapp_number: customerPhone
+                });
+            if (userError) console.error("Supabase Users Insert Error:", userError);
         }
 
         // 3. Send WhatsApp Notification via Fonnte
