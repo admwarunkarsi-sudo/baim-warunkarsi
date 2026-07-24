@@ -18,7 +18,8 @@ serve(async (req) => {
     const status = payload.status || payload.transaction_status || payload.data?.status;
 
     if (!email) {
-      return new Response(JSON.stringify({ error: "No email provided in payload" }), { status: 400 });
+      console.log("No email in payload. This might be a test ping from Mayar.");
+      return new Response(JSON.stringify({ message: "Payload received but no email found. Ignored." }), { status: 200 });
     }
 
     // Hanya proses jika status berhasil/settled
