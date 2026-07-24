@@ -1,10 +1,18 @@
 require('dotenv').config();
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
+const cors = require('cors');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const axios = require('axios');
+const { createClient } = require('@supabase/supabase-js');
+
+// Config Supabase (Use same anon key as client)
+const SUPABASE_URL = 'https://ghfnukejqcioulphszil.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZm51a2VqcWNpb3VscGhzemlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMTc1NDMsImV4cCI6MjA5OTg5MzU0M30.l7syGaYq2QPHNyJ8FIiGY7_WVVfYtKxjSXj1gIxoc4Y';
+const FONNTE_TOKEN = 'q5fXFifuQdFfhmRprTUs';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -165,6 +173,86 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
     } catch (e) {
         console.error('SSG Error:', e);
         res.status(500).json({ success: false, message: 'Failed to save articles.' });
+    }
+});
+
+// ==========================================
+// MAYAR WEBHOOK
+// ==========================================
+app.post('/api/webhook/mayar', async (req, res) => {
+    try {
+        console.log("MAYAR WEBHOOK RECEIVED:", JSON.stringify(req.body));
+        const payload = req.body;
+
+        // Mayar payload structure varies, try to extract customer data robustly
+        let customerName = payload.customer_name || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || "Customer";
+        let customerEmail = payload.customer_email || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || null;
+        let customerPhone = payload.customer_phone || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || "";
+
+        if (!customerEmail) {
+            return res.status(200).send("No email found, ignored."); // Return 200 so Mayar doesn't retry
+        }
+
+        // Clean phone number (remove leading 0 or +62)
+        let cleanPhone = customerPhone.replace(/[^0-9]/g, '');
+        if (cleanPhone.startsWith('62')) cleanPhone = '0' + cleanPhone.substring(2);
+        
+        // Generate Password: Baim + last 4 digits
+        const last4 = cleanPhone.length >= 4 ? cleanPhone.slice(-4) : '1234';
+        const password = `Baim${last4}`;
+
+        // Initialize Supabase client
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 1. Create User in Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: customerEmail,
+            password: password,
+            options: { data: { full_name: customerName, whatsapp: customerPhone } }
+        });
+
+        if (authError && !authError.message.includes('already registered')) {
+            console.error("Supabase Auth Error:", authError);
+            return res.status(500).send("Auth error");
+        }
+
+        // 2. Insert into kelas_members
+        const userId = authData?.user?.id;
+        if (userId) {
+            const { error: dbError } = await supabase
+                .from('kelas_members')
+                .upsert({
+                    user_id: userId,
+                    full_name: customerName,
+                    email: customerEmail,
+                    whatsapp: customerPhone,
+                    status: 'active',
+                    payment_method: 'mayar'
+                }, { onConflict: 'email' });
+
+            if (dbError) console.error("Supabase Insert Error:", dbError);
+        }
+
+        // 3. Send WhatsApp Notification via Fonnte
+        const waMessage = `Halo *${customerName}*,\n\nTerima kasih sudah bergabung di *Klub Pendampingan Kuliner Go Digital*! 🎉\n\nAkun Anda telah otomatis diaktifkan. Silakan login ke Member Area melalui tautan berikut:\n🌐 https://baim-warunkarsi.vercel.app/login\n\nGunakan akses berikut:\n📧 Email: *${customerEmail}*\n🔑 Password: *${password}*\n\nSelamat belajar dan tingkatkan omzet warung Anda! 🚀`;
+        
+        await fetch('https://api.fonnte.com/send', {
+            method: 'POST',
+            headers: {
+                'Authorization': FONNTE_TOKEN,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                target: customerPhone,
+                message: waMessage,
+                countryCode: '62'
+            })
+        });
+
+        res.status(200).send("OK");
+    } catch (e) {
+        console.error("Webhook Error:", e);
+        res.status(500).send("Internal Server Error");
     }
 });
 
