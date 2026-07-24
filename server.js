@@ -201,50 +201,21 @@ app.post('/api/webhook/mayar', async (req, res) => {
         const last4 = cleanPhone.length >= 4 ? cleanPhone.slice(-4) : '1234';
         const password = `Baim${last4}`;
 
-        // Initialize Supabase client
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // 1. Create User in Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: customerEmail,
-            password: password,
-            options: { data: { full_name: customerName, whatsapp: customerPhone } }
-        });
-
-        if (authError && !authError.message.includes('already registered')) {
-            console.error("Supabase Auth Error:", authError);
-            return res.status(500).send("Auth error");
+        // 1. Forward to Supabase Edge Function (It handles robust User Creation & RLS bypassing)
+        try {
+            console.log("Forwarding to Supabase Edge Function...");
+            const edgeRes = await fetch('https://ghfnukejqcioulphszil.supabase.co/functions/v1/mayar-webhook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const edgeText = await edgeRes.text();
+            console.log("Edge Function Response:", edgeRes.status, edgeText);
+        } catch (edgeErr) {
+            console.error("Failed to forward to Edge Function:", edgeErr);
         }
 
-        // 2. Insert into kelas_members
-        const userId = authData?.user?.id;
-        if (userId) {
-            const { error: dbError } = await supabase
-                .from('kelas_members')
-                .upsert({
-                    user_id: userId,
-                    full_name: customerName,
-                    email: customerEmail,
-                    whatsapp: customerPhone,
-                    status: 'active',
-                    payment_method: 'mayar'
-                }, { onConflict: 'email' });
-
-            if (dbError) console.error("Supabase Insert Error:", dbError);
-
-            // Also upsert into users table for legacy compatibility
-            const { error: userError } = await supabase
-                .from('users')
-                .upsert({
-                    id: userId,
-                    email: customerEmail,
-                    full_name: customerName,
-                    whatsapp_number: customerPhone
-                });
-            if (userError) console.error("Supabase Users Insert Error:", userError);
-        }
-
-        // 3. Send WhatsApp Notification via Fonnte
+        // 2. Send WhatsApp Notification via Fonnte
         const waMessage = `Halo *${customerName}*,\n\nTerima kasih sudah bergabung di *Klub Pendampingan Kuliner Go Digital*! 🎉\n\nAkun Anda telah otomatis diaktifkan. Silakan login ke Member Area melalui tautan berikut:\n🌐 https://baim-warunkarsi.vercel.app/login\n\nGunakan akses berikut:\n📧 Email: *${customerEmail}*\n🔑 Password: *${password}*\n\nSelamat belajar dan tingkatkan omzet warung Anda! 🚀`;
         
         await fetch('https://api.fonnte.com/send', {
