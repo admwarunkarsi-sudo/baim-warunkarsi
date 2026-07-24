@@ -187,9 +187,9 @@ app.post('/api/webhook/mayar', async (req, res) => {
         const payload = req.body;
 
         // Mayar payload structure varies, try to extract customer data robustly
-        let customerName = payload.customer_name || payload.name || (payload.customer && payload.customer.name) || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || (payload.data && payload.data.name) || "Member";
-        let customerEmail = payload.customer_email || payload.email || (payload.customer && payload.customer.email) || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || (payload.data && payload.data.email) || null;
-        let customerPhone = payload.customer_phone || payload.phone || payload.whatsapp || payload.hp || (payload.customer && payload.customer.phone) || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || (payload.data && payload.data.phone) || "";
+        let customerName = payload.customer_name || payload.name || (payload.customer && payload.customer.name) || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || (payload.data && payload.data.customerName) || (payload.data && payload.data.name) || "Member";
+        let customerEmail = payload.customer_email || payload.email || (payload.customer && payload.customer.email) || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || (payload.data && payload.data.customerEmail) || (payload.data && payload.data.email) || null;
+        let customerPhone = payload.customer_phone || payload.phone || payload.whatsapp || payload.hp || (payload.customer && payload.customer.phone) || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || (payload.data && payload.data.customerMobile) || (payload.data && payload.data.phone) || "";
 
         // Clean phone number (remove leading 0 or +62)
         let cleanPhone = customerPhone.replace(/[^0-9]/g, '');
@@ -206,7 +206,7 @@ app.post('/api/webhook/mayar', async (req, res) => {
         }
 
         // ONLY PROCESS PAID/SETTLED TRANSACTIONS!
-        const status = (payload.status || payload.transaction_status || (payload.data && payload.data.status) || "").toLowerCase();
+        const status = (payload.status || payload.transaction_status || (payload.data && payload.data.status) || (payload.data && payload.data.transactionStatus) || "").toLowerCase();
         if (status !== 'settled' && status !== 'paid' && status !== 'success' && status !== 'completed') {
             console.log(`Ignored status: ${status}. Waiting for payment to be settled.`);
             return res.status(200).send(`Ignored status: ${status}`);
