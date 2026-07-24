@@ -154,9 +154,12 @@ Daftar lewat link ini mumpung harganya belum naik:
                         // Show waiting message
                         document.getElementById('card-waiting').classList.remove('hidden');
                     }
+                } else {
+                    document.getElementById('card-waiting').classList.remove('hidden');
                 }
             } catch (err) {
                 console.error("Gagal mengambil data affiliate", err);
+                document.getElementById('card-waiting').classList.remove('hidden');
             }
         }
 

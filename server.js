@@ -169,10 +169,28 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
 });
 
 // Get Affiliates (Public/Protected)
-app.get('/api/affiliates', (req, res) => {
+app.get('/api/affiliates', async (req, res) => {
+    try {
+        const owner = process.env.GITHUB_USERNAME;
+        const repo = process.env.GITHUB_REPO;
+        // Try fetching from raw github to avoid Vercel build delay
+        const ghRes = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/main/data/affiliates.json`);
+        if (ghRes.ok) {
+            const data = await ghRes.json();
+            return res.json(data);
+        }
+    } catch(e) {
+        console.error("GitHub fetch failed, falling back to local:", e);
+    }
+    
+    // Fallback
     fs.readFile(path.join(process.cwd(), 'data', 'affiliates.json'), 'utf8', (err, data) => {
-        if (err) return res.status(500).json({ error: 'Failed to read affiliates.' });
-        res.json(JSON.parse(data || '{}'));
+        if (err) return res.json({});
+        try {
+            res.json(JSON.parse(data || '{}'));
+        } catch(e) {
+            res.json({});
+        }
     });
 });
 
@@ -188,8 +206,12 @@ app.post('/api/affiliates', authMiddleware, async (req, res) => {
     }
 
     try {
-        // 1. Update local file
-        fs.writeFileSync(path.join(process.cwd(), 'data', 'affiliates.json'), JSON.stringify(newAffiliates, null, 2));
+        // 1. Try to update local file (will fail on Vercel, but works locally)
+        try {
+            fs.writeFileSync(path.join(process.cwd(), 'data', 'affiliates.json'), JSON.stringify(newAffiliates, null, 2));
+        } catch (fsErr) {
+            console.log("Could not write locally (expected on Vercel):", fsErr.message);
+        }
         
         // 2. Upload to GitHub
         await uploadToGitHub(owner, repo, token, 'data/affiliates.json', JSON.stringify(newAffiliates, null, 2), 'Auto update affiliates mapping via API');
