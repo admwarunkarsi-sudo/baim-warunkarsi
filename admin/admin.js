@@ -975,7 +975,10 @@ window.admin = {
                     </div>
                     <p class="text-xs text-gray-500">📚 ${lessonTitle}</p>
                     <p class="text-sm text-gray-700 italic">"${d.question}"</p>
-                    <button onclick="window.admin.openReplyModal('${d.id}', \`${memberName.replace(/'/g, "\\'")}\`, \`${lessonTitle.replace(/'/g, "\\'")}\`, \`${d.question.replace(/'/g, "\\'")}\`, \`${(d.reply || '').replace(/'/g, "\\'")}\`)" class="bg-blue-100 text-blue-700 font-semibold px-3 py-1.5 rounded text-sm w-full text-center">💬 Balas</button>
+                    <div class="flex gap-2">
+                        <button onclick="window.admin.openReplyModal('${d.id}', \`${memberName.replace(/'/g, "\\'")}\`, \`${lessonTitle.replace(/'/g, "\\'")}\`, \`${d.question.replace(/'/g, "\\'")}\`, \`${(d.reply || '').replace(/'/g, "\\'")}\`)" class="bg-blue-100 text-blue-700 font-semibold px-3 py-1.5 rounded text-sm w-full text-center">💬 Balas</button>
+                        <button onclick="window.admin.deleteDiscussion('${d.id}')" class="bg-red-100 text-red-700 font-semibold px-3 py-1.5 rounded text-sm w-full text-center">🗑️ Hapus</button>
+                    </div>
                 </div>`;
             }).join('');
 
@@ -1003,6 +1006,7 @@ window.admin = {
                     </td>
                     <td class="px-5 py-4 border-b border-gray-200 text-sm">
                         <button onclick="window.admin.openReplyModal('${d.id}', \`${memberName.replace(/'/g, "\\'")}\`, \`${lessonTitle.replace(/'/g, "\\'")}\`, \`${d.question.replace(/'/g, "\\'")}\`, \`${(d.reply || '').replace(/'/g, "\\'")}\`)" class="bg-blue-100 text-blue-700 hover:bg-blue-200 font-semibold px-3 py-1 rounded transition">Balas</button>
+                        <button onclick="window.admin.deleteDiscussion('${d.id}')" class="bg-red-100 text-red-700 hover:bg-red-200 font-semibold px-3 py-1 rounded transition ml-1">Hapus</button>
                     </td>
                 </tr>
                 `;
@@ -1024,6 +1028,17 @@ window.admin = {
     },
     closeReplyModal: function() {
         document.getElementById('reply-modal').classList.add('hidden');
+    },
+    deleteDiscussion: async function(id) {
+        if(!confirm('Yakin ingin menghapus diskusi ini?')) return;
+        try {
+            const { error } = await window.supabaseClient.from('discussions').delete().eq('id', id);
+            if (error) throw error;
+            window.admin.loadDiscussions();
+        } catch(err) {
+            console.error(err);
+            alert('Gagal menghapus diskusi: ' + err.message);
+        }
     },
     // --- Bonus Files Functions ---
     loadBonusFiles: async function() {
