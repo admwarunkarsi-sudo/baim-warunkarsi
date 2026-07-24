@@ -806,6 +806,10 @@ span.highlight, h1 span, h2 span { color: var(--accent-color); }
     margin-bottom: 3rem;
 }
 
+.footer .logo {
+    color: white;
+}
+
 .footer-brand h2 {
     color: white;
     font-size: 2rem;
