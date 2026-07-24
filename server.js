@@ -189,8 +189,18 @@ app.post('/api/webhook/mayar', async (req, res) => {
         let customerEmail = payload.customer_email || (payload.customer && payload.customer.email) || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || null;
         let customerPhone = payload.customer_phone || (payload.customer && payload.customer.phone) || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || "";
 
-        if (!customerEmail) {
-            return res.status(200).send("No email found, ignored."); // Return 200 so Mayar doesn't retry
+        // Clean phone number (remove leading 0 or +62)
+        let cleanPhone = customerPhone.replace(/[^0-9]/g, '');
+        if (cleanPhone.startsWith('62')) cleanPhone = '0' + cleanPhone.substring(2);
+
+        // Validate email format. If invalid, generate a dummy email based on phone number so they can still login.
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!customerEmail || !emailRegex.test(customerEmail)) {
+            console.log(`Invalid or missing email: ${customerEmail}. Using fallback.`);
+            if (!cleanPhone) {
+                return res.status(200).send("No valid email and no phone number. Ignored.");
+            }
+            customerEmail = `user_${cleanPhone}@warunkarsi.com`;
         }
 
         // ONLY PROCESS PAID/SETTLED TRANSACTIONS!
@@ -200,10 +210,6 @@ app.post('/api/webhook/mayar', async (req, res) => {
             return res.status(200).send(`Ignored status: ${status}`);
         }
 
-        // Clean phone number (remove leading 0 or +62)
-        let cleanPhone = customerPhone.replace(/[^0-9]/g, '');
-        if (cleanPhone.startsWith('62')) cleanPhone = '0' + cleanPhone.substring(2);
-        
         // Generate Password: Baim + last 4 digits
         const last4 = cleanPhone.length >= 4 ? cleanPhone.slice(-4) : '1234';
         const password = `Baim${last4}`;
