@@ -185,9 +185,9 @@ app.post('/api/webhook/mayar', async (req, res) => {
         const payload = req.body;
 
         // Mayar payload structure varies, try to extract customer data robustly
-        let customerName = payload.customer_name || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || "Customer";
-        let customerEmail = payload.customer_email || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || null;
-        let customerPhone = payload.customer_phone || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || "";
+        let customerName = payload.customer_name || (payload.customer && payload.customer.name) || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || "Member";
+        let customerEmail = payload.customer_email || (payload.customer && payload.customer.email) || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || null;
+        let customerPhone = payload.customer_phone || (payload.customer && payload.customer.phone) || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || "";
 
         if (!customerEmail) {
             return res.status(200).send("No email found, ignored."); // Return 200 so Mayar doesn't retry
@@ -208,21 +208,85 @@ app.post('/api/webhook/mayar', async (req, res) => {
         const last4 = cleanPhone.length >= 4 ? cleanPhone.slice(-4) : '1234';
         const password = `Baim${last4}`;
 
-        // 1. Forward to Supabase Edge Function (It handles robust User Creation & RLS bypassing)
+        // 1. Create Supabase Admin Client using Service Role Key
+        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        if (!supabaseServiceKey) {
+            console.error("CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing!");
+            return res.status(500).send("Server configuration error.");
+        }
+        
+        const adminSupabase = createClient(SUPABASE_URL, supabaseServiceKey, {
+            auth: { autoRefreshToken: false, persistSession: false }
+        });
+
+        // 2. Check if user already exists
+        let userId = null;
         try {
-            console.log("Forwarding to Supabase Edge Function...");
-            const edgeRes = await fetch('https://ghfnukejqcioulphszil.supabase.co/functions/v1/mayar-webhook', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const edgeText = await edgeRes.text();
-            console.log("Edge Function Response:", edgeRes.status, edgeText);
-        } catch (edgeErr) {
-            console.error("Failed to forward to Edge Function:", edgeErr);
+            console.log("Checking if user exists:", customerEmail);
+            const { data: existingUsers, error: listError } = await adminSupabase.auth.admin.listUsers();
+            if (listError) throw listError;
+            
+            const existingUser = existingUsers.users.find(u => u.email === customerEmail);
+            if (existingUser) {
+                userId = existingUser.id;
+                console.log("User exists with ID:", userId);
+            } else {
+                console.log("Creating new user:", customerEmail);
+                const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
+                    email: customerEmail,
+                    password: password,
+                    email_confirm: true, // Auto-confirm email
+                    user_metadata: { full_name: customerName, whatsapp_number: cleanPhone }
+                });
+                
+                if (createError) throw createError;
+                userId = newUser.user.id;
+                console.log("New user created with ID:", userId);
+            }
+        } catch (authErr) {
+            console.error("Auth Admin Error:", authErr);
+            // We shouldn't send WA if user creation failed entirely
+            return res.status(500).send("Failed to process user account.");
         }
 
-        // 2. Send WhatsApp Notification via Fonnte
+        // 3. Ensure they are in users table (upsert)
+        try {
+            await adminSupabase.from('users').upsert({
+                id: userId,
+                email: customerEmail,
+                full_name: customerName,
+                whatsapp_number: cleanPhone
+            });
+        } catch (dbErr) {
+            console.error("Warning: Failed to upsert users table:", dbErr);
+        }
+
+        // 4. Force insert into kelas_members
+        try {
+            // First check if they are already in kelas_members to avoid duplicate insert errors
+            const { data: existingMember } = await adminSupabase.from('kelas_members').select('id').eq('user_id', userId).single();
+            if (!existingMember) {
+                const { error: memberError } = await adminSupabase.from('kelas_members').insert([{
+                    user_id: userId,
+                    email: customerEmail,
+                    full_name: customerName,
+                    whatsapp: cleanPhone,
+                    status: 'active',
+                    payment_method: 'mayar'
+                }]);
+                if (memberError) {
+                    console.error("Warning: Failed to insert into kelas_members:", memberError);
+                } else {
+                    console.log("Successfully inserted into kelas_members for:", customerEmail);
+                }
+            } else {
+                console.log("User already exists in kelas_members, skipping insert.");
+            }
+        } catch (memberCatchErr) {
+            console.error("Warning: Exception while handling kelas_members:", memberCatchErr);
+        }
+
+        // 5. Send WhatsApp Notification via Fonnte
         const waMessage = `Halo *${customerName}*,\n\nTerima kasih sudah bergabung di *Klub Pendampingan Kuliner Go Digital*! 🎉\n\nAkun Anda telah otomatis diaktifkan. Silakan login ke Member Area melalui tautan berikut:\n🌐 https://baim-warunkarsi.vercel.app/login\n\nGunakan akses berikut:\n📧 Email: *${customerEmail}*\n🔑 Password: *${password}*\n\nSelamat belajar dan tingkatkan omzet warung Anda! 🚀`;
         
         await fetch('https://api.fonnte.com/send', {
