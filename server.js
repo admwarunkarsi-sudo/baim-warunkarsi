@@ -3,13 +3,25 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const upload = multer({ storage: multer.memoryStorage() });
+
 
 const app = express();
 const PORT = 3000;
 const ADMIN_PASSWORD = 'baimdigital2026';
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, '.'), { extensions: ['html'] }));
 
 // Simple Authentication Middleware
@@ -133,6 +145,28 @@ app.post('/api/articles', authMiddleware, (req, res) => {
 
         res.json({ success: true, message: 'Articles saved successfully.' });
     });
+});
+
+// Upload Image to Cloudinary (Protected)
+app.post('/api/upload', authMiddleware, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Tidak ada file gambar yang dipilih.' });
+        }
+
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+        const uploadResponse = await cloudinary.uploader.upload(dataURI, {
+            folder: 'baim-warunkarsi',
+            resource_type: 'auto'
+        });
+
+        res.json({ success: true, url: uploadResponse.secure_url });
+    } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        res.status(500).json({ success: false, message: 'Gagal upload gambar ke Cloudinary.' });
+    }
 });
 
 // Git Publish (Protected)
