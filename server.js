@@ -185,9 +185,9 @@ app.post('/api/webhook/mayar', async (req, res) => {
         const payload = req.body;
 
         // Mayar payload structure varies, try to extract customer data robustly
-        let customerName = payload.customer_name || (payload.customer && payload.customer.name) || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || "Member";
-        let customerEmail = payload.customer_email || (payload.customer && payload.customer.email) || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || null;
-        let customerPhone = payload.customer_phone || (payload.customer && payload.customer.phone) || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || "";
+        let customerName = payload.customer_name || payload.name || (payload.customer && payload.customer.name) || (payload.data && payload.data.customer && payload.data.customer.name) || (payload.data && payload.data.customer_name) || (payload.data && payload.data.name) || "Member";
+        let customerEmail = payload.customer_email || payload.email || (payload.customer && payload.customer.email) || (payload.data && payload.data.customer && payload.data.customer.email) || (payload.data && payload.data.customer_email) || (payload.data && payload.data.email) || null;
+        let customerPhone = payload.customer_phone || payload.phone || payload.whatsapp || payload.hp || (payload.customer && payload.customer.phone) || (payload.data && payload.data.customer && payload.data.customer.phone) || (payload.data && payload.data.customer_phone) || (payload.data && payload.data.phone) || "";
 
         // Clean phone number (remove leading 0 or +62)
         let cleanPhone = customerPhone.replace(/[^0-9]/g, '');
