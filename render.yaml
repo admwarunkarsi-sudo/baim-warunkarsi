@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: baim-cms-admin
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GITHUB_USERNAME
+        value: admwarunkarsi-sudo
+      - key: GITHUB_REPO
+        value: baim-warunkarsi
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        value: heswgpdc
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
