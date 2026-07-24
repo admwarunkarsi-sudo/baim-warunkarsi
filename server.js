@@ -193,6 +193,13 @@ app.post('/api/webhook/mayar', async (req, res) => {
             return res.status(200).send("No email found, ignored."); // Return 200 so Mayar doesn't retry
         }
 
+        // ONLY PROCESS PAID/SETTLED TRANSACTIONS!
+        const status = (payload.status || payload.transaction_status || (payload.data && payload.data.status) || "").toLowerCase();
+        if (status !== 'settled' && status !== 'paid' && status !== 'success' && status !== 'completed') {
+            console.log(`Ignored status: ${status}. Waiting for payment to be settled.`);
+            return res.status(200).send(`Ignored status: ${status}`);
+        }
+
         // Clean phone number (remove leading 0 or +62)
         let cleanPhone = customerPhone.replace(/[^0-9]/g, '');
         if (cleanPhone.startsWith('62')) cleanPhone = '0' + cleanPhone.substring(2);

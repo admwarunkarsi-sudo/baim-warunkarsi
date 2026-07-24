@@ -89,6 +89,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
             currentUserId = session.user.id;
+
+            // FIX: Ensure user is recorded in kelas_members to appear in Admin Dashboard
+            try {
+                const { data: existingMember } = await window.supabaseClient
+                    .from('kelas_members')
+                    .select('user_id')
+                    .eq('user_id', currentUserId)
+                    .single();
+                
+                if (!existingMember) {
+                    const fullName = session.user.user_metadata?.full_name || session.user.email.split('@')[0] || 'Member';
+                    const phone = session.user.user_metadata?.whatsapp_number || session.user.user_metadata?.whatsapp || '';
+                    
+                    await window.supabaseClient.from('kelas_members').insert([{
+                        user_id: currentUserId,
+                        email: session.user.email,
+                        full_name: fullName,
+                        whatsapp: phone,
+                        status: 'active',
+                        payment_method: 'mayar'
+                    }]);
+                    
+                    // Also ensure they are in users table
+                    await window.supabaseClient.from('users').upsert({
+                        id: currentUserId,
+                        email: session.user.email,
+                        full_name: fullName,
+                        whatsapp_number: phone
+                    });
+                }
+            } catch (memberErr) {
+                console.error("Error auto-adding to kelas_members:", memberErr);
+            }
+
             return true;
         } catch (err) {
             console.error('Auth error:', err);
