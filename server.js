@@ -295,7 +295,7 @@ app.post('/api/webhook/mayar', async (req, res) => {
         }
 
         // 5. Send WhatsApp Notification via Fonnte
-        const waMessage = `Halo *${customerName}*,\n\nTerima kasih sudah bergabung di *Klub Pendampingan Kuliner Go Digital*! 🎉\n\nAkun Anda telah otomatis diaktifkan. Silakan login ke Member Area melalui tautan berikut:\n🌐 https://baim-warunkarsi.vercel.app/login\n\nGunakan akses berikut:\n📧 Email: *${customerEmail}*\n🔑 Password: *${password}*\n\nSelamat belajar dan tingkatkan omzet warung Anda! 🚀`;
+        const waMessage = `Halo *${customerName}*,\n\nTerima kasih sudah bergabung di *Klub Pendampingan Kuliner Go Digital*! 🎉\n\nAkun Anda telah otomatis diaktifkan. Silakan login ke Member Area melalui tautan berikut:\n🌐 https://baim.warunkarsi.com/member\n\nGunakan akses berikut:\n📧 Email: *${customerEmail}*\n🔑 Password: *${password}*\n\nSelamat belajar dan tingkatkan omzet warung Anda! 🚀`;
         
         await fetch('https://api.fonnte.com/send', {
             method: 'POST',
