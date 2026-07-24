@@ -498,12 +498,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data) {
                 document.getElementById('profile-fullname').value = data.full_name || '';
                 document.getElementById('profile-wa').value = data.whatsapp_number || '';
+                // Populate display name + email beside avatar
+                const displayName = data.full_name || email.split('@')[0] || 'Member';
+                const nameEl = document.getElementById('profile-display-name');
+                const emailEl = document.getElementById('profile-display-email');
+                if (nameEl) nameEl.textContent = displayName;
+                if (emailEl) emailEl.textContent = email;
                 if (data.avatar_url) {
                     document.getElementById('profile-big-avatar').src = data.avatar_url;
                 } else {
                     const name = data.full_name || email || 'M';
                     document.getElementById('profile-big-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=E8A020&color=fff&size=120`;
                 }
+            } else {
+                // No profile data yet, still show email
+                const nameEl = document.getElementById('profile-display-name');
+                const emailEl = document.getElementById('profile-display-email');
+                if (nameEl) nameEl.textContent = email.split('@')[0] || 'Member';
+                if (emailEl) emailEl.textContent = email;
             }
         } catch (err) {
             console.error('Error loading profile:', err);
@@ -530,9 +542,11 @@ document.addEventListener('DOMContentLoaded', () => {
             statusEl.textContent = '&#10003; Perubahan berhasil disimpan!';
             statusEl.style.color = '#10b981';
 
-            // Update sidebar name
+            // Update sidebar name and profile card display name
             document.getElementById('profile-name-display').textContent = fullName;
             document.getElementById('dash-greeting').textContent = 'Selamat datang, ' + fullName + '!';
+            const displayNameEl = document.getElementById('profile-display-name');
+            if (displayNameEl) displayNameEl.textContent = fullName;
 
             setTimeout(() => { statusEl.textContent = ''; }, 4000);
         } catch (err) {
