@@ -22,7 +22,7 @@ const ADMIN_PASSWORD = 'baimdigital2026';
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.static(path.join(__dirname, '.'), { extensions: ['html'] }));
+app.use(express.static(path.join(process.cwd(), '.'), { extensions: ['html'] }));
 
 // Simple Authentication Middleware
 const authMiddleware = (req, res, next) => {
@@ -58,7 +58,7 @@ async function uploadToGitHub(owner, repo, token, filePath, contentString, commi
 
 // Get Products (Public)
 app.get('/api/products', (req, res) => {
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf8', (err, data) => {
+    fs.readFile(path.join(process.cwd(), 'data', 'products.json'), 'utf8', (err, data) => {
         if (err) return res.status(500).json({ error: 'Failed to read products.' });
         res.json(JSON.parse(data));
     });
@@ -79,7 +79,7 @@ app.post('/api/products', authMiddleware, async (req, res) => {
         await uploadToGitHub(owner, repo, token, 'data/products.json', JSON.stringify(newProducts, null, 2), 'Update products data via CMS');
         
         // --- Static Site Generation for Products ---
-        const templatePath = path.join(__dirname, 'produk.html');
+        const templatePath = path.join(process.cwd(), 'produk.html');
         if (fs.existsSync(templatePath)) {
             const templateHtml = fs.readFileSync(templatePath, 'utf8');
             
@@ -113,7 +113,7 @@ app.post('/api/products', authMiddleware, async (req, res) => {
 
 // Get Articles (Public)
 app.get('/api/articles', (req, res) => {
-    fs.readFile(path.join(__dirname, 'data', 'articles.json'), 'utf8', (err, data) => {
+    fs.readFile(path.join(process.cwd(), 'data', 'articles.json'), 'utf8', (err, data) => {
         if (err) return res.status(500).json({ error: 'Failed to read articles.' });
         res.json(JSON.parse(data));
     });
@@ -134,7 +134,7 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
         await uploadToGitHub(owner, repo, token, 'data/articles.json', JSON.stringify(newArticles, null, 2), 'Update articles data via CMS');
         
         // --- Static Site Generation for Articles ---
-        const templatePath = path.join(__dirname, 'blog.html');
+        const templatePath = path.join(process.cwd(), 'blog.html');
         if (fs.existsSync(templatePath)) {
             const templateHtml = fs.readFileSync(templatePath, 'utf8');
             
