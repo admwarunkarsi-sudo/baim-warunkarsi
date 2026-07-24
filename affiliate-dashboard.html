@@ -56,22 +56,11 @@
             <p class="text-gray-600 max-w-2xl mx-auto">Sebarkan link unik Anda dan dapatkan komisi pasif setiap bulan. Copy-paste materinya, biarkan sistem yang bekerja untuk Anda!</p>
         </div>
 
-        <!-- STEP 1: Setup Mayar Code -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 relative overflow-hidden" id="card-setup">
+        <!-- STEP 1: Waiting for Admin -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 relative overflow-hidden text-center hidden" id="card-waiting">
             <div class="absolute top-0 left-0 w-1 h-full bg-accent"></div>
-            <div class="flex items-start justify-between flex-wrap gap-4">
-                <div>
-                    <h2 class="text-xl font-bold text-navy mb-2 flex items-center gap-2"><span class="bg-blue-100 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span> Masukkan Kode Unik Mayar Anda</h2>
-                    <p class="text-gray-500 text-sm mb-4 max-w-xl">Agar komisi masuk ke rekening Anda, sistem kami perlu tahu kode unik (ID Affiliate) Mayar Anda. Anda bisa menemukannya di dashboard Mayar. Contoh kode: <span class="font-mono bg-gray-100 px-1 rounded text-red-500">cc4c669c</span></p>
-                </div>
-                <a href="https://web.mayar.id/sign-in/referral/3Tl3Ki2" target="_blank" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm font-semibold transition border border-blue-100">Belum punya akun Mayar? Daftar di sini &rarr;</a>
-            </div>
-
-            <form id="form-affiliate-code" class="mt-4 flex gap-3 max-w-md">
-                <input type="text" id="input-affiliate-code" class="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy" placeholder="Masukkan ID Affiliate (contoh: cc4c669c)" required>
-                <button type="submit" class="bg-navy hover:bg-navy-light text-white font-bold px-6 py-3 rounded-xl transition shadow-md" id="btn-save-code">Simpan</button>
-            </form>
-            <p class="text-xs text-green-600 font-bold mt-2 hidden" id="status-code-saved">✅ Kode unik berhasil tersimpan!</p>
+            <h2 class="text-xl font-bold text-navy mb-2">⏳ Sedang Menyiapkan Link Anda...</h2>
+            <p class="text-gray-500 text-sm max-w-xl mx-auto">Admin sedang mendaftarkan akun Affiliate Mayar Anda secara manual. Mohon tunggu maksimal 1x24 jam. Jika sudah aktif, materi promosi akan otomatis muncul di bawah ini.</p>
         </div>
 
         <!-- STEP 2: Promotional Materials (Hidden until code is set) -->
@@ -153,42 +142,25 @@ Daftar lewat link ini mumpung harganya belum naik:
             currentUser = data.session.user;
             document.getElementById('user-email').textContent = currentUser.email;
 
-            // Load saved affiliate code if exists
-            if (currentUser.user_metadata && currentUser.user_metadata.affiliate_code) {
-                affiliateCode = currentUser.user_metadata.affiliate_code;
-                document.getElementById('input-affiliate-code').value = affiliateCode;
-                activatePromos();
+            // Fetch Affiliate ID from server
+            try {
+                const res = await fetch('/api/affiliates');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data[currentUser.email]) {
+                        affiliateCode = data[currentUser.email];
+                        activatePromos();
+                    } else {
+                        // Show waiting message
+                        document.getElementById('card-waiting').classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Gagal mengambil data affiliate", err);
             }
         }
 
-        // Handle Save Code
-        document.getElementById('form-affiliate-code').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const inputCode = document.getElementById('input-affiliate-code').value.trim();
-            if (!inputCode) return;
-
-            const btn = document.getElementById('btn-save-code');
-            btn.innerHTML = 'Menyimpan...';
-            btn.disabled = true;
-
-            // Save to Supabase user_metadata
-            const { data, error } = await window.supabaseClient.auth.updateUser({
-                data: { affiliate_code: inputCode }
-            });
-
-            btn.innerHTML = 'Simpan';
-            btn.disabled = false;
-
-            if (error) {
-                Swal.fire('Gagal', 'Terjadi kesalahan saat menyimpan kode: ' + error.message, 'error');
-            } else {
-                affiliateCode = inputCode;
-                document.getElementById('status-code-saved').classList.remove('hidden');
-                setTimeout(() => { document.getElementById('status-code-saved').classList.add('hidden'); }, 3000);
-                activatePromos();
-                Swal.fire('Berhasil!', 'Kode unik berhasil disimpan. Sekarang Anda bisa mulai menyebarkan link!', 'success');
-            }
-        });
+        // Form listener removed
 
         function activatePromos() {
             if (!affiliateCode) return;

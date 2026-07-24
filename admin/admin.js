@@ -1199,17 +1199,28 @@ document.getElementById('bonus-form').addEventListener('submit', async (e) => {
 // ============================================================
 let allMembersData = [];
 let currentFilter = 'pending';
+let affiliatesMap = {};
 
 window.admin.loadMembers = async function(filter = 'pending') {
     currentFilter = filter;
     const tbody = document.getElementById('member-list');
-    tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-8 text-center text-gray-400">Memuat data...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="px-5 py-8 text-center text-gray-400">Memuat data...</td></tr>`;
 
     try {
+        // Fetch members from supabase
         const { data, error } = await window.supabaseClient
             .from('kelas_members')
             .select('*')
             .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        allMembersData = data || [];
+
+        // Fetch affiliates mapping
+        const affRes = await fetch('/api/affiliates');
+        if (affRes.ok) {
+            affiliatesMap = await affRes.json();
+        }
 
         if (error) throw error;
         allMembersData = data || [];
@@ -1276,6 +1287,11 @@ window.admin.renderMembers = function(filter) {
             : m.status === 'active'
             ? `<button onclick="window.admin.rejectMember('${m.id}')" class="bg-gray-400 text-white text-xs font-bold px-3 py-1.5 rounded">Cabut Akses</button>`
             : `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded">✅ Aktifkan</button>`;
+        const affCode = affiliatesMap[m.email] || '';
+        const affInput = m.status === 'active' 
+            ? `<div class="flex gap-2 pt-2 border-t mt-2"><input type="text" id="aff-mob-${m.id}" value="${affCode}" placeholder="Mayar ID" class="border px-2 py-1 rounded w-full text-sm"><button onclick="window.admin.saveAffiliateCode('${m.email}', 'aff-mob-${m.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold">Simpan ID</button></div>`
+            : '';
+
         return `<div class="bg-white rounded-lg shadow p-4 space-y-2">
             <div class="flex items-center justify-between">
                 <p class="font-bold text-gray-900 text-sm">${m.full_name}</p>
@@ -1287,6 +1303,7 @@ window.admin.renderMembers = function(filter) {
                 <span class="text-xs text-gray-400">${date}</span>
             </div>
             <div class="flex gap-2 pt-1">${actions}</div>
+            ${affInput}
         </div>`;
     }).join('');
     // Desktop table
@@ -1298,12 +1315,19 @@ window.admin.renderMembers = function(filter) {
             : m.status === 'active'
             ? `<button onclick="window.admin.rejectMember('${m.id}')" class="bg-gray-400 hover:bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded transition">Cabut Akses</button>`
             : `<button onclick="window.admin.approveMember('${m.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1 rounded transition">✅ Aktifkan</button>`;
+        
+        const affCode = affiliatesMap[m.email] || '';
+        const affInput = m.status === 'active' 
+            ? `<div class="flex gap-1"><input type="text" id="aff-${m.id}" value="${affCode}" placeholder="Mayar ID" class="border px-2 py-1 rounded w-24 text-xs"><button onclick="window.admin.saveAffiliateCode('${m.email}', 'aff-${m.id}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">Simpan</button></div>`
+            : `<span class="text-xs text-gray-400 italic">Harus aktif</span>`;
+
         return `<tr class="hover:bg-gray-50">
             <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold">${m.full_name}</td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm">${m.email}</td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm"><a href="https://wa.me/62${m.whatsapp.replace(/^0/, '')}" target="_blank" class="text-green-600 hover:underline">📞 ${m.whatsapp}</a></td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-500">${date}</td>
             <td class="px-5 py-4 border-b border-gray-200">${status}</td>
+            <td class="px-5 py-4 border-b border-gray-200">${affInput}</td>
             <td class="px-5 py-4 border-b border-gray-200">${actions}</td>
         </tr>`;
     }).join('');
@@ -1330,5 +1354,37 @@ window.admin.rejectMember = async function(id) {
         window.admin.loadMembers(currentFilter);
     } catch (err) {
         alert('Gagal menolak: ' + err.message);
+    }
+};
+
+window.admin.saveAffiliateCode = async function(email, inputId) {
+    const code = document.getElementById(inputId).value.trim();
+    if (!code) {
+        alert('Kode Affiliate tidak boleh kosong.');
+        return;
+    }
+    const adminPassword = prompt("Masukkan password Admin untuk menyimpan perubahan ini:");
+    if (!adminPassword) return;
+
+    affiliatesMap[email] = code;
+
+    try {
+        const res = await fetch('/api/affiliates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + adminPassword
+            },
+            body: JSON.stringify(affiliatesMap)
+        });
+        const data = await res.json();
+        if (data.success) {
+            showStatus('✅ Kode Affiliate untuk ' + email + ' berhasil disimpan!');
+            window.admin.loadMembers(currentFilter);
+        } else {
+            alert('Gagal menyimpan: ' + data.message);
+        }
+    } catch (e) {
+        alert('Gagal menghubungi server.');
     }
 };

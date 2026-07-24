@@ -168,6 +168,39 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
     }
 });
 
+// Get Affiliates (Public/Protected)
+app.get('/api/affiliates', (req, res) => {
+    fs.readFile(path.join(process.cwd(), 'data', 'affiliates.json'), 'utf8', (err, data) => {
+        if (err) return res.status(500).json({ error: 'Failed to read affiliates.' });
+        res.json(JSON.parse(data || '{}'));
+    });
+});
+
+// Update Affiliates (Protected)
+app.post('/api/affiliates', authMiddleware, async (req, res) => {
+    const newAffiliates = req.body;
+    const owner = process.env.GITHUB_USERNAME;
+    const repo = process.env.GITHUB_REPO;
+    const token = process.env.GITHUB_TOKEN;
+
+    if (!owner || !repo || !token) {
+        return res.status(500).json({ success: false, message: 'GitHub credentials not configured in .env file.' });
+    }
+
+    try {
+        // 1. Update local file
+        fs.writeFileSync(path.join(process.cwd(), 'data', 'affiliates.json'), JSON.stringify(newAffiliates, null, 2));
+        
+        // 2. Upload to GitHub
+        await uploadToGitHub(owner, repo, token, 'data/affiliates.json', JSON.stringify(newAffiliates, null, 2), 'Auto update affiliates mapping via API');
+        
+        res.json({ success: true, message: 'Affiliates saved successfully.' });
+    } catch (e) {
+        console.error('Save Affiliates Error:', e);
+        res.status(500).json({ success: false, message: 'Failed to save affiliates.' });
+    }
+});
+
 // Upload Image to Cloudinary (Protected)
 app.post('/api/upload', authMiddleware, upload.single('image'), async (req, res) => {
     try {
