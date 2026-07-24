@@ -34,6 +34,26 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
+// Helper for GitHub API Commits
+async function uploadToGitHub(owner, repo, token, filePath, contentString, commitMessage) {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+    const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' };
+    const base64Content = Buffer.from(contentString).toString('base64');
+    
+    let sha = '';
+    try {
+        const getResponse = await axios.get(url, { headers });
+        sha = getResponse.data.sha;
+    } catch (err) {
+        if (err.response && err.response.status !== 404) throw err;
+    }
+
+    const payload = { message: commitMessage, content: base64Content };
+    if (sha) payload.sha = sha;
+
+    await axios.put(url, payload, { headers });
+}
+
 // --- API ROUTES ---
 
 // Get Products (Public)
@@ -45,47 +65,50 @@ app.get('/api/products', (req, res) => {
 });
 
 // Update Products (Protected)
-app.post('/api/products', authMiddleware, (req, res) => {
+app.post('/api/products', authMiddleware, async (req, res) => {
     const newProducts = req.body;
-    fs.writeFile(path.join(__dirname, 'data', 'products.json'), JSON.stringify(newProducts, null, 2), (err) => {
-        if (err) return res.status(500).json({ success: false, message: 'Failed to save products.' });
+    const owner = process.env.GITHUB_USERNAME;
+    const repo = process.env.GITHUB_REPO;
+    const token = process.env.GITHUB_TOKEN;
+
+    if (!owner || !repo || !token) {
+        return res.status(500).json({ success: false, message: 'GitHub credentials not configured in .env file.' });
+    }
+
+    try {
+        await uploadToGitHub(owner, repo, token, 'data/products.json', JSON.stringify(newProducts, null, 2), 'Update products data via CMS');
         
         // --- Static Site Generation for Products ---
-        try {
-            const produkDir = path.join(__dirname, 'produk');
-            if (!fs.existsSync(produkDir)) fs.mkdirSync(produkDir);
+        const templatePath = path.join(__dirname, 'produk.html');
+        if (fs.existsSync(templatePath)) {
+            const templateHtml = fs.readFileSync(templatePath, 'utf8');
             
-            const templatePath = path.join(__dirname, 'produk.html');
-            if (fs.existsSync(templatePath)) {
-                const templateHtml = fs.readFileSync(templatePath, 'utf8');
+            for (const product of newProducts) {
+                if(!product.slug) continue;
+                let html = templateHtml;
+                const pageTitle = `${product.title} | Baim Warunk Arsi`;
+                const rawContent = product.description || "";
+                const cleanDesc = rawContent.replace(/(<([^>]+)>)/gi, "").substring(0, 150) + "...";
+                const img = product.image || 'https://res.cloudinary.com/heswgpdc/image/upload/v1784105147/cjxn9nkbq9fk27itqs0z.png';
                 
-                newProducts.forEach(product => {
-                    if(!product.slug) return;
-                    let html = templateHtml;
-                    const pageTitle = `${product.title} | Baim Warunk Arsi`;
-                    const rawContent = product.description || "";
-                    const cleanDesc = rawContent.replace(/(<([^>]+)>)/gi, "").substring(0, 150) + "...";
-                    const img = product.image || 'https://res.cloudinary.com/heswgpdc/image/upload/v1784105147/cjxn9nkbq9fk27itqs0z.png';
-                    
-                    html = html.replace(/<title id="meta-title">.*?<\/title>/, `<title id="meta-title">${pageTitle}</title>`);
-                    html = html.replace(/id="meta-title">.*?<\/title>/, `id="meta-title">${pageTitle}</title>`);
-                    html = html.replace(/id="meta-desc" content=".*?"/, `id="meta-desc" content="${cleanDesc}"`);
-                    html = html.replace(/id="og-title" content=".*?"/, `id="og-title" content="${pageTitle}"`);
-                    html = html.replace(/id="og-desc" content=".*?"/, `id="og-desc" content="${cleanDesc}"`);
-                    html = html.replace(/id="og-image" content=".*?"/, `id="og-image" content="${img}"`);
-                    html = html.replace(/id="tw-title" content=".*?"/, `id="tw-title" content="${pageTitle}"`);
-                    html = html.replace(/id="tw-desc" content=".*?"/, `id="tw-desc" content="${cleanDesc}"`);
-                    html = html.replace(/id="tw-image" content=".*?"/, `id="tw-image" content="${img}"`);
-                    
-                    fs.writeFileSync(path.join(produkDir, `${product.slug}.html`), html);
-                });
+                html = html.replace(/<title id="meta-title">.*?<\/title>/, `<title id="meta-title">${pageTitle}</title>`);
+                html = html.replace(/id="meta-title">.*?<\/title>/, `id="meta-title">${pageTitle}</title>`);
+                html = html.replace(/id="meta-desc" content=".*?"/, `id="meta-desc" content="${cleanDesc}"`);
+                html = html.replace(/id="og-title" content=".*?"/, `id="og-title" content="${pageTitle}"`);
+                html = html.replace(/id="og-desc" content=".*?"/, `id="og-desc" content="${cleanDesc}"`);
+                html = html.replace(/id="og-image" content=".*?"/, `id="og-image" content="${img}"`);
+                html = html.replace(/id="tw-title" content=".*?"/, `id="tw-title" content="${pageTitle}"`);
+                html = html.replace(/id="tw-desc" content=".*?"/, `id="tw-desc" content="${cleanDesc}"`);
+                html = html.replace(/id="tw-image" content=".*?"/, `id="tw-image" content="${img}"`);
+                
+                await uploadToGitHub(owner, repo, token, `produk/${product.slug}.html`, html, `Auto update product page: ${product.slug}`);
             }
-        } catch (e) {
-            console.error('SSG Error (Produk):', e);
         }
-
         res.json({ success: true, message: 'Products saved successfully.' });
-    });
+    } catch (e) {
+        console.error('SSG Error (Produk):', e);
+        res.status(500).json({ success: false, message: 'Failed to save products.' });
+    }
 });
 
 // Get Articles (Public)
@@ -97,54 +120,52 @@ app.get('/api/articles', (req, res) => {
 });
 
 // Update Articles (Protected)
-app.post('/api/articles', authMiddleware, (req, res) => {
+app.post('/api/articles', authMiddleware, async (req, res) => {
     const newArticles = req.body;
-    fs.writeFile(path.join(__dirname, 'data', 'articles.json'), JSON.stringify(newArticles, null, 2), (err) => {
-        if (err) return res.status(500).json({ success: false, message: 'Failed to save articles.' });
+    const owner = process.env.GITHUB_USERNAME;
+    const repo = process.env.GITHUB_REPO;
+    const token = process.env.GITHUB_TOKEN;
+
+    if (!owner || !repo || !token) {
+        return res.status(500).json({ success: false, message: 'GitHub credentials not configured in .env file.' });
+    }
+
+    try {
+        await uploadToGitHub(owner, repo, token, 'data/articles.json', JSON.stringify(newArticles, null, 2), 'Update articles data via CMS');
         
         // --- Static Site Generation for Articles ---
-        try {
-            const blogDir = path.join(__dirname, 'blog');
-            if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir);
+        const templatePath = path.join(__dirname, 'blog.html');
+        if (fs.existsSync(templatePath)) {
+            const templateHtml = fs.readFileSync(templatePath, 'utf8');
             
-            const templatePath = path.join(__dirname, 'blog.html');
-            if (fs.existsSync(templatePath)) {
-                const templateHtml = fs.readFileSync(templatePath, 'utf8');
+            for (const article of newArticles) {
+                if(!article.slug) continue;
+                let html = templateHtml;
+                const pageTitle = `${article.title} | Blog Baim`;
+                const rawContent = article.excerpt || article.content || "";
+                const cleanDesc = rawContent.replace(/(<([^>]+)>)/gi, "").substring(0, 150) + "...";
+                const img = article.image || 'https://res.cloudinary.com/heswgpdc/image/upload/v1784105147/cjxn9nkbq9fk27itqs0z.png';
                 
-                newArticles.forEach(article => {
-                    if(!article.slug) return;
-                    let html = templateHtml;
-                    const pageTitle = `${article.title} | Blog Baim`;
-                    const rawContent = article.excerpt || article.content || "";
-                    const cleanDesc = rawContent.replace(/(<([^>]+)>)/gi, "").substring(0, 150) + "...";
-                    const img = article.image || 'https://res.cloudinary.com/heswgpdc/image/upload/v1784105147/cjxn9nkbq9fk27itqs0z.png';
-                    
-                    // Replace fallback meta tags with specific ones
-                    html = html.replace(/<title id="meta-title">.*?<\/title>/, `<title id="meta-title">${pageTitle}</title>`);
-                    html = html.replace(/content="[^"]*"/g, (match) => {
-                        // this is a bit too broad, let's target specific lines using string replacement
-                        return match;
-                    });
-                    
-                    // A safer string replacement for the meta tags based on the known IDs in blog.html
-                    html = html.replace(/id="meta-title">.*?<\/title>/, `id="meta-title">${pageTitle}</title>`);
-                    html = html.replace(/id="meta-desc" content=".*?"/, `id="meta-desc" content="${cleanDesc}"`);
-                    html = html.replace(/id="og-title" content=".*?"/, `id="og-title" content="${pageTitle}"`);
-                    html = html.replace(/id="og-desc" content=".*?"/, `id="og-desc" content="${cleanDesc}"`);
-                    html = html.replace(/id="og-image" content=".*?"/, `id="og-image" content="${img}"`);
-                    html = html.replace(/id="tw-title" content=".*?"/, `id="tw-title" content="${pageTitle}"`);
-                    html = html.replace(/id="tw-desc" content=".*?"/, `id="tw-desc" content="${cleanDesc}"`);
-                    html = html.replace(/id="tw-image" content=".*?"/, `id="tw-image" content="${img}"`);
-                    
-                    fs.writeFileSync(path.join(blogDir, `${article.slug}.html`), html);
-                });
+                html = html.replace(/<title id="meta-title">.*?<\/title>/, `<title id="meta-title">${pageTitle}</title>`);
+                html = html.replace(/content="[^"]*"/g, (match) => match);
+                
+                html = html.replace(/id="meta-title">.*?<\/title>/, `id="meta-title">${pageTitle}</title>`);
+                html = html.replace(/id="meta-desc" content=".*?"/, `id="meta-desc" content="${cleanDesc}"`);
+                html = html.replace(/id="og-title" content=".*?"/, `id="og-title" content="${pageTitle}"`);
+                html = html.replace(/id="og-desc" content=".*?"/, `id="og-desc" content="${cleanDesc}"`);
+                html = html.replace(/id="og-image" content=".*?"/, `id="og-image" content="${img}"`);
+                html = html.replace(/id="tw-title" content=".*?"/, `id="tw-title" content="${pageTitle}"`);
+                html = html.replace(/id="tw-desc" content=".*?"/, `id="tw-desc" content="${cleanDesc}"`);
+                html = html.replace(/id="tw-image" content=".*?"/, `id="tw-image" content="${img}"`);
+                
+                await uploadToGitHub(owner, repo, token, `blog/${article.slug}.html`, html, `Auto update article page: ${article.slug}`);
             }
-        } catch (e) {
-            console.error('SSG Error:', e);
         }
-
         res.json({ success: true, message: 'Articles saved successfully.' });
-    });
+    } catch (e) {
+        console.error('SSG Error:', e);
+        res.status(500).json({ success: false, message: 'Failed to save articles.' });
+    }
 });
 
 // Upload Image to Cloudinary (Protected)
@@ -254,8 +275,13 @@ app.post('/api/publish', authMiddleware, async (req, res) => {
     }
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Local CMS server running on http://localhost:${PORT}`);
-    console.log(`Admin panel: http://localhost:${PORT}/admin`);
-});
+// Start Server (if not in serverless environment)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Local CMS server running on http://localhost:${PORT}`);
+        console.log(`Admin panel: http://localhost:${PORT}/admin`);
+    });
+}
+
+// Export the app for Vercel Serverless
+module.exports = app;
