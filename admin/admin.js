@@ -314,28 +314,32 @@ function renderLMSData() {
     let html = '';
     lmsModules.forEach(mod => {
         html += `
-            <div class="bg-white shadow rounded-lg p-4">
-                <div class="flex justify-between items-center border-b pb-3 mb-3">
-                    <h3 class="text-xl font-bold text-navy flex items-center gap-2"><span class="text-accent">📦</span> ${mod.title} (Urutan: ${mod.order_index})</h3>
-                    <div class="flex gap-2">
-                        <button onclick="window.admin.openLessonForm('${mod.id}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded text-sm transition font-bold">+ Bab</button>
-                        <button onclick="window.admin.editModule('${mod.id}')" class="bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded text-sm transition">Edit</button>
-                        <button onclick="window.admin.deleteModule('${mod.id}')" class="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded text-sm transition">Hapus</button>
+            <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-4 md:p-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-3 mb-4 gap-3 md:gap-0">
+                    <h3 class="text-lg md:text-xl font-bold text-navy flex flex-wrap items-center gap-2 w-full md:w-auto break-words"><span class="text-accent text-xl">📦</span> ${mod.title} <span class="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full ml-1">Urutan: ${mod.order_index}</span></h3>
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto justify-start md:justify-end">
+                        <button onclick="window.admin.openLessonForm('${mod.id}')" class="bg-green-50 text-green-700 hover:bg-green-100 px-3 py-1.5 rounded-lg text-sm transition font-bold shadow-sm border border-green-100">+ Bab</button>
+                        <button onclick="window.admin.editModule('${mod.id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm transition shadow-sm border border-blue-100">Edit</button>
+                        <button onclick="window.admin.deleteModule('${mod.id}')" class="bg-red-50 text-red-700 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm transition shadow-sm border border-red-100">Hapus</button>
                     </div>
                 </div>
-                <div class="space-y-2 pl-6">
+                <div class="space-y-3 pl-2 md:pl-6">
         `;
         
         if (mod.lessons && mod.lessons.length > 0) {
             mod.lessons.forEach(lesson => {
                 html += `
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded border hover:bg-gray-100 transition">
-                        <div class="font-semibold text-gray-700 flex items-center gap-2"><span class="text-accent">▶</span> ${lesson.title} <span class="text-xs text-gray-400 font-normal ml-2">(Urutan: ${lesson.order_index})</span></div>
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">${lesson.video_provider.toUpperCase()}</span>
-                            <button onclick="window.admin.openAttachmentModal('${lesson.id}', \`${lesson.title.replace(/'/g, "\\'")}\`)" class="text-green-600 hover:text-green-800 text-sm font-semibold border-l pl-3 border-gray-300">Lampiran</button>
-                            <button onclick="window.admin.editLesson('${mod.id}', '${lesson.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-semibold border-l pl-3 border-gray-300">Edit</button>
-                            <button onclick="window.admin.deleteLesson('${lesson.id}')" class="text-red-600 hover:text-red-800 text-sm font-semibold">Hapus</button>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-100 hover:bg-white hover:shadow-sm hover:border-gray-200 transition-all gap-3">
+                        <div class="font-semibold text-gray-700 flex flex-wrap items-center gap-2 w-full md:w-auto break-words">
+                            <span class="text-accent text-sm md:text-base">▶</span> 
+                            <span>${lesson.title}</span> 
+                            <span class="text-xs text-gray-500 font-normal bg-gray-200/50 px-2 py-0.5 rounded-md">(Urutan: ${lesson.order_index})</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-gray-200">
+                            <span class="text-xs bg-white border border-gray-200 text-gray-600 px-2 py-1 rounded shadow-sm">${lesson.video_provider.toUpperCase()}</span>
+                            <button onclick="window.admin.openAttachmentModal('${lesson.id}', \`${lesson.title.replace(/'/g, "\\'")}\`)" class="text-green-600 hover:text-green-800 text-sm font-semibold bg-green-50 px-2 py-1 rounded border border-green-100 md:border-none md:bg-transparent md:border-l md:pl-3 md:rounded-none md:border-gray-300">Lampiran</button>
+                            <button onclick="window.admin.editLesson('${mod.id}', '${lesson.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-semibold bg-blue-50 px-2 py-1 rounded border border-blue-100 md:border-none md:bg-transparent md:border-l md:pl-3 md:rounded-none md:border-gray-300">Edit</button>
+                            <button onclick="window.admin.deleteLesson('${lesson.id}')" class="text-red-600 hover:text-red-800 text-sm font-semibold bg-red-50 px-2 py-1 rounded border border-red-100 md:border-none md:bg-transparent md:ml-1">Hapus</button>
                         </div>
                     </div>
                 `;
