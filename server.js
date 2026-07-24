@@ -181,7 +181,9 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
 // ==========================================
 app.post('/api/webhook/mayar', async (req, res) => {
     try {
-        console.log("MAYAR WEBHOOK RECEIVED:", JSON.stringify(req.body));
+        console.log("=== MAYAR WEBHOOK RAW DUMP ===");
+        console.log(JSON.stringify(req.body, null, 2));
+        console.log("==============================");
         const payload = req.body;
 
         // Mayar payload structure varies, try to extract customer data robustly
