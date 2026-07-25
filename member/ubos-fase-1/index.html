@@ -430,7 +430,7 @@ Terimakasih udah mampir dan dukung terus ${toko} yaa 🙏`;
             const { toko, produk, detail, waktu, gaya } = getWaInputs();
 
             try {
-                const response = await fetch(`/api/generate-promo`, {
+                const response = await fetch(`https://baim-warunkarsi.vercel.app/api/generate-promo`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
