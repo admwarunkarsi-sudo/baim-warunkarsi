@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAJU Tools Center - KELOLA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#059669',
+                            dark: '#047857'
+                        },
+                        slate: {
+                            50: '#F8FAFC',
+                            900: '#0F172A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; color: #0F172A; }
+        .app-container { max-width: 480px; margin: 0 auto; background-color: #F8FAFC; min-height: 100vh; position: relative; padding-bottom: 80px; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 10px 0; z-index: 50; padding-bottom: calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);}
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: all 0.2s; flex: 1; text-align: center;}
+        .nav-item.active { color: #059669; }
+        .nav-icon { font-size: 1.25rem; margin-bottom: 3px; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="app-container">
+        <!-- Top Breadcrumb -->
+        <div class="bg-slate-900 text-white text-xs px-4 py-2 flex items-center justify-between">
+            <a href="https://baim.warunkarsi.com/member" class="hover:text-green-400 transition flex items-center gap-1 font-medium">
+                <span>&larr;</span> Kembali ke Dashboard Member
+            </a>
+            <span class="opacity-50">Fase 2</span>
+        </div>
+
+        <!-- Header -->
+        <header class="bg-primary text-white p-5 shadow-md relative overflow-hidden">
+            <div class="relative z-10">
+                <h1 class="text-2xl font-bold leading-tight">MAJU Tools Center</h1>
+                <p class="text-sm text-green-100 mt-1 opacity-90 font-medium">Sistem Eksekusi Bisnis UMKM • Fase 2: KELOLA</p>
+            </div>
+            <!-- Decorative circle -->
+            <div class="absolute -right-10 -top-10 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+        </header>
+
+        <main class="p-4 pt-6">
+
+            <!-- ===================== TAB 1: KALKULATOR HPP ===================== -->
+            <div id="tab1" class="tab-content active">
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span>📊</span> Kalkulator HPP Premium
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Hitung Harga Pokok Penjualan secara presisi untuk bisnis kulinermu.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
+                    <div class="w-16 h-16 bg-green-100 text-primary rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                        💰
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">HPP Premium Web Tool</h3>
+                    <p class="text-sm text-slate-500 mb-6">Akses tool eksklusif untuk menghitung modal resep per porsi, margin keuntungan ideal, dan BEP dengan mudah.</p>
+                    
+                    <a href="https://hpppremium.warunkarsi.com" target="_blank" class="w-full inline-block bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-green-200/50 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        Buka Kalkulator Premium
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 2: KAS HARIAN ===================== -->
+            <div id="tab2" class="tab-content">
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span>📝</span> Catatan Kas Harian
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Catat pemasukan dan pengeluaran harian dengan simpel agar keuangan tidak bocor.</p>
+                </div>
+
+                <!-- Input Pemasukan -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4 border-t-4 border-t-green-500">
+                    <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-green-500">↑</span> Pemasukan Harian</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Omzet Lapak / Toko Fisik</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
+                                <input type="number" id="kas_in_lapak" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 transition" oninput="hitungKas()">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Omzet Online (Gofood/ShopeeFood)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
+                                <input type="number" id="kas_in_online" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 transition" oninput="hitungKas()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Pengeluaran -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4 border-t-4 border-t-red-500">
+                    <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-red-500">↓</span> Pengeluaran Harian</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Belanja Bahan Baku (Restock)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
+                                <input type="number" id="kas_out_bahan" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="hitungKas()">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Operasional Harian (Es, Plastik, Kebersihan)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
+                                <input type="number" id="kas_out_ops" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="hitungKas()">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Gaji Karyawan / Ambilan Owner</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
+                                <input type="number" id="kas_out_gaji" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="hitungKas()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hasil Kalkulasi -->
+                <div class="bg-slate-900 rounded-2xl p-5 mb-4 shadow-lg text-white">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p class="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-1">Sisa Uang Kas Hari Ini</p>
+                            <div class="text-3xl font-bold text-green-400" id="kas_sisa">Rp 0</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between text-xs font-medium text-slate-300">
+                        <div>Total Masuk: <span id="kas_total_in" class="text-white">Rp 0</span></div>
+                        <div>Total Keluar: <span id="kas_total_out" class="text-white">Rp 0</span></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="exportKasWA()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                        Lapor ke WA
+                    </button>
+                    <button onclick="resetKas()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-4 rounded-xl transition-all text-sm shadow-sm">
+                        Reset Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================== TAB 3: STOK & SUPPLIER ===================== -->
+            <div id="tab3" class="tab-content">
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span>📦</span> Stok & Supplier
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Pantau stok bahan harian agar tidak kehabisan dan catat kontak supplier langganan.</p>
+                </div>
+
+                <!-- Manajemen Stok -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-slate-800 text-sm">Ceklist Stok Bahan</h3>
+                        <span id="stok_warning" class="text-[10px] font-bold px-2 py-1 bg-red-100 text-red-600 rounded-md hidden">⚠ Ada bahan habis!</span>
+                    </div>
+
+                    <!-- Add form -->
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="add_stok_nama" placeholder="Nama Bahan (Cth: Teh)" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary">
+                        <button onclick="tambahStok()" class="bg-primary text-white px-3 py-2 rounded-lg font-bold text-sm">+</button>
+                    </div>
+
+                    <!-- Stok List -->
+                    <div id="stok_list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- Items will be injected here via JS -->
+                    </div>
+                </div>
+
+                <!-- Daftar Supplier -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm mb-3">Kontak Supplier Langganan</h3>
+                    
+                    <!-- Add form -->
+                    <div class="space-y-2 mb-4">
+                        <input type="text" id="add_sup_nama" placeholder="Nama Supplier (Cth: Koh Acong)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary">
+                        <div class="flex gap-2">
+                            <input type="text" id="add_sup_bahan" placeholder="Jual Apa?" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary">
+                            <input type="number" id="add_sup_wa" placeholder="No WA (08...)" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary">
+                        </div>
+                        <button onclick="tambahSupplier()" class="w-full bg-primary text-white px-3 py-2 rounded-lg font-bold text-sm mt-1">Simpan Supplier</button>
+                    </div>
+
+                    <!-- Supplier List -->
+                    <div id="supplier_list" class="space-y-3">
+                        <!-- Items will be injected here via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('tab1', this)">
+                <div class="nav-icon">📊</div>
+                <span>HPP Premium</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('tab2', this)">
+                <div class="nav-icon">📝</div>
+                <span>Kas Harian</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('tab3', this)">
+                <div class="nav-icon">📦</div>
+                <span>Stok</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // --- Tab Switching Logic ---
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // --- Helper Format Rupiah ---
+        function formatRp(angka) {
+            return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(angka);
+        }
+
+        // --- KAS HARIAN LOGIC ---
+        function hitungKas() {
+            const inLapak = parseInt(document.getElementById('kas_in_lapak').value) || 0;
+            const inOnline = parseInt(document.getElementById('kas_in_online').value) || 0;
+            const totalIn = inLapak + inOnline;
+
+            const outBahan = parseInt(document.getElementById('kas_out_bahan').value) || 0;
+            const outOps = parseInt(document.getElementById('kas_out_ops').value) || 0;
+            const outGaji = parseInt(document.getElementById('kas_out_gaji').value) || 0;
+            const totalOut = outBahan + outOps + outGaji;
+
+            const sisa = totalIn - totalOut;
+
+            document.getElementById('kas_total_in').innerText = 'Rp ' + formatRp(totalIn);
+            document.getElementById('kas_total_out').innerText = 'Rp ' + formatRp(totalOut);
+            
+            const elSisa = document.getElementById('kas_sisa');
+            elSisa.innerText = 'Rp ' + formatRp(sisa);
+            if(sisa < 0) {
+                elSisa.classList.replace('text-green-400', 'text-red-400');
+            } else {
+                elSisa.classList.replace('text-red-400', 'text-green-400');
+            }
+
+            // Simpan ke localStorage
+            const kasData = { inLapak, inOnline, outBahan, outOps, outGaji };
+            localStorage.setItem('ubos_kas_data', JSON.stringify(kasData));
+        }
+
+        function loadKas() {
+            const saved = localStorage.getItem('ubos_kas_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if(data.inLapak) document.getElementById('kas_in_lapak').value = data.inLapak;
+                if(data.inOnline) document.getElementById('kas_in_online').value = data.inOnline;
+                if(data.outBahan) document.getElementById('kas_out_bahan').value = data.outBahan;
+                if(data.outOps) document.getElementById('kas_out_ops').value = data.outOps;
+                if(data.outGaji) document.getElementById('kas_out_gaji').value = data.outGaji;
+                hitungKas();
+            }
+        }
+
+        function resetKas() {
+            if(confirm("Yakin ingin mereset catatan kas hari ini?")) {
+                document.getElementById('kas_in_lapak').value = '';
+                document.getElementById('kas_in_online').value = '';
+                document.getElementById('kas_out_bahan').value = '';
+                document.getElementById('kas_out_ops').value = '';
+                document.getElementById('kas_out_gaji').value = '';
+                localStorage.removeItem('ubos_kas_data');
+                hitungKas();
+            }
+        }
+
+        function exportKasWA() {
+            const inLapak = parseInt(document.getElementById('kas_in_lapak').value) || 0;
+            const inOnline = parseInt(document.getElementById('kas_in_online').value) || 0;
+            const outBahan = parseInt(document.getElementById('kas_out_bahan').value) || 0;
+            const outOps = parseInt(document.getElementById('kas_out_ops').value) || 0;
+            const outGaji = parseInt(document.getElementById('kas_out_gaji').value) || 0;
+            
+            const totalIn = inLapak + inOnline;
+            const totalOut = outBahan + outOps + outGaji;
+            const sisa = totalIn - totalOut;
+            const tgl = new Date().toLocaleDateString('id-ID');
+
+            let text = `*LAPORAN KAS HARIAN (${tgl})*%0A%0A`;
+            text += `*PEMASUKAN:* Rp ${formatRp(totalIn)}%0A`;
+            text += `- Lapak: Rp ${formatRp(inLapak)}%0A`;
+            text += `- Online: Rp ${formatRp(inOnline)}%0A%0A`;
+            text += `*PENGELUARAN:* Rp ${formatRp(totalOut)}%0A`;
+            text += `- Belanja Bahan: Rp ${formatRp(outBahan)}%0A`;
+            text += `- Operasional: Rp ${formatRp(outOps)}%0A`;
+            text += `- Gaji/Ambilan: Rp ${formatRp(outGaji)}%0A%0A`;
+            text += `*SISA KAS (PROFIT KOTOR):* *Rp ${formatRp(sisa)}*%0A%0A`;
+            text += `_Dibuat otomatis via MAJU Tools Center_`;
+
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        // --- STOK LOGIC ---
+        let stokList = [];
+        function loadStok() {
+            const saved = localStorage.getItem('ubos_stok_data');
+            if (saved) stokList = JSON.parse(saved);
+            renderStok();
+        }
+
+        function renderStok() {
+            const container = document.getElementById('stok_list');
+            container.innerHTML = '';
+            let adaHabis = false;
+
+            stokList.forEach((item, index) => {
+                const isAman = item.status === 'aman';
+                if (!isAman) adaHabis = true;
+                
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-2 rounded-lg border border-slate-100 ${isAman ? 'bg-slate-50' : 'bg-red-50 border-red-200'}">
+                        <div>
+                            <p class="text-sm font-bold text-slate-800 ${isAman ? '' : 'text-red-700'}">${item.nama}</p>
+                            <p class="text-[10px] ${isAman ? 'text-green-600' : 'text-red-500 font-bold'}">${isAman ? 'Stok Aman' : 'Perlu Belanja'}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="toggleStok(${index})" class="px-3 py-1 rounded text-xs font-bold text-white transition ${isAman ? 'bg-slate-300 hover:bg-slate-400' : 'bg-green-500 hover:bg-green-600 shadow-sm'}">
+                                ${isAman ? 'Tandai Habis' : '✓ Sudah Restock'}
+                            </button>
+                            <button onclick="hapusStok(${index})" class="text-red-400 hover:text-red-600 px-2 text-lg">×</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('stok_warning').style.display = adaHabis ? 'block' : 'none';
+        }
+
+        function tambahStok() {
+            const nama = document.getElementById('add_stok_nama').value.trim();
+            if(nama) {
+                stokList.push({ nama, status: 'aman' });
+                localStorage.setItem('ubos_stok_data', JSON.stringify(stokList));
+                document.getElementById('add_stok_nama').value = '';
+                renderStok();
+            }
+        }
+
+        function toggleStok(index) {
+            stokList[index].status = stokList[index].status === 'aman' ? 'habis' : 'aman';
+            localStorage.setItem('ubos_stok_data', JSON.stringify(stokList));
+            renderStok();
+        }
+
+        function hapusStok(index) {
+            stokList.splice(index, 1);
+            localStorage.setItem('ubos_stok_data', JSON.stringify(stokList));
+            renderStok();
+        }
+
+        // --- SUPPLIER LOGIC ---
+        let supplierList = [];
+        function loadSupplier() {
+            const saved = localStorage.getItem('ubos_supplier_data');
+            if (saved) supplierList = JSON.parse(saved);
+            renderSupplier();
+        }
+
+        function renderSupplier() {
+            const container = document.getElementById('supplier_list');
+            container.innerHTML = '';
+
+            supplierList.forEach((item, index) => {
+                // Ensure WA number starts with 62
+                let wa = item.wa.replace(/\D/g,'');
+                if(wa.startsWith('0')) wa = '62' + wa.substring(1);
+
+                container.innerHTML += `
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl relative">
+                        <button onclick="hapusSupplier(${index})" class="absolute top-2 right-2 text-red-400 hover:text-red-600 font-bold px-2">×</button>
+                        <h4 class="font-bold text-sm text-slate-800">${item.nama}</h4>
+                        <p class="text-xs text-slate-500 mb-2">Bahan: ${item.bahan}</p>
+                        
+                        ${wa ? `<a href="https://wa.me/${wa}" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-green-500 px-3 py-1.5 rounded-full hover:bg-green-600 transition shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg> Chat WA
+                        </a>` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        function tambahSupplier() {
+            const nama = document.getElementById('add_sup_nama').value.trim();
+            const bahan = document.getElementById('add_sup_bahan').value.trim();
+            const wa = document.getElementById('add_sup_wa').value.trim();
+
+            if(nama && bahan) {
+                supplierList.push({ nama, bahan, wa });
+                localStorage.setItem('ubos_supplier_data', JSON.stringify(supplierList));
+                document.getElementById('add_sup_nama').value = '';
+                document.getElementById('add_sup_bahan').value = '';
+                document.getElementById('add_sup_wa').value = '';
+                renderSupplier();
+            }
+        }
+
+        function hapusSupplier(index) {
+            if(confirm("Hapus data supplier ini?")) {
+                supplierList.splice(index, 1);
+                localStorage.setItem('ubos_supplier_data', JSON.stringify(supplierList));
+                renderSupplier();
+            }
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            loadKas();
+            loadStok();
+            loadSupplier();
+        };
+    </script>
+</body>
+</html>
