@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>MAJU Tools Center – Fase 4: SISTEMASI</title>
+    <meta name="description" content="Fase 4 MAJU Tools Center: Generator SOP AI, Kalkulator Buka Cabang, dan Daily Audit Log Karyawan untuk UMKM kuliner.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #d1fae5;
+            --bg: #F8FAFC;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .app-wrapper { max-width: 480px; margin: 0 auto; width: 100%; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+
+        /* BREADCRUMB */
+        .breadcrumb { background: #1e293b; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        .breadcrumb a { color: #94a3b8; font-size: 12px; font-weight: 600; text-decoration: none; }
+        .breadcrumb a:hover { color: #fff; }
+        .breadcrumb span { color: #475569; font-size: 11px; }
+
+        /* HEADER */
+        .app-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 20px 16px 18px; }
+        .app-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .app-header p { font-size: 12px; opacity: 0.7; margin-top: 3px; }
+        .phase-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; margin-top: 8px; color: #a3e635; }
+
+        /* MAIN */
+        main { flex: 1; padding: 16px; padding-bottom: 100px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .section-title { font-size: 16px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .section-desc { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+
+        /* CARD */
+        .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+        /* FORM */
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+        input[type="text"], input[type="number"], input[type="time"], textarea, select {
+            width: 100%; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px;
+            padding: 11px 14px; font-size: 14px; font-family: inherit; color: var(--text); font-weight: 600;
+            outline: none; transition: border 0.2s;
+        }
+        input:focus, textarea:focus, select:focus { border-color: var(--primary); }
+        textarea { resize: none; line-height: 1.6; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* BUTTONS */
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 16px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(5,150,105,0.3); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-dark { background: #1e293b; color: white; }
+        .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+        .btn-danger { background: #fef2f2; border: 1.5px solid #fecaca; color: #dc2626; }
+        .btn-sm { padding: 9px 14px; font-size: 12px; border-radius: 9px; width: auto; flex: 1; }
+        .btn-loading { opacity: 0.7; pointer-events: none; }
+        .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* SOP OUTPUT */
+        .sop-output {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            word-break: break-word;
+        }
+
+        /* KALKULATOR CABANG */
+        .result-card { border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+        .result-card.layak { background: linear-gradient(135deg, #059669, #047857); color: white; }
+        .result-card.risiko { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+        .result-card.warning { background: linear-gradient(135deg, #d97706, #b45309); color: white; }
+        .result-label { font-size: 11px; font-weight: 700; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .result-value { font-size: 22px; font-weight: 800; }
+        .result-sub { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+        .result-status { font-size: 15px; font-weight: 800; padding: 12px 16px; border-radius: 12px; text-align: center; margin-top: 8px; }
+        .calc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .calc-item { background: #f8fafc; border-radius: 12px; padding: 12px; border: 1px solid var(--border); }
+        .calc-item-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+        .calc-item-value { font-size: 15px; font-weight: 800; color: var(--text); }
+
+        /* DAILY AUDIT */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .checklist-item.checked { background: #f0fdf4; border-color: var(--primary); }
+        .checklist-item .check-box {
+            width: 22px; height: 22px; border-radius: 6px;
+            border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 13px; transition: all 0.2s;
+        }
+        .checklist-item.checked .check-box { background: var(--primary); border-color: var(--primary); color: white; }
+        .checklist-item .check-text { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
+        .checklist-item.checked .check-text { color: var(--muted); text-decoration: line-through; }
+        .checklist-progress { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .progress-bar-wrap { background: var(--border); border-radius: 10px; height: 6px; overflow: hidden; margin-bottom: 14px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: width 0.4s; }
+        .audit-tab-btns { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+        .audit-tab-btn { padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: white; font-size: 11px; font-weight: 700; color: var(--muted); cursor: pointer; white-space: nowrap; }
+        .audit-tab-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .audit-section { display: none; }
+        .audit-section.active { display: block; }
+        .stok-input-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .stok-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
+        .absen-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: white; }
+        .absen-name { font-size: 13px; font-weight: 700; color: var(--text); }
+        .absen-status { display: flex; gap: 6px; }
+        .status-btn { padding: 5px 10px; border-radius: 6px; border: 1.5px solid var(--border); font-size: 11px; font-weight: 700; cursor: pointer; background: white; color: var(--muted); transition: all 0.2s; }
+        .status-btn.hadir.active { background: #dcfce7; border-color: var(--primary); color: var(--primary-dark); }
+        .status-btn.absen.active { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+        .bonus-input { width: 100px; padding: 5px 8px; border-radius: 6px; border: 1.5px solid var(--border); font-size: 12px; font-family: inherit; font-weight: 600; }
+        input[type="number"].bonus-input { background: #f8fafc; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; z-index: 50; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 4px; cursor: pointer; transition: all 0.2s; gap: 2px; }
+        .nav-icon svg { stroke: #94a3b8; transition: stroke 0.2s; }
+        .nav-item span { font-size: 10px; font-weight: 700; color: #94a3b8; }
+        .nav-item.active span { color: var(--primary); }
+        .nav-item.active .nav-icon svg { stroke: var(--primary); }
+
+        /* PRINT */
+        @media print {
+            .breadcrumb, .app-header, .bottom-nav, .btn, .sop-form, .no-print { display: none !important; }
+            .sop-output { background: white; color: black; border: 1px solid #ccc; font-size: 12px; padding: 12px; }
+            body { background: white; }
+        }
+
+        /* INPUT NOMINAL */
+        .rp-wrap { position: relative; }
+        .rp-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 700; color: var(--muted); }
+        .rp-input { padding-left: 36px !important; }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+        <a href="https://baim.warunkarsi.com/member">← Kembali ke Dashboard Member</a>
+        <span>Fase 4</span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="app-header">
+        <h1>MAJU Tools Center</h1>
+        <p>Sistem Eksekusi Bisnis UMKM • Modul Member Area</p>
+        <div class="phase-badge">⚙️ Fase 4: SISTEMASI</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <!-- ========== TAB 1: GENERATOR SOP ========== -->
+        <div id="tab1" class="tab-content active">
+            <div class="section-title"><span>📜</span> Generator SOP Dapur & Operasional</div>
+            <div class="section-desc">Isi data warung → AI buatkan SOP harian siap cetak & tempel di dapur atau gerobak!</div>
+
+            <!-- Form -->
+            <div class="card sop-form">
+                <div class="card-title">Data Warung & Karyawan</div>
+                <div class="form-group">
+                    <label>Nama Warung / Usaha</label>
+                    <input type="text" id="sop_warung" placeholder="Cth: Warung Soto Pak Budi">
+                </div>
+                <div class="form-group">
+                    <label>Produk / Menu Utama</label>
+                    <input type="text" id="sop_produk" placeholder="Cth: Soto Ayam, Sate, Bakso">
+                </div>
+                <div class="form-group">
+                    <label>Peran Karyawan</label>
+                    <select id="sop_peran">
+                        <option value="Tukang Masak / Juru Masak">👨‍🍳 Tukang Masak / Juru Masak</option>
+                        <option value="Kasir / Penerima Pembayaran">🧾 Kasir / Penerima Pembayaran</option>
+                        <option value="Pelayan Lapak / Waitress">🛎️ Pelayan Lapak</option>
+                        <option value="Penjaga Gerobak / Pedagang">🛒 Penjaga Gerobak</option>
+                        <option value="Semua Karyawan (Umum)">👥 Semua Karyawan (SOP Umum)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Jam Buka</label>
+                        <input type="time" id="sop_jam_buka" value="06:00">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Jam Tutup</label>
+                        <input type="time" id="sop_jam_tutup" value="21:00">
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn_generate_sop" class="btn btn-primary" onclick="generateSOP()" style="margin-bottom:14px;">
+                📋 Generate SOP (AI)
+            </button>
+
+            <!-- SOP Output -->
+            <div id="sop_output_wrap" style="display:none;">
+                <div class="card no-print" style="padding:12px 14px;margin-bottom:10px;">
+                    <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;">⬇️ AKSI SOP</div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-dark btn-sm" onclick="printSOP()">🖨️ Cetak / Print</button>
+                        <button class="btn btn-outline btn-sm" onclick="copySOP(this)">📋 Copy Teks</button>
+                        <button class="btn btn-primary btn-sm" onclick="downloadSOP()">💾 Simpan .txt</button>
+                    </div>
+                </div>
+                <div id="sop_result" class="sop-output"></div>
+            </div>
+        </div>
+
+        <!-- ========== TAB 2: KALKULATOR CABANG ========== -->
+        <div id="tab2" class="tab-content">
+            <div class="section-title"><span>🏢</span> Kalkulator Buka Cabang</div>
+            <div class="section-desc">Simulasikan kelayakan dan estimasi BEP sebelum memutuskan buka cabang baru.</div>
+
+            <!-- Form Input -->
+            <div class="card">
+                <div class="card-title">💰 Modal Awal Cabang</div>
+                <div class="form-group">
+                    <label>Sewa Tempat / Beli Gerobak Baru (per bulan)</label>
+                    <div class="rp-wrap">
+                        <span class="rp-prefix">Rp</span>
+                        <input type="text" inputmode="numeric" id="cab_sewa" class="rp-input" placeholder="0" oninput="cabFormat(this);hitungCabang()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Gaji Karyawan Cabang Baru (total/bulan)</label>
+                    <div class="rp-wrap">
+                        <span class="rp-prefix">Rp</span>
+                        <input type="text" inputmode="numeric" id="cab_gaji" class="rp-input" placeholder="0" oninput="cabFormat(this);hitungCabang()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Biaya Renovasi / Peralatan Awal</label>
+                    <div class="rp-wrap">
+                        <span class="rp-prefix">Rp</span>
+                        <input type="text" inputmode="numeric" id="cab_renovasi" class="rp-input" placeholder="0" oninput="cabFormat(this);hitungCabang()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Modal Bahan Baku Awal (stok pertama)</label>
+                    <div class="rp-wrap">
+                        <span class="rp-prefix">Rp</span>
+                        <input type="text" inputmode="numeric" id="cab_bahan" class="rp-input" placeholder="0" oninput="cabFormat(this);hitungCabang()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Proyeksi Penjualan Cabang</div>
+                <div class="form-group">
+                    <label>Target Porsi Terjual per Hari</label>
+                    <input type="text" inputmode="numeric" id="cab_porsi" placeholder="Cth: 50" oninput="cabFormat(this);hitungCabang()">
+                </div>
+                <div class="form-group">
+                    <label>Harga Jual per Porsi</label>
+                    <div class="rp-wrap">
+                        <span class="rp-prefix">Rp</span>
+                        <input type="text" inputmode="numeric" id="cab_harga" class="rp-input" placeholder="0" oninput="cabFormat(this);hitungCabang()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>HPP / Modal per Porsi</label>
+                    <div class="rp-wrap">
+                        <span class="rp-prefix">Rp</span>
+                        <input type="text" inputmode="numeric" id="cab_hpp" class="rp-input" placeholder="0" oninput="cabFormat(this);hitungCabang()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hasil Kalkulator -->
+            <div id="cab_result_wrap" style="display:none;">
+                <div class="card-title" style="margin-bottom:8px;padding:0 4px;">📊 Hasil Simulasi</div>
+                <div class="calc-row">
+                    <div class="calc-item">
+                        <div class="calc-item-label">Total Modal Awal</div>
+                        <div class="calc-item-value" id="cab_total_modal">Rp 0</div>
+                    </div>
+                    <div class="calc-item">
+                        <div class="calc-item-label">Untung Bersih/Bulan</div>
+                        <div class="calc-item-value" id="cab_untung_bulan">Rp 0</div>
+                    </div>
+                    <div class="calc-item">
+                        <div class="calc-item-label">Omzet per Hari</div>
+                        <div class="calc-item-value" id="cab_omzet_hari">Rp 0</div>
+                    </div>
+                    <div class="calc-item">
+                        <div class="calc-item-label">Margin Keuntungan</div>
+                        <div class="calc-item-value" id="cab_margin">0%</div>
+                    </div>
+                </div>
+                <div id="cab_bep_card" class="result-card layak" style="margin-bottom:10px;">
+                    <div class="result-label">Break Even Point (BEP)</div>
+                    <div class="result-value" id="cab_bep_value">-</div>
+                    <div class="result-sub" id="cab_bep_sub">Modal kembali dalam estimasi</div>
+                </div>
+                <div id="cab_status_card" class="result-status" style="background:#f0fdf4;color:#065f46;border:1.5px solid #a7f3d0;" id="cab_status">-</div>
+            </div>
+        </div>
+
+        <!-- ========== TAB 3: DAILY AUDIT & LOG ========== -->
+        <div id="tab3" class="tab-content">
+            <div class="section-title"><span>👥</span> Daily Audit & Log Karyawan</div>
+            <div class="section-desc">Isi checklist harian, laporan stok, dan absensi karyawan setiap hari via HP.</div>
+
+            <!-- Sub-Tab Buttons -->
+            <div class="audit-tab-btns">
+                <div class="audit-tab-btn active" onclick="switchAudit('kebersihan', this)">🧹 Kebersihan</div>
+                <div class="audit-tab-btn" onclick="switchAudit('stok', this)">📦 Stok</div>
+                <div class="audit-tab-btn" onclick="switchAudit('absensi', this)">👤 Absensi</div>
+            </div>
+
+            <!-- SUB-TAB: KEBERSIHAN -->
+            <div id="audit_kebersihan" class="audit-section active">
+                <div class="card" style="padding:12px 14px;margin-bottom:10px;">
+                    <div id="kebersihan_progress" class="checklist-progress">
+                        <span style="font-size:12px;font-weight:700;color:var(--muted);">Checklist Kebersihan Dapur</span>
+                        <span id="kebersihan_count" style="font-size:13px;font-weight:800;color:var(--primary);">0/10</span>
+                    </div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="kebersihan_bar" style="width:0%"></div></div>
+                    <div id="checklist_kebersihan">
+                        <!-- Inject via JS -->
+                    </div>
+                    <button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="resetKebersihan()">🔄 Reset Checklist Hari Ini</button>
+                </div>
+            </div>
+
+            <!-- SUB-TAB: STOK -->
+            <div id="audit_stok" class="audit-section">
+                <div class="card">
+                    <div class="card-title">📦 Laporan Stok Masuk / Keluar Harian</div>
+                    <div id="stok_list">
+                        <!-- Inject via JS -->
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addStokItem()">+ Tambah Bahan</button>
+                    <button class="btn btn-dark btn-sm" style="margin-top:6px;" onclick="exportStokWA()">📲 Kirim Laporan via WA</button>
+                </div>
+            </div>
+
+            <!-- SUB-TAB: ABSENSI -->
+            <div id="audit_absensi" class="audit-section">
+                <div class="card">
+                    <div class="card-title">👤 Absensi & Bonus Karyawan</div>
+                    <div id="absensi_list">
+                        <!-- Inject via JS -->
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                        <button class="btn btn-primary btn-sm" onclick="addKaryawan()">+ Tambah Karyawan</button>
+                        <button class="btn btn-dark btn-sm" onclick="saveAbsensi()">💾 Simpan</button>
+                    </div>
+                </div>
+                <div id="absensi_summary" class="card" style="margin-top:0;"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('tab1', this)">
+            <div class="nav-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            </div>
+            <span>SOP AI</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab2', this)">
+            <div class="nav-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </div>
+            <span>Kalk. Cabang</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab3', this)">
+            <div class="nav-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <span>Audit Harian</span>
+        </div>
+    </nav>
+
+</div>
+
+<script>
+// ======= TAB SWITCHING =======
+function switchTab(id, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+}
+
+function switchAudit(id, el) {
+    document.querySelectorAll('.audit-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.audit-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('audit_' + id).classList.add('active');
+    el.classList.add('active');
+}
+
+// ======= FORMAT HELPER =======
+function formatRp(n) { return new Intl.NumberFormat('id-ID').format(Math.round(n)); }
+function cabFormat(el) {
+    const pos = el.selectionStart, oldLen = el.value.length;
+    const raw = el.value.replace(/\D/g, '');
+    if (!raw) { el.value = ''; return; }
+    el.value = new Intl.NumberFormat('id-ID').format(parseInt(raw));
+    const diff = el.value.length - oldLen;
+    try { el.setSelectionRange(pos + diff, pos + diff); } catch(e) {}
+}
+function cabGetVal(id) { return parseInt(document.getElementById(id).value.replace(/\D/g,'')) || 0; }
+
+// ======= GENERATOR SOP AI =======
+async function generateSOP() {
+    const namaWarung = document.getElementById('sop_warung').value.trim();
+    const produkUtama = document.getElementById('sop_produk').value.trim();
+    const peran = document.getElementById('sop_peran').value;
+    const jamBuka = document.getElementById('sop_jam_buka').value;
+    const jamTutup = document.getElementById('sop_jam_tutup').value;
+
+    if (!namaWarung || !produkUtama) { alert('Isi Nama Warung dan Produk Utamanya dulu ya!'); return; }
+
+    const btn = document.getElementById('btn_generate_sop');
+    btn.classList.add('btn-loading');
+    btn.innerHTML = '<span class="spinner"></span> AI sedang membuat SOP...';
+    document.getElementById('sop_output_wrap').style.display = 'none';
+
+    try {
+        const resp = await fetch('https://baim-warunkarsi.vercel.app/api/generate-sop', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ namaWarung, produkUtama, peran, jamBuka, jamTutup })
+        });
+        const data = await resp.json();
+        document.getElementById('sop_result').textContent = data.text || data.error || 'Gagal mendapatkan SOP dari AI.';
+        document.getElementById('sop_output_wrap').style.display = 'block';
+    } catch (err) {
+        alert('Gagal menghubungi server. Cek koneksi internet.');
+    }
+
+    btn.classList.remove('btn-loading');
+    btn.innerHTML = '📋 Generate Ulang SOP (AI)';
+}
+
+function printSOP() { window.print(); }
+
+function copySOP(btn) {
+    const text = document.getElementById('sop_result').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✅ Tersalin!';
+        setTimeout(() => btn.textContent = '📋 Copy Teks', 2000);
+    });
+}
+
+function downloadSOP() {
+    const text = document.getElementById('sop_result').textContent;
+    const namaWarung = document.getElementById('sop_warung').value || 'warung';
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `SOP_${namaWarung.replace(/\s+/g,'_')}.txt`;
+    a.click();
+}
+
+// ======= KALKULATOR CABANG =======
+function hitungCabang() {
+    const sewa = cabGetVal('cab_sewa');
+    const gaji = cabGetVal('cab_gaji');
+    const renovasi = cabGetVal('cab_renovasi');
+    const bahan = cabGetVal('cab_bahan');
+    const porsi = cabGetVal('cab_porsi');
+    const harga = cabGetVal('cab_harga');
+    const hpp = cabGetVal('cab_hpp');
+
+    if (!porsi || !harga) return;
+
+    const totalModal = sewa + gaji + renovasi + bahan;
+    const omzetHari = porsi * harga;
+    const untungHari = porsi * (harga - hpp);
+    const biayaOperasional = sewa + gaji;
+    const untungBersihBulan = (untungHari * 26) - biayaOperasional; // 26 hari kerja
+    const margin = harga > 0 ? Math.round(((harga - hpp) / harga) * 100) : 0;
+
+    let bepBulan = 0;
+    if (untungBersihBulan > 0) {
+        bepBulan = totalModal / untungBersihBulan;
+    }
+
+    document.getElementById('cab_total_modal').textContent = 'Rp ' + formatRp(totalModal);
+    document.getElementById('cab_untung_bulan').textContent = 'Rp ' + formatRp(Math.max(0, untungBersihBulan));
+    document.getElementById('cab_omzet_hari').textContent = 'Rp ' + formatRp(omzetHari);
+    document.getElementById('cab_margin').textContent = margin + '%';
+
+    const bepCard = document.getElementById('cab_bep_card');
+    const bepVal = document.getElementById('cab_bep_value');
+    const bepSub = document.getElementById('cab_bep_sub');
+    const statusCard = document.getElementById('cab_status_card');
+
+    if (untungBersihBulan <= 0) {
+        bepVal.textContent = '∞ (Tidak Balik Modal)';
+        bepSub.textContent = 'Proyeksi penjualan tidak cukup menutup biaya operasional';
+        bepCard.className = 'result-card risiko';
+        statusCard.textContent = '🔴 Risiko Sangat Tinggi — Evaluasi Modal & Proyeksi';
+        statusCard.style = 'background:#fef2f2;color:#991b1b;border:1.5px solid #fecaca;padding:14px;border-radius:12px;text-align:center;font-weight:800;font-size:14px;margin-top:8px;';
+    } else if (bepBulan <= 6) {
+        bepVal.textContent = bepBulan.toFixed(1) + ' Bulan';
+        bepSub.textContent = 'Modal perkiraan kembali dalam waktu singkat ✅';
+        bepCard.className = 'result-card layak';
+        statusCard.textContent = '🟢 SANGAT LAYAK BUKA CABANG!';
+        statusCard.style = 'background:#f0fdf4;color:#065f46;border:1.5px solid #a7f3d0;padding:14px;border-radius:12px;text-align:center;font-weight:800;font-size:14px;margin-top:8px;';
+    } else if (bepBulan <= 18) {
+        bepVal.textContent = bepBulan.toFixed(1) + ' Bulan';
+        bepSub.textContent = 'Layak tapi perlu perencanaan yang matang ⚠️';
+        bepCard.className = 'result-card warning';
+        statusCard.textContent = '🟡 Cukup Layak — Persiapkan Dana Cadangan';
+        statusCard.style = 'background:#fffbeb;color:#92400e;border:1.5px solid #fde68a;padding:14px;border-radius:12px;text-align:center;font-weight:800;font-size:14px;margin-top:8px;';
+    } else {
+        bepVal.textContent = bepBulan.toFixed(1) + ' Bulan';
+        bepSub.textContent = 'Terlalu lama. Pertimbangkan kurangi modal awal';
+        bepCard.className = 'result-card risiko';
+        statusCard.textContent = '🔴 Risiko Tinggi — Perlu Evaluasi Modal';
+        statusCard.style = 'background:#fef2f2;color:#991b1b;border:1.5px solid #fecaca;padding:14px;border-radius:12px;text-align:center;font-weight:800;font-size:14px;margin-top:8px;';
+    }
+
+    document.getElementById('cab_result_wrap').style.display = 'block';
+}
+
+// ======= DAILY AUDIT: KEBERSIHAN =======
+const kebersihanItems = [
+    'Cuci semua peralatan masak (panci, wajan, spatula)',
+    'Bersihkan kompor dan area memasak dari minyak/sisa bumbu',
+    'Lap meja persiapan bahan baku',
+    'Buang sampah dan ganti kantong plastik',
+    'Cuci talenan dan pisau setelah pemakaian',
+    'Bersihkan wastafel dan area cuci piring',
+    'Lap meja dan kursi area makan pelanggan',
+    'Sapu dan pel lantai area dapur & lapak',
+    'Cek dan ganti minyak goreng jika sudah gelap',
+    'Pastikan semua bahan baku tertutup rapat di tempat penyimpanan',
+];
+
+let kebersihanChecked = JSON.parse(localStorage.getItem('ubos_kebersihan_' + getTodayKey()) || '[]');
+
+function getTodayKey() { return new Date().toLocaleDateString('id-ID'); }
+
+function renderKebersihan() {
+    const container = document.getElementById('checklist_kebersihan');
+    container.innerHTML = kebersihanItems.map((item, i) => {
+        const done = kebersihanChecked.includes(i);
+        return `
+            <div class="checklist-item ${done ? 'checked' : ''}" onclick="toggleKebersihan(${i})">
+                <div class="check-box">${done ? '✓' : ''}</div>
+                <div class="check-text">${item}</div>
+            </div>
+        `;
+    }).join('');
+    updateKebersihanProgress();
+}
+
+function toggleKebersihan(idx) {
+    const pos = kebersihanChecked.indexOf(idx);
+    if (pos === -1) kebersihanChecked.push(idx);
+    else kebersihanChecked.splice(pos, 1);
+    localStorage.setItem('ubos_kebersihan_' + getTodayKey(), JSON.stringify(kebersihanChecked));
+    renderKebersihan();
+}
+
+function updateKebersihanProgress() {
+    const done = kebersihanChecked.length;
+    const total = kebersihanItems.length;
+    document.getElementById('kebersihan_count').textContent = done + '/' + total;
+    document.getElementById('kebersihan_bar').style.width = ((done / total) * 100) + '%';
+}
+
+function resetKebersihan() {
+    if (confirm('Reset semua checklist kebersihan hari ini?')) {
+        kebersihanChecked = [];
+        localStorage.removeItem('ubos_kebersihan_' + getTodayKey());
+        renderKebersihan();
+    }
+}
+
+// ======= DAILY AUDIT: STOK =======
+let stokData = JSON.parse(localStorage.getItem('ubos_stok_' + getTodayKey()) || JSON.stringify([
+    { nama: 'Beras', masuk: 0, keluar: 0, satuan: 'kg' },
+    { nama: 'Minyak Goreng', masuk: 0, keluar: 0, satuan: 'liter' },
+    { nama: 'Cabai', masuk: 0, keluar: 0, satuan: 'kg' },
+    { nama: 'Bawang Merah', masuk: 0, keluar: 0, satuan: 'kg' },
+]));
+
+function renderStok() {
+    const container = document.getElementById('stok_list');
+    container.innerHTML = `
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px;padding:0 4px;">
+            <span style="font-size:11px;font-weight:700;color:var(--muted);">NAMA BAHAN</span>
+            <span style="font-size:11px;font-weight:700;color:var(--primary);">MASUK</span>
+            <span style="font-size:11px;font-weight:700;color:#dc2626;">KELUAR</span>
+        </div>
+    ` + stokData.map((item, i) => `
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px;align-items:center;">
+            <div>
+                <div style="font-size:13px;font-weight:700;color:var(--text);">${item.nama}</div>
+                <div style="font-size:10px;color:var(--muted);">${item.satuan}</div>
+            </div>
+            <input type="number" value="${item.masuk}" min="0" placeholder="0"
+                style="padding:8px;border:1.5px solid #a7f3d0;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;background:#f0fdf4;color:#065f46;"
+                oninput="updateStok(${i},'masuk',this.value)">
+            <input type="number" value="${item.keluar}" min="0" placeholder="0"
+                style="padding:8px;border:1.5px solid #fecaca;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;text-align:center;background:#fef2f2;color:#991b1b;"
+                oninput="updateStok(${i},'keluar',this.value)">
+        </div>
+    `).join('');
+}
+
+function updateStok(idx, field, val) {
+    stokData[idx][field] = parseInt(val) || 0;
+    localStorage.setItem('ubos_stok_' + getTodayKey(), JSON.stringify(stokData));
+}
+
+function addStokItem() {
+    const nama = prompt('Nama bahan baru:');
+    if (!nama) return;
+    const satuan = prompt('Satuan (kg/liter/pcs/bungkus):') || 'pcs';
+    stokData.push({ nama, masuk: 0, keluar: 0, satuan });
+    localStorage.setItem('ubos_stok_' + getTodayKey(), JSON.stringify(stokData));
+    renderStok();
+}
+
+function exportStokWA() {
+    const tanggal = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    let msg = `📦 *LAPORAN STOK HARIAN*\n${tanggal}\n\n`;
+    stokData.forEach(item => {
+        msg += `• ${item.nama}: Masuk ${item.masuk} ${item.satuan}, Keluar ${item.keluar} ${item.satuan}\n`;
+    });
+    msg += `\nDikirim via MAJU Tools Center 🚀`;
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ======= DAILY AUDIT: ABSENSI =======
+let karyawanList = JSON.parse(localStorage.getItem('ubos_karyawan') || JSON.stringify([
+    { nama: 'Karyawan 1', status: '', bonus: 0 },
+    { nama: 'Karyawan 2', status: '', bonus: 0 },
+]));
+
+function renderAbsensi() {
+    const container = document.getElementById('absensi_list');
+    const tanggal = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' });
+    container.innerHTML = `<div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:10px;">📅 ${tanggal}</div>` +
+    karyawanList.map((k, i) => `
+        <div class="absen-row">
+            <div>
+                <div class="absen-name">${k.nama}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                    <span style="font-size:10px;color:var(--muted);font-weight:600;">Bonus:</span>
+                    <input type="number" class="bonus-input" value="${k.bonus}" min="0" placeholder="0"
+                        oninput="karyawanList[${i}].bonus=parseInt(this.value)||0"
+                        style="width:80px;padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;font-weight:600;">
+                </div>
+            </div>
+            <div class="absen-status">
+                <div class="status-btn hadir ${k.status==='hadir'?'active':''}" onclick="setAbsen(${i},'hadir')">Hadir</div>
+                <div class="status-btn absen ${k.status==='absen'?'active':''}" onclick="setAbsen(${i},'absen')">Absen</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function setAbsen(idx, status) {
+    karyawanList[idx].status = status;
+    renderAbsensi();
+}
+
+function saveAbsensi() {
+    localStorage.setItem('ubos_karyawan', JSON.stringify(karyawanList));
+    const hadir = karyawanList.filter(k => k.status === 'hadir').length;
+    const absen = karyawanList.filter(k => k.status === 'absen').length;
+    const totalBonus = karyawanList.reduce((s, k) => s + (k.bonus || 0), 0);
+    document.getElementById('absensi_summary').innerHTML = `
+        <div class="card-title">📊 Ringkasan Hari Ini</div>
+        <div class="calc-row">
+            <div class="calc-item"><div class="calc-item-label">Hadir</div><div class="calc-item-value" style="color:var(--primary);">${hadir} orang</div></div>
+            <div class="calc-item"><div class="calc-item-label">Absen</div><div class="calc-item-value" style="color:#dc2626;">${absen} orang</div></div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:4px;">Total Bonus Hari Ini: <span style="color:var(--primary);">Rp ${formatRp(totalBonus)}</span></div>
+        <div style="font-size:11px;color:var(--primary);margin-top:6px;font-weight:600;">✅ Data tersimpan!</div>
+    `;
+}
+
+function addKaryawan() {
+    const nama = prompt('Nama karyawan baru:');
+    if (!nama) return;
+    karyawanList.push({ nama, status: '', bonus: 0 });
+    localStorage.setItem('ubos_karyawan', JSON.stringify(karyawanList));
+    renderAbsensi();
+}
+
+// ======= INIT =======
+renderKebersihan();
+renderStok();
+renderAbsensi();
+</script>
+</body>
+</html>

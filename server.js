@@ -682,6 +682,78 @@ ATURAN PENULISAN:
     }
 });
 
+
+// UBOS AI SOP Generator Endpoint
+app.post('/api/generate-sop', async (req, res) => {
+    const { namaWarung, produkUtama, peran, jamBuka, jamTutup } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
+    }
+
+    const prompt = `Kamu adalah "Konsultan Operasional Warung" berpengalaman membantu UMKM dan pedagang gerobakan di Indonesia.
+
+Buatkan SOP (Standar Operasional Prosedur) HARIAN yang LENGKAP dan MUDAH DIPAHAMI untuk:
+- Nama Warung: ${namaWarung}
+- Produk/Menu Utama: ${produkUtama}
+- Peran Karyawan: ${peran}
+- Jam Operasional: ${jamBuka} - ${jamTutup}
+
+FORMAT WAJIB (tulis persis seperti ini):
+
+📋 SOP ${namaWarung} - ${peran}
+Jam Operasional: ${jamBuka} - ${jamTutup}
+================================
+
+✅ SEBELUM BUKA (mulai ${jamBuka}):
+☐ [tugas spesifik 1]
+☐ [tugas spesifik 2]
+☐ [tugas spesifik 3]
+☐ [tugas spesifik 4]
+☐ [tugas spesifik 5]
+☐ [tugas spesifik 6]
+
+⚙️ SAAT OPERASIONAL:
+☐ [tugas spesifik 1]
+☐ [tugas spesifik 2]
+☐ [tugas spesifik 3]
+☐ [tugas spesifik 4]
+☐ [tugas spesifik 5]
+☐ [tugas spesifik 6]
+
+🔒 SAAT TUTUP (jam ${jamTutup}):
+☐ [tugas spesifik 1]
+☐ [tugas spesifik 2]
+☐ [tugas spesifik 3]
+☐ [tugas spesifik 4]
+☐ [tugas spesifik 5]
+
+🧼 STANDAR KEBERSIHAN & PELAYANAN:
+• [standar 1]
+• [standar 2]
+• [standar 3]
+• [standar 4]
+
+Isi setiap tugas dengan hal yang SPESIFIK sesuai usaha ${produkUtama} dan peran ${peran}. Gunakan bahasa Indonesia sederhana. JANGAN gunakan simbol bintang atau markdown.`;
+
+    try {
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+            {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.5, maxOutputTokens: 3000 }
+            },
+            { headers: { 'Content-Type': 'application/json' }, validateStatus: (s) => s < 500 }
+        );
+        if (response.status !== 200) throw new Error(`API Error: ${JSON.stringify(response.data)}`);
+        return res.status(200).json({ text: response.data.candidates[0].content.parts[0].text });
+    } catch (error) {
+        console.error("AI SOP Error:", error);
+        return res.status(500).json({ error: 'Gagal memuat AI. ' + error.message });
+    }
+});
+
 // Start Server (if not in serverless environment)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
