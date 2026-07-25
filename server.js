@@ -499,7 +499,8 @@ Aturan:
 - Gunakan emoji secukupnya.
 - Jangan gunakan formatting markdown bold/italic bintang (*) yang berlebihan jika tidak perlu.
 - Di akhir kalimat, WAJIB sertakan penutup persis seperti ini: "Terimakasih udah mampir dan dukung terus ${toko} yaa 🙏"
-- Langsung berikan hasil teksnya saja tanpa basa-basi pembuka.`;
+- Langsung berikan hasil teksnya saja tanpa basa-basi pembuka.
+- Pastikan kalimat selesai dengan utuh dan tidak terpotong di tengah jalan.`;
 
     try {
         const response = await axios.post(
@@ -508,7 +509,7 @@ Aturan:
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                     temperature: 0.7,
-                    maxOutputTokens: 500
+                    maxOutputTokens: 1000
                 }
             },
             {
