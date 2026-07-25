@@ -239,16 +239,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     let icon = '&#128193;';
                     if (file.file_type === 'pdf') icon = '&#128196;';
                     else if (file.file_type === 'xlsx' || file.file_type === 'xls') icon = '&#128202;';
+                    else if (file.file_type === 'url') icon = '&#128279;';
+                    
+                    const btnText = file.file_type === 'url' ? 'Lihat' : 'Unduh';
+                    const targetAttr = file.file_type === 'url' ? '' : 'target="_blank"';
+                    
                     html += `
                         <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:0.5rem;background:#fff;">
                             <div style="display:flex;align-items:center;gap:1rem;">
                                 <div style="font-size:1.5rem;">${icon}</div>
                                 <div>
                                     <h4 style="margin:0;font-size:1rem;color:var(--text-dark);">${file.file_name}</h4>
-                                    <p style="margin:0;font-size:0.85rem;color:var(--text-muted);">${(file.file_type || 'file').toUpperCase()}</p>
+                                    <p style="margin:0;font-size:0.85rem;color:var(--text-muted);">${(file.file_type === 'url' ? 'Link' : file.file_type || 'file').toUpperCase()}</p>
                                 </div>
                             </div>
-                            <a href="${file.file_url}" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;">Unduh</a>
+                            <a href="${file.file_url}" ${targetAttr} class="btn btn-outline" style="padding:0.5rem 1rem;">${btnText}</a>
                         </div>`;
                 });
                 attachmentContainer.innerHTML = html;
@@ -468,6 +473,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     let icon = '&#128193;';
                     if (att.file_type === 'pdf') icon = '&#128196;';
                     else if (att.file_type === 'xlsx' || att.file_type === 'xls') icon = '&#128202;';
+                    else if (att.file_type === 'url') icon = '&#128279;';
+                    
+                    const btnText = att.file_type === 'url' ? 'Lihat' : 'Unduh';
+                    const targetAttr = att.file_type === 'url' ? '' : 'target="_blank"';
+                    
                     html += `
                         <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:0.5rem;background:#f8fafc;">
                             <div style="display:flex;align-items:center;gap:1rem;">
@@ -477,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <p style="margin:0;font-size:0.8rem;color:var(--text-muted);">${modTitle} &rsaquo; ${lesTitle}</p>
                                 </div>
                             </div>
-                            <a href="${att.file_url}" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;white-space:nowrap;">Unduh</a>
+                            <a href="${att.file_url}" ${targetAttr} class="btn btn-outline" style="padding:0.5rem 1rem;white-space:nowrap;">${btnText}</a>
                         </div>`;
                 });
                 attContainer.innerHTML = html;
