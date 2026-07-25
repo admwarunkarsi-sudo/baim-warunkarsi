@@ -542,6 +542,73 @@ Tugas Anda adalah membuat pesan promosi WhatsApp yang sangat menarik, natural, d
     }
 });
 
+// UBOS AI Market Research Endpoint
+app.post('/api/generate-research', async (req, res) => {
+    const { jenisUsaha, namaUsaha, lokasi } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
+    }
+
+    const prompt = `Anda adalah "Konsultan Bisnis F&B Profesional" spesialis riset pasar lokal.
+Tugas Anda adalah memberikan hasil riset pasar dan strategi bisnis yang tajam, praktis, dan dapat langsung dieksekusi berdasarkan data berikut:
+
+[DATA USAHA]
+- Jenis Usaha: ${jenisUsaha}
+- Nama/Ide Produk: ${namaUsaha}
+- Lokasi Target: ${lokasi}
+
+[ATURAN KETAT HASIL RISET]
+Berikan hasil riset dengan struktur berikut (Gunakan poin-poin yang mudah dibaca):
+
+1. 🔍 ANALISA PESAING LOKAL
+Berikan 3 kelemahan umum yang sering dilakukan oleh pesaing bisnis sejenis di area target, dan bagaimana bisnis ini bisa menutup celah tersebut.
+
+2. 💡 IDE INOVASI PRODUK (LOW BUDGET)
+Berikan 3 ide inovasi unik agar produk ini tampil beda dan viral di area target tanpa harus mengeluarkan modal besar atau alat mahal.
+
+3. 💰 STRATEGI HARGA & MARGIN
+Berikan rekomendasi rentang harga jual (dalam Rupiah) yang ideal dan masuk akal untuk demografi area target tersebut.
+
+[FORMAT & GAYA BAHASA]
+- Gunakan bahasa Indonesia sehari-hari yang profesional, praktis, dan to the point (jangan terlalu kaku).
+- Gunakan emoji secukupnya sebagai pemanis.
+- Gunakan *bold* pada kata kunci penting.
+- Jangan menuliskan basa-basi pembuka atau penutup. Langsung berikan hasil risetnya.`;
+
+    try {
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+            {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 2500
+                }
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                validateStatus: function (status) {
+                    return status < 500;
+                }
+            }
+        );
+
+        if (response.status !== 200) {
+            const errData = response.data;
+            throw new Error(`Google API Error: ${JSON.stringify(errData)}`);
+        }
+
+        const aiText = response.data.candidates[0].content.parts[0].text;
+        
+        return res.status(200).json({ text: aiText });
+    } catch (error) {
+        console.error("AI Research Generation Error:", error);
+        return res.status(500).json({ error: 'Gagal meriset pasar. ' + error.message });
+    }
+});
+
 // Start Server (if not in serverless environment)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
