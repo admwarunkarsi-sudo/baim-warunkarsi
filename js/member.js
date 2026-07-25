@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     completed_at: new Date().toISOString()
                 }, { onConflict: 'user_id,lesson_id' });
 
-                btn.textContent = '&#10003; Selesai!';
+                btn.innerHTML = '&#10003; Selesai!';
                 btn.style.background = '#10b981';
                 setTimeout(() => {
                     btn.innerHTML = 'Tandai Selesai &amp; Lanjut &#8594;';
@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) throw error;
 
-            statusEl.textContent = '&#10003; Perubahan berhasil disimpan!';
+            statusEl.innerHTML = '&#10003; Perubahan berhasil disimpan!';
             statusEl.style.color = '#10b981';
 
             // Update sidebar name and profile card display name
@@ -636,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mobileAvatar = document.getElementById('mobile-profile-avatar-img');
             if (mobileAvatar) mobileAvatar.src = result.secure_url;
 
-            statusEl.textContent = '&#10003; Foto profil berhasil diperbarui!';
+            statusEl.innerHTML = '&#10003; Foto profil berhasil diperbarui!';
             statusEl.style.color = '#10b981';
             setTimeout(() => { statusEl.textContent = ''; }, 4000);
         } catch (err) {
@@ -722,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (error) throw error;
 
             input.value = '';
-            status.textContent = '&#10003; Pertanyaan berhasil dikirim! Admin akan segera membalasnya.';
+            status.innerHTML = '&#10003; Pertanyaan berhasil dikirim! Admin akan segera membalasnya.';
             status.style.color = '#10b981';
             setTimeout(() => { status.textContent = ''; }, 5000);
             loadDiscussions(activeLessonId);
