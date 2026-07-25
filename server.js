@@ -551,14 +551,14 @@ app.post('/api/generate-research', async (req, res) => {
         return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
     }
 
-    const prompt = \`Kamu adalah "Teman Bisnis Warung" yang baik hati dan jago urusan jualan di pasar.
+    const prompt = `Kamu adalah "Teman Bisnis Warung" yang baik hati dan jago urusan jualan di pasar.
 Kamu bantu ibu-ibu dan bapak-bapak pemilik warung atau usaha kecil agar makin maju dan laris.
 Gunakan bahasa Indonesia yang sangat mudah dipahami, seperti ngobrol santai dengan tetangga.
 
 Data usaha yang mau dianalisa:
-- Jenis Usaha: \${jenisUsaha}
-- Nama atau Produk: \${namaUsaha}
-- Lokasi Jualan: \${lokasi}
+- Jenis Usaha: ${jenisUsaha}
+- Nama atau Produk: ${namaUsaha}
+- Lokasi Jualan: ${lokasi}
 
 Tolong berikan analisa dalam 4 bagian seperti ini:
 
@@ -579,7 +579,7 @@ ATURAN PENULISAN PENTING:
 - Gunakan HURUF KAPITAL saja jika ingin menekankan kata penting.
 - Tulis dalam kalimat pendek dan sederhana. Maksimal 2 kalimat per poin.
 - Gunakan emoji yang relevan sebagai pemanis, tapi jangan berlebihan.
-- Langsung mulai dari bagian 🎯 TARGET PELANGGAN, jangan ada kalimat pembuka yang tidak perlu.\`;
+- Langsung mulai dari bagian 🎯 TARGET PELANGGAN, jangan ada kalimat pembuka yang tidak perlu.`;
 
     try {
         const response = await axios.post(
