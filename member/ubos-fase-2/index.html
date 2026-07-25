@@ -409,11 +409,15 @@
                 });
             }
             
-            document.getElementById('modal_laporan').classList.remove('hidden');
+            const modal = document.getElementById('modal_laporan');
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
         }
 
         function closeLaporan() {
-            document.getElementById('modal_laporan').classList.add('hidden');
+            const modal = document.getElementById('modal_laporan');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
         }
 
         function exportKasWA() {
