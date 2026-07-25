@@ -488,19 +488,27 @@ app.post('/api/generate-promo', async (req, res) => {
         return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
     }
 
-    const prompt = `Buatkan teks pesan broadcast WhatsApp promosi kuliner yang menarik.
-Nama Toko: ${toko}
-Produk: ${produk}
-Detail Promo: ${detail}
-Batas Waktu: ${waktu}
-Gaya Bahasa: ${gaya}
+    const prompt = `Anda adalah "Copywriter Kuliner Profesional" spesialis WhatsApp Broadcast.
+Tugas Anda adalah membuat pesan promosi WhatsApp yang sangat menarik, natural, dan persuasif berdasarkan data berikut:
 
-Aturan:
-- Gunakan emoji secukupnya.
-- Jangan gunakan formatting markdown bold/italic bintang (*) yang berlebihan jika tidak perlu.
-- Di akhir kalimat, WAJIB sertakan penutup persis seperti ini: "Terimakasih udah mampir dan dukung terus ${toko} yaa 🙏"
-- Langsung berikan hasil teksnya saja tanpa basa-basi pembuka.
-- Pastikan kalimat selesai dengan utuh dan tidak terpotong di tengah jalan.`;
+[DATA PROMOSI]
+- Nama Toko: ${toko}
+- Produk/Menu: ${produk}
+- Penawaran Promo: ${detail}
+- Batas Waktu: ${waktu}
+- Gaya Bahasa Target: ${gaya}
+
+[ATURAN KETAT]
+1. STRUKTUR PESAN WA: 
+   - Paragraf 1: Hook/Sapaan yang menarik perhatian (sesuai gaya bahasa).
+   - Paragraf 2: Inti Promo (sebutkan produk dan detail promo secara jelas).
+   - Paragraf 3: Urgency (batas waktu) & Call-to-Action (ajakan bertindak).
+2. PANJANG PESAN: Buat ringkas, padat, dan jelas. Maksimal 3-4 paragraf pendek agar nyaman dibaca di layar HP.
+3. EMOJI: Gunakan emoji yang relevan tapi JANGAN berlebihan (maksimal 1-2 emoji per paragraf).
+4. FORMAT: Gunakan *bold* hanya untuk kata kunci penting (nama toko, harga, atau diskon).
+5. KESIMPULAN: Jangan pernah membiarkan kalimat menggantung/terpotong. Pesan harus tuntas.
+6. PENUTUP WAJIB: Akhiri pesan Anda dengan kalimat persis seperti ini (tanpa diubah sedikitpun): "Terimakasih udah mampir dan dukung terus ${toko} yaa 🙏"
+7. LARANGAN: Jangan menuliskan basa-basi pembuka seperti "Berikut adalah teks promosinya:". Langsung berikan hasil akhir pesannya saja.`;
 
     try {
         const response = await axios.post(
@@ -509,7 +517,7 @@ Aturan:
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                     temperature: 0.7,
-                    maxOutputTokens: 1000
+                    maxOutputTokens: 2000
                 }
             },
             {
