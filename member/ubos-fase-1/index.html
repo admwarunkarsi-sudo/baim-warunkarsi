@@ -439,13 +439,14 @@ Terimakasih udah mampir dan dukung terus ${toko} yaa 🙏`;
                 });
 
                 if (!response.ok) {
-                    throw new Error("Gagal menghubungi server AI.");
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || "Gagal menghubungi server Vercel.");
                 }
 
                 const data = await response.json();
                 document.getElementById('output_wa').innerText = data.text;
             } catch (error) {
-                document.getElementById('output_wa').innerText = "Gagal memuat AI. Pastikan Backend Server berjalan (port 3000). Error: " + error.message;
+                document.getElementById('output_wa').innerText = "Gagal memuat AI. Error: " + error.message;
                 showToast("⚠️ Gagal menghubungi backend.");
             } finally {
                 // Hide loading
