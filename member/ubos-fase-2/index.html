@@ -96,14 +96,14 @@
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Omzet Lapak / Toko Fisik</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
-                                <input type="number" id="kas_in_lapak" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 transition" oninput="hitungKas()">
+                                <input type="text" inputmode="numeric" id="kas_in_lapak" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 transition" oninput="kasFormat(this); hitungKas()">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Omzet Online (Gofood/ShopeeFood)</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
-                                <input type="number" id="kas_in_online" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 transition" oninput="hitungKas()">
+                                <input type="text" inputmode="numeric" id="kas_in_online" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-green-500 transition" oninput="kasFormat(this); hitungKas()">
                             </div>
                         </div>
                     </div>
@@ -117,21 +117,21 @@
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Belanja Bahan Baku (Restock)</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
-                                <input type="number" id="kas_out_bahan" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="hitungKas()">
+                                <input type="text" inputmode="numeric" id="kas_out_bahan" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="kasFormat(this); hitungKas()">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Operasional Harian (Es, Plastik, Kebersihan)</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
-                                <input type="number" id="kas_out_ops" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="hitungKas()">
+                                <input type="text" inputmode="numeric" id="kas_out_ops" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="kasFormat(this); hitungKas()">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Gaji Karyawan / Ambilan Owner</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-slate-400 font-semibold">Rp</span>
-                                <input type="number" id="kas_out_gaji" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="hitungKas()">
+                                <input type="text" inputmode="numeric" id="kas_out_gaji" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-red-500 transition" oninput="kasFormat(this); hitungKas()">
                             </div>
                         </div>
                     </div>
@@ -274,17 +274,44 @@
             return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(angka);
         }
 
+        // Format input dgn titik ribuan saat mengetik
+        function kasFormat(el) {
+            const cursorPos = el.selectionStart;
+            const oldLen = el.value.length;
+            // Hapus semua non-digit
+            let raw = el.value.replace(/\D/g, '');
+            if (raw === '') { el.value = ''; return; }
+            // Format dengan titik
+            const formatted = new Intl.NumberFormat('id-ID').format(parseInt(raw));
+            el.value = formatted;
+            // Pertahankan posisi kursor
+            const newLen = el.value.length;
+            el.setSelectionRange(cursorPos + (newLen - oldLen), cursorPos + (newLen - oldLen));
+        }
+
+        // Ambil nilai angka dari input berformat
+        function kasGetVal(id) {
+            const val = document.getElementById(id).value.replace(/\D/g, '');
+            return parseInt(val) || 0;
+        }
+
+        // Set nilai input dengan format titik
+        function kasSetVal(id, angka) {
+            if (!angka) { document.getElementById(id).value = ''; return; }
+            document.getElementById(id).value = new Intl.NumberFormat('id-ID').format(angka);
+        }
+
         // --- KAS HARIAN LOGIC ---
         let kasHistory = {};
 
         function hitungKas() {
-            const inLapak = parseInt(document.getElementById('kas_in_lapak').value) || 0;
-            const inOnline = parseInt(document.getElementById('kas_in_online').value) || 0;
+            const inLapak = kasGetVal('kas_in_lapak');
+            const inOnline = kasGetVal('kas_in_online');
             const totalIn = inLapak + inOnline;
 
-            const outBahan = parseInt(document.getElementById('kas_out_bahan').value) || 0;
-            const outOps = parseInt(document.getElementById('kas_out_ops').value) || 0;
-            const outGaji = parseInt(document.getElementById('kas_out_gaji').value) || 0;
+            const outBahan = kasGetVal('kas_out_bahan');
+            const outOps = kasGetVal('kas_out_ops');
+            const outGaji = kasGetVal('kas_out_gaji');
             const totalOut = outBahan + outOps + outGaji;
 
             const sisa = totalIn - totalOut;
@@ -330,11 +357,11 @@
             // Cek apakah ada data untuk hari ini
             if (kasHistory[todayKey]) {
                 const data = kasHistory[todayKey];
-                if(data.inLapak) document.getElementById('kas_in_lapak').value = data.inLapak;
-                if(data.inOnline) document.getElementById('kas_in_online').value = data.inOnline;
-                if(data.outBahan) document.getElementById('kas_out_bahan').value = data.outBahan;
-                if(data.outOps) document.getElementById('kas_out_ops').value = data.outOps;
-                if(data.outGaji) document.getElementById('kas_out_gaji').value = data.outGaji;
+                if(data.inLapak) kasSetVal('kas_in_lapak', data.inLapak);
+                if(data.inOnline) kasSetVal('kas_in_online', data.inOnline);
+                if(data.outBahan) kasSetVal('kas_out_bahan', data.outBahan);
+                if(data.outOps) kasSetVal('kas_out_ops', data.outOps);
+                if(data.outGaji) kasSetVal('kas_out_gaji', data.outGaji);
             } else {
                 // Hari baru, otomatis kosongkan field
                 document.getElementById('kas_in_lapak').value = '';
