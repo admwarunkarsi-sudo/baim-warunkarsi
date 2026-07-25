@@ -610,6 +610,75 @@ ATURAN PENULISAN PENTING:
     }
 });
 
+// UBOS AI MVP Advice Endpoint
+app.post('/api/generate-mvp-advice', async (req, res) => {
+    const { namaProduk, hargaJual, hppPorsi, targetPorsi, untungBulan, bep, margin } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
+    }
+
+    const prompt = `Kamu adalah "Penasihat Bisnis Warung" yang baik hati, jujur, dan jago hitung-hitungan usaha kecil.
+Kamu bantu pemilik warung dan pedagang gerobakan agar usahanya makin untung dan tidak merugi.
+Gunakan bahasa Indonesia yang santai, hangat, dan mudah dimengerti seperti ngobrol dengan teman lama.
+
+Ini adalah data kalkulasi usaha yang perlu kamu beri saran:
+- Nama Produk: ${namaProduk}
+- Harga Jual per Porsi: ${hargaJual}
+- HPP (Modal) per Porsi: ${hppPorsi}
+- Target Jualan per Hari: ${targetPorsi} porsi
+- Perkiraan Untung per Bulan: ${untungBulan}
+- Margin Keuntungan: ${margin}
+- Estimasi Balik Modal: ${bep}
+
+Tolong berikan saran dalam 3 poin singkat:
+
+✅ PENILAIAN SINGKAT
+Nilai kondisi bisnis ini secara jujur dalam 2 kalimat. Apakah angkanya sudah bagus atau perlu diperbaiki?
+
+💡 SARAN PALING PENTING
+Berikan 1 saran paling penting yang HARUS dilakukan dulu untuk meningkatkan keuntungan. Tulis langkah praktisnya yang bisa dilakukan hari ini atau besok.
+
+⚠️ YANG HARUS DIWASPADAI
+Berikan 1 peringatan atau risiko yang harus diperhatikan dari data ini. Tulis dengan kalimat yang tidak menakut-nakuti tapi tetap jujur.
+
+ATURAN PENULISAN:
+- DILARANG menggunakan simbol bintang (*) atau garis bawah (_) apapun.
+- Gunakan HURUF KAPITAL untuk menekankan kata penting.
+- Kalimat pendek, to the point, dan langsung bisa dipahami.
+- Langsung mulai dari bagian ✅ PENILAIAN SINGKAT tanpa basa-basi.`;
+
+    try {
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+            {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 1500
+                }
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                validateStatus: function (status) {
+                    return status < 500;
+                }
+            }
+        );
+
+        if (response.status !== 200) {
+            throw new Error(`Google API Error: ${JSON.stringify(response.data)}`);
+        }
+
+        const aiText = response.data.candidates[0].content.parts[0].text;
+        return res.status(200).json({ text: aiText });
+    } catch (error) {
+        console.error("AI MVP Advice Error:", error);
+        return res.status(500).json({ error: 'Gagal memuat saran AI. ' + error.message });
+    }
+});
+
 // Start Server (if not in serverless environment)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
