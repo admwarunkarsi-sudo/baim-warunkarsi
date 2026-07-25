@@ -551,31 +551,32 @@ app.post('/api/generate-research', async (req, res) => {
         return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
     }
 
-    const prompt = `Anda adalah "Konsultan Bisnis F&B Profesional" spesialis riset pasar lokal.
-Tugas Anda adalah memberikan hasil riset pasar dan strategi bisnis yang tajam, praktis, dan dapat langsung dieksekusi berdasarkan data berikut:
+    const prompt = `Kamu adalah "Teman Bisnis Warung" yang baik hati dan jago urusan jualan di pasar.
+Kamu bantu ibu-ibu dan bapak-bapak pemilik warung atau usaha kecil agar makin maju dan laris.
+Gunakan bahasa Indonesia yang sangat mudah dipahami, seperti ngobrol santai dengan tetangga.
 
-[DATA USAHA]
+Data usaha yang mau dianalisa:
 - Jenis Usaha: ${jenisUsaha}
-- Nama/Ide Produk: ${namaUsaha}
-- Lokasi Target: ${lokasi}
+- Nama atau Produk: ${namaUsaha}
+- Lokasi Jualan: ${lokasi}
 
-[ATURAN KETAT HASIL RISET]
-Berikan hasil riset dengan struktur berikut (Gunakan poin-poin yang mudah dibaca):
+Tolong berikan analisa dalam 3 bagian seperti ini:
 
-1. 🔍 ANALISA PESAING LOKAL
-Berikan 3 kelemahan umum yang sering dilakukan oleh pesaing bisnis sejenis di area target, dan bagaimana bisnis ini bisa menutup celah tersebut.
+🔍 ANALISA SAINGAN DI SEKITAR KAMU
+Ceritakan 3 kelemahan umum para saingan usaha sejenis di area tersebut. Tulis dengan kalimat pendek yang mudah dimengerti. Mulai tiap poin dengan nomor (1. 2. 3.) dan jelaskan juga cara memanfaatkan kelemahannya itu.
 
-2. 💡 IDE INOVASI PRODUK (LOW BUDGET)
-Berikan 3 ide inovasi unik agar produk ini tampil beda dan viral di area target tanpa harus mengeluarkan modal besar atau alat mahal.
+💡 IDE BIAR JUALAN KAMU BEDA DAN LARIS
+Berikan 3 ide kreatif yang bisa langsung dilakukan tanpa modal besar. Idenya harus praktis, tidak ribet, dan bisa dicoba besok pagi. Mulai tiap ide dengan nomor (1. 2. 3.).
 
-3. 💰 STRATEGI HARGA & MARGIN
-Berikan rekomendasi rentang harga jual (dalam Rupiah) yang ideal dan masuk akal untuk demografi area target tersebut.
+💰 HARGA YANG PAS DI KANTONG PEMBELI
+Berikan saran rentang harga jual yang cocok untuk pembeli di area lokasi tersebut. Tulis alasannya secara singkat dan jelas.
 
-[FORMAT & GAYA BAHASA]
-- Gunakan bahasa Indonesia sehari-hari yang profesional, praktis, dan to the point (jangan terlalu kaku).
-- Gunakan emoji secukupnya sebagai pemanis.
-- Gunakan *bold* pada kata kunci penting.
-- Jangan menuliskan basa-basi pembuka atau penutup. Langsung berikan hasil risetnya.`;
+ATURAN PENULISAN PENTING:
+- DILARANG KERAS menggunakan simbol bintang (*) atau garis bawah (_) apapun dalam jawaban.
+- Gunakan HURUF KAPITAL saja jika ingin menekankan kata penting.
+- Tulis dalam kalimat pendek dan sederhana. Maksimal 2 kalimat per poin.
+- Gunakan emoji yang relevan sebagai pemanis, tapi jangan berlebihan.
+- Langsung mulai dari bagian 🔍 ANALISA SAINGAN, jangan ada kalimat pembuka yang tidak perlu.`;
 
     try {
         const response = await axios.post(

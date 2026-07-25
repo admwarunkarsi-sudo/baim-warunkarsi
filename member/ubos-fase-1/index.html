@@ -398,7 +398,13 @@
                 }
 
                 const data = await response.json();
-                document.getElementById('output_prompt').innerText = data.text;
+                // Tampilkan teks dengan rapi: ganti newline jadi <br>
+                const formattedText = data.text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/\n/g, '<br>');
+                document.getElementById('output_prompt').innerHTML = formattedText;
             } catch (error) {
                 document.getElementById('output_prompt').innerText = "Gagal memuat AI. Error: " + error.message;
                 showToast("⚠️ Gagal menghubungi backend.");
