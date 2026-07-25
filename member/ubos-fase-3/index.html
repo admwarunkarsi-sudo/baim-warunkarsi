@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>MAJU Tools Center – Fase 3: PASARKAN</title>
+    <meta name="description" content="Fase 3 MAJU Tools Center: Generator Promo WA, Kalender Konten 30 Hari, dan Template Banner untuk UMKM & Pedagang.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #d1fae5;
+            --bg: #F8FAFC;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .app-wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb {
+            background: #1e293b;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .breadcrumb a { color: #94a3b8; font-size: 12px; font-weight: 600; text-decoration: none; }
+        .breadcrumb a:hover { color: #fff; }
+        .breadcrumb span { color: #475569; font-size: 11px; }
+
+        /* HEADER */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 16px 18px;
+        }
+        .app-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .app-header p { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+
+        /* PHASE BADGE */
+        .phase-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* TABS */
+        main { flex: 1; padding: 16px; padding-bottom: 100px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* CARD */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        /* FORM */
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            font-weight: 600;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus, textarea:focus, select:focus { border-color: var(--primary); }
+        textarea { resize: none; }
+
+        /* BUTTONS */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(5,150,105,0.3); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-dark { background: #1e293b; color: white; }
+        .btn-dark:hover { background: #0f172a; }
+        .btn-green-outline { background: #f0fdf4; border: 1.5px solid var(--primary); color: var(--primary); }
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 12px;
+            border-radius: 8px;
+            width: auto;
+            flex: 1;
+        }
+        .btn-loading { opacity: 0.7; pointer-events: none; }
+
+        /* PROMO OUTPUT */
+        .promo-result-box {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+        .promo-result-box .result-tag {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        .promo-result-box .result-text {
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .promo-result-box .result-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn-copy {
+            flex: 1;
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover { background: #334155; color: white; }
+        .btn-wa-send {
+            flex: 1;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* PROMO GAYA TABS */
+        .gaya-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+        .gaya-tab {
+            flex: 1;
+            padding: 8px 4px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .gaya-tab.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+
+        /* KALENDER KONTEN */
+        .hari-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .hari-card {
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .hari-card:hover { border-color: var(--primary); }
+        .hari-card.done { background: #f0fdf4; border-color: var(--primary); }
+        .hari-card.done .hari-num { color: var(--primary); }
+        .hari-num { font-size: 22px; font-weight: 800; color: #94a3b8; line-height: 1; }
+        .hari-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+        .hari-ide { font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+        .hari-jam { font-size: 10px; color: var(--primary); font-weight: 700; }
+        .hari-done-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        /* HARI DETAIL MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.65);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-sheet {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 20px 16px 36px;
+        }
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 4px;
+            margin: 0 auto 16px;
+        }
+        .caption-box {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        /* BANNER GALLERY */
+        .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .template-card {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+            background: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .template-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .template-thumb {
+            width: 100%;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        .template-info { padding: 10px; }
+        .template-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .template-type { font-size: 10px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+        .template-btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 2px;
+        }
+        .nav-icon { font-size: 20px; line-height: 1; }
+        .nav-item span { font-size: 10px; font-weight: 700; color: #94a3b8; }
+        .nav-item.active span { color: var(--primary); }
+        .nav-item.active .nav-icon { filter: none; }
+        .nav-item:not(.active) .nav-icon { opacity: 0.4; }
+
+        /* SPINNER */
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .section-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+        .progress-bar-wrap { background: var(--border); border-radius: 10px; height: 6px; overflow: hidden; margin-top: 6px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: width 0.4s; }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+        <a href="https://baim.warunkarsi.com/member">← Kembali ke Dashboard Member</a>
+        <span>Fase 3</span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="app-header">
+        <h1>MAJU Tools Center</h1>
+        <p>Sistem Eksekusi Bisnis UMKM • Modul Member Area</p>
+        <div class="phase-badge">📣 Fase 3: PASARKAN</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <!-- ========== TAB 1: GENERATOR PROMO WA ========== -->
+        <div id="tab1" class="tab-content active">
+            <div class="section-title"><span>💬</span> Generator Promo WA</div>
+            <div class="section-desc">Isi data warung, klik generate — AI langsung buatkan 3 variasi pesan promo siap kirim!</div>
+
+            <!-- Form Input -->
+            <div class="card">
+                <div class="card-title">Data Warung & Promo</div>
+                <div class="form-group">
+                    <label>Nama Warung / Toko</label>
+                    <input type="text" id="promo_toko" placeholder="Cth: Warung Sate Pak Budi">
+                </div>
+                <div class="form-group">
+                    <label>Menu / Produk Unggulan</label>
+                    <input type="text" id="promo_produk" placeholder="Cth: Sate Ayam, Es Teh Manis">
+                </div>
+                <div class="form-group">
+                    <label>Detail Promo / Penawaran</label>
+                    <input type="text" id="promo_detail" placeholder="Cth: Beli 5 Tusuk Gratis 1, Diskon 20%">
+                </div>
+                <div class="form-group">
+                    <label>Target Pembeli</label>
+                    <select id="promo_target">
+                        <option value="semua kalangan">Semua Kalangan</option>
+                        <option value="tetangga dan ibu rumah tangga">Tetangga & Ibu RT</option>
+                        <option value="anak sekolah dan mahasiswa">Anak Sekolah & Mahasiswa</option>
+                        <option value="pekerja dan karyawan kantoran">Pekerja & Karyawan Kantor</option>
+                        <option value="keluarga muda">Keluarga Muda</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pilih Gaya -->
+            <div class="card">
+                <div class="card-title">Pilih Gaya Pesan (AI akan generate 3 variasi)</div>
+                <div class="gaya-tabs">
+                    <div class="gaya-tab active" data-gaya="Santai & Akrab">😊 Santai</div>
+                    <div class="gaya-tab" data-gaya="Flash Sale & Urgent">⚡ Flash Sale</div>
+                    <div class="gaya-tab" data-gaya="Storytelling & Emosional">📖 Cerita</div>
+                </div>
+                <button id="btn_generate_promo" class="btn btn-primary" onclick="generatePromo()">
+                    ✨ Generate Pesan Promo (AI)
+                </button>
+            </div>
+
+            <!-- Hasil AI -->
+            <div id="promo_results_wrap" style="display:none;">
+                <div style="font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">✅ 3 Variasi Pesan Siap Kirim:</div>
+                <div id="promo_v1" class="promo-result-box"></div>
+                <div id="promo_v2" class="promo-result-box"></div>
+                <div id="promo_v3" class="promo-result-box"></div>
+            </div>
+        </div>
+
+        <!-- ========== TAB 2: KALENDER KONTEN ========== -->
+        <div id="tab2" class="tab-content">
+            <div class="section-title"><span>📅</span> Kalender Konten 30 Hari</div>
+            <div class="section-desc">Klik hari untuk lihat ide konten & caption siap copy. Centang setelah posting!</div>
+
+            <!-- Progress Posting -->
+            <div class="card" style="padding:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-size:12px;font-weight:700;color:var(--muted);">Progress Posting Bulan Ini</span>
+                    <span id="progress_text" style="font-size:13px;font-weight:800;color:var(--primary);">0/30 Hari</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="progress_fill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <!-- Grid 30 Hari -->
+            <div class="hari-grid" id="hari_grid">
+                <!-- Inject via JS -->
+            </div>
+        </div>
+
+        <!-- ========== TAB 3: TEMPLATE BANNER ========== -->
+        <div id="tab3" class="tab-content">
+            <div class="section-title"><span>🎨</span> Template Banner & Promo</div>
+            <div class="section-desc">Pilih template siap edit di Canva. Klik tombol "Edit di Canva" dan langsung bisa custom logo & nama warung!</div>
+
+            <!-- Kategori Template -->
+            <div class="card" style="padding:12px 14px;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <div class="gaya-tab active" style="flex:none;padding:7px 14px;" onclick="filterTemplate('semua', this)">Semua</div>
+                    <div class="gaya-tab" style="flex:none;padding:7px 14px;" onclick="filterTemplate('flyer', this)">Flyer WA</div>
+                    <div class="gaya-tab" style="flex:none;padding:7px 14px;" onclick="filterTemplate('banner', this)">Banner</div>
+                    <div class="gaya-tab" style="flex:none;padding:7px 14px;" onclick="filterTemplate('story', this)">Story IG</div>
+                </div>
+            </div>
+
+            <div class="template-grid" id="template_grid">
+                <!-- Inject via JS -->
+            </div>
+
+            <div class="card" style="margin-top:4px;">
+                <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;">🔗 AKSES CEPAT TOOLS DESAIN</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <a href="https://www.canva.com/id_id/templates/?query=warung+makan" target="_blank" class="btn btn-primary" style="font-size:13px;text-decoration:none;">🎨 Buka Canva – Cari Template Warung</a>
+                    <a href="https://www.canva.com/id_id/templates/?query=promo+makanan" target="_blank" class="btn btn-dark" style="font-size:13px;text-decoration:none;">🍜 Template Promo Makanan di Canva</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- DETAIL HARI MODAL -->
+    <div id="modal_hari" class="modal-overlay" style="display:none;" onclick="closeHariModal(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <div id="modal_hari_content"></div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('tab1', this)">
+            <div class="nav-icon">💬</div>
+            <span>Promo WA</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab2', this)">
+            <div class="nav-icon">📅</div>
+            <span>Kalender</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab3', this)">
+            <div class="nav-icon">🎨</div>
+            <span>Template</span>
+        </div>
+    </nav>
+
+</div>
+
+<script>
+// ======= TAB SWITCHING =======
+function switchTab(id, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+}
+
+// ======= GAYA TABS (Promo) =======
+document.querySelectorAll('.gaya-tab[data-gaya]').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.gaya-tab[data-gaya]').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// ======= GENERATE PROMO AI =======
+async function generatePromo() {
+    const toko = document.getElementById('promo_toko').value.trim();
+    const produk = document.getElementById('promo_produk').value.trim();
+    const detail = document.getElementById('promo_detail').value.trim();
+    const target = document.getElementById('promo_target').value;
+
+    if (!toko || !produk || !detail) {
+        alert('Isi dulu Nama Warung, Produk, dan Detail Promonya ya!'); return;
+    }
+
+    const btn = document.getElementById('btn_generate_promo');
+    btn.classList.add('btn-loading');
+    btn.innerHTML = '<span class="spinner"></span> AI sedang membuat pesan...';
+
+    const gayaList = [
+        { key: 'Santai & Akrab', label: '😊 Variasi 1 – Gaya Santai' },
+        { key: 'Flash Sale & Urgent', label: '⚡ Variasi 2 – Flash Sale' },
+        { key: 'Storytelling & Emosional', label: '📖 Variasi 3 – Storytelling' }
+    ];
+
+    document.getElementById('promo_results_wrap').style.display = 'none';
+
+    const results = [];
+    for (let i = 0; i < gayaList.length; i++) {
+        const g = gayaList[i];
+        try {
+            const resp = await fetch('https://baim-warunkarsi.vercel.app/api/generate-promo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ toko, produk, detail, waktu: 'Hari ini saja', gaya: g.key + ' dengan target pembeli ' + target })
+            });
+            const data = await resp.json();
+            results.push({ label: g.label, text: data.text || data.error || 'Gagal mendapatkan respons AI.' });
+        } catch (err) {
+            results.push({ label: g.label, text: 'Gagal menghubungi server. Cek koneksi internet.' });
+        }
+    }
+
+    ['promo_v1', 'promo_v2', 'promo_v3'].forEach((id, i) => {
+        const box = document.getElementById(id);
+        box.innerHTML = `
+            <div class="result-tag">${results[i].label}</div>
+            <div class="result-text">${results[i].text}</div>
+            <div class="result-actions">
+                <button class="btn-copy" onclick="copyPromo(this, '${encodeURIComponent(results[i].text)}')">📋 Copy</button>
+                <button class="btn-wa-send" onclick="kirimWA('${encodeURIComponent(results[i].text)}')">📲 Kirim WA</button>
+            </div>
+        `;
+    });
+
+    document.getElementById('promo_results_wrap').style.display = 'block';
+
+    btn.classList.remove('btn-loading');
+    btn.innerHTML = '✨ Generate Ulang (AI)';
+}
+
+function copyPromo(btn, encoded) {
+    const text = decodeURIComponent(encoded);
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✅ Tersalin!';
+        setTimeout(() => btn.textContent = orig, 2000);
+    });
+}
+
+function kirimWA(encoded) {
+    const text = decodeURIComponent(encoded);
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+// ======= KALENDER KONTEN 30 HARI =======
+const kontenHarian = [
+    { ide: "Foto Meja Lapak Pagi", caption: "Semangat pagi! Lapak kita udah siap dari subuh buat ngejaga perut kalian seharian. Mampir ya! 😊", jam: "06:30 Pagi", emoji: "🌅" },
+    { ide: "Video Proses Masak Bumbu", caption: "Rahasia enaknya ada di bumbunya! Dibikin dari bahan segar setiap hari. Mau cobain? 🔥", jam: "10:00 Pagi", emoji: "🍲" },
+    { ide: "Foto Menu Best Seller", caption: "Ini yang paling sering habis duluan! Kalau mau dapat, mampir sebelum jam 12 ya. 🍜", jam: "08:30 Pagi", emoji: "⭐" },
+    { ide: "Testimoni Pelanggan", caption: "Makasih banyak ya udah mau share pengalamannya! Kalian yang bikin semangat terus masak dengan hati ❤️", jam: "19:00 Malam", emoji: "💬" },
+    { ide: "Foto Porsi Makanan Dekat", caption: "Porsinya gak pernah pelit! Satu porsi udah bisa kenyang sampe sore. Gaskeun! 😋", jam: "11:30 Pagi", emoji: "🍽️" },
+    { ide: "Story: Balik dari Pasar", caption: "Baru balik dari pasar! Bahannya segar semua hari ini. Insya Allah masakannya makin enak 🛒", jam: "06:00 Pagi", emoji: "🛒" },
+    { ide: "Pengumuman Promo Mingguan", caption: "Spesial PROMO HARI INI AJA! Mumpung masih ada, buruan mampir sebelum kehabisan! ⚡", jam: "07:00 Pagi", emoji: "📣" },
+    { ide: "Video: Plating Makanan", caption: "Bukan cuma enak, tapi juga bikin mata happy! Cobain deh dan rasain sendiri perbedaannya 👀", jam: "12:00 Siang", emoji: "🎨" },
+    { ide: "Foto Momen Ramai Pelanggan", caption: "Alhamdulillah rame terus! Makasih buat kalian yang udah jadi pelanggan setia 🙏", jam: "12:30 Siang", emoji: "👥" },
+    { ide: "Tips Hemat Makan Siang", caption: "Makan siang kenyang gak harus mahal! Di sini aja, harganya aman di kantong tapi rasanya bintang 5 ⭐", jam: "10:30 Pagi", emoji: "💡" },
+    { ide: "Foto Minuman Segar", caption: "Hawanya panas? Tenang, minuman segernya udah nunggu kalian nih! Dingin, manis, dan nyegerin banget 🧊", jam: "13:00 Siang", emoji: "🥤" },
+    { ide: "Cerita di Balik Resep", caption: "Resep ini udah diwariskan dari almarhumah nenek. Dimasak dengan cinta supaya kalian bisa ngerasain hangatnya 🤗", jam: "20:00 Malam", emoji: "📖" },
+    { ide: "Promo 'Ajak Teman'", caption: "Ajak 2 teman mampir bareng, dapat bonus minuman gratis! Yuk rame-rame dan hemat bareng 👫", jam: "16:00 Sore", emoji: "🎁" },
+    { ide: "Video Persiapan Lapak", caption: "Dari jam 4 pagi udah nyiapin semua buat kalian. Karena yang masak pakai hati, pasti lebih enak! ❤️‍🔥", jam: "05:00 Pagi", emoji: "⏰" },
+    { ide: "Foto Menu Baru", caption: "🆕 ADA MENU BARU! Akhirnya jadi juga setelah banyak yang request. Yuk coba duluan sebelum yang lain! 🥳", jam: "09:00 Pagi", emoji: "🆕" },
+    { ide: "Kuis Berhadiah Kecil", caption: "KUIS! Tebak ada berapa tusuk sate di foto ini? Yang tebak bener dapat diskon 10% buat kunjungan berikutnya 🎉", jam: "15:00 Sore", emoji: "🎯" },
+    { ide: "Konten Edukasi Bahan Baku", caption: "Tau gak sih, bahan-bahan di warung ini semuanya dibeli langsung dari petani lokal? Biar fresh dan dukung UMKM! 🌿", jam: "18:00 Sore", emoji: "🌱" },
+    { ide: "Foto 'Behind The Scene'", caption: "Ini dia dapurnya! Bersih kan? Masak yang halal, bersih, dan penuh tanggung jawab itu prioritas nomor satu 🧹", jam: "17:00 Sore", emoji: "🍳" },
+    { ide: "Repost Foto Pelanggan", caption: "Makasih udah mau foto dan nge-tag kita! Kamu bikin hari kita jadi lebih cerah ☀️ Mampir lagi ya!", jam: "19:30 Malam", emoji: "📸" },
+    { ide: "Pengumuman Libur / Buka", caption: "INFO: Besok kita buka seperti biasa jam 07:00 pagi! Udah siap nganterin kalian makan enak lagi 😊", jam: "21:00 Malam", emoji: "📢" },
+    { ide: "Ucapan Terima Kasih Akhir Pekan", caption: "Alhamdulillah weekend kemarin rame banget! Makasih buat semua yang udah mampir dan kasih kepercayaan ke kita 🙏❤️", jam: "07:30 Pagi", emoji: "🙏" },
+    { ide: "Video Bungkus / Packing Rapi", caption: "Dibungkus rapi dan tetap panas saat sampai! Aman buat dibawa ke mana aja 📦", jam: "12:00 Siang", emoji: "📦" },
+    { ide: "Promo Akhir Bulan", caption: "Akhir bulan kantong tipis? Tenang, di sini ada paket hemat spesial buat kalian! Kenyang gak bikin bokek 💪", jam: "11:00 Pagi", emoji: "💸" },
+    { ide: "Foto Bareng Tim / Karyawan", caption: "Ini tim kecil kami yang kerja keras setiap hari buat kalian! Doain ya biar dagangan kami makin berkah 🤝", jam: "18:00 Sore", emoji: "👨‍🍳" },
+    { ide: "Konten Humor / Relatable", caption: "Tipe-tipe pelanggan warung: yang pesannya sambil berdiri, yang makannya tercepat, sama yang sering minta bon dulu 😂", jam: "20:00 Malam", emoji: "😂" },
+    { ide: "Tanya Pendapat Pelanggan", caption: "Hei! Kalau boleh usul, menurut kalian kita harus nambahin menu apa? Komen di bawah yuk! 🗳️", jam: "15:30 Sore", emoji: "🗳️" },
+    { ide: "Foto Lokasi & Akses Mudah", caption: "Bingung lokasinya? Gampang banget! [Sebutkan patokan]. Peta lengkap ada di bio kami ya 📍", jam: "10:00 Pagi", emoji: "📍" },
+    { ide: "Konten Motivasi UMKM", caption: "Setiap porsi yang terjual adalah semangat buat kami terus ada dan berkembang. Terima kasih sudah jadi bagian dari cerita kami 💚", jam: "07:00 Pagi", emoji: "💚" },
+    { ide: "Flash Sale Menjelang Tutup", caption: "⚡ FLASH SALE JAM 16:00! Sisa menu hari ini dijual setengah harga. Cepetan sebelum habis!", jam: "15:45 Sore", emoji: "⚡" },
+    { ide: "Refleksi & Rencana Bulan Depan", caption: "30 hari udah lewat! Makasih buat kalian yang udah setia jadi pelanggan. Bulan depan ada lebih banyak kejutan lagi! 🎊", jam: "21:00 Malam", emoji: "🎊" }
+];
+
+let checkedDays = JSON.parse(localStorage.getItem('ubos_konten_checklist') || '[]');
+
+function renderHariGrid() {
+    const grid = document.getElementById('hari_grid');
+    grid.innerHTML = '';
+    kontenHarian.forEach((k, i) => {
+        const isDone = checkedDays.includes(i);
+        grid.innerHTML += `
+            <div class="hari-card ${isDone ? 'done' : ''}" onclick="openHariModal(${i})">
+                ${isDone ? '<div class="hari-done-badge">✓</div>' : ''}
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <div class="hari-num">${i + 1}</div>
+                    <span style="font-size:18px;">${k.emoji}</span>
+                </div>
+                <div class="hari-ide">${k.ide}</div>
+                <div class="hari-jam">⏰ ${k.jam}</div>
+            </div>
+        `;
+    });
+    updateProgress();
+}
+
+function updateProgress() {
+    const done = checkedDays.length;
+    document.getElementById('progress_text').textContent = `${done}/30 Hari`;
+    document.getElementById('progress_fill').style.width = `${(done / 30) * 100}%`;
+}
+
+function openHariModal(idx) {
+    const k = kontenHarian[idx];
+    const isDone = checkedDays.includes(idx);
+    document.getElementById('modal_hari_content').innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="font-size:36px;">${k.emoji}</div>
+            <div>
+                <div style="font-size:11px;font-weight:700;color:var(--muted);">HARI KE-${idx + 1}</div>
+                <div style="font-size:17px;font-weight:800;color:var(--text);">${k.ide}</div>
+            </div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:10px 12px;margin-bottom:14px;">
+            <div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:2px;">⏰ Jam Posting Terbaik</div>
+            <div style="font-size:15px;font-weight:800;color:var(--primary-dark);">${k.jam}</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;">📝 Caption Siap Copy:</div>
+        <div class="caption-box">${k.caption}</div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+            <button class="btn btn-green-outline btn-sm" onclick="copyCaption('${encodeURIComponent(k.caption)}', this)">📋 Copy Caption</button>
+            <button class="btn btn-sm ${isDone ? 'btn-dark' : 'btn-primary'}" onclick="toggleChecklist(${idx})" id="btn_checklist_${idx}">
+                ${isDone ? '✓ Sudah Posting' : 'Tandai Sudah Posting'}
+            </button>
+        </div>
+    `;
+    document.getElementById('modal_hari').style.display = 'flex';
+}
+
+function closeHariModal(e) {
+    if (e.target === document.getElementById('modal_hari')) {
+        document.getElementById('modal_hari').style.display = 'none';
+    }
+}
+
+function toggleChecklist(idx) {
+    const pos = checkedDays.indexOf(idx);
+    if (pos === -1) checkedDays.push(idx);
+    else checkedDays.splice(pos, 1);
+    localStorage.setItem('ubos_konten_checklist', JSON.stringify(checkedDays));
+    renderHariGrid();
+    openHariModal(idx); // Re-render modal
+}
+
+function copyCaption(encoded, btn) {
+    navigator.clipboard.writeText(decodeURIComponent(encoded)).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✅ Disalin!';
+        setTimeout(() => btn.textContent = orig, 2000);
+    });
+}
+
+// ======= TEMPLATE BANNER =======
+const templates = [
+    { nama: "Promo Menu Harian", tipe: "flyer", emoji: "🍜", warna: "#fef3c7", canva: "https://www.canva.com/id_id/templates/?query=promo+menu+harian" },
+    { nama: "Flash Sale WA", tipe: "flyer", emoji: "⚡", warna: "#dbeafe", canva: "https://www.canva.com/id_id/templates/?query=flash+sale+makanan" },
+    { nama: "Banner Spanduk Lapak", tipe: "banner", emoji: "🏪", warna: "#d1fae5", canva: "https://www.canva.com/id_id/templates/?query=spanduk+warung+makan" },
+    { nama: "Banner Grand Opening", tipe: "banner", emoji: "🎉", warna: "#fce7f3", canva: "https://www.canva.com/id_id/templates/?query=grand+opening+warung" },
+    { nama: "Story IG Promo", tipe: "story", emoji: "📱", warna: "#ede9fe", canva: "https://www.canva.com/id_id/templates/?query=story+instagram+kuliner" },
+    { nama: "Story Testimoni", tipe: "story", emoji: "⭐", warna: "#fef9c3", canva: "https://www.canva.com/id_id/templates/?query=testimoni+kuliner+story" },
+    { nama: "Flyer Voucher Diskon", tipe: "flyer", emoji: "🎟️", warna: "#fef3c7", canva: "https://www.canva.com/id_id/templates/?query=voucher+diskon+makanan" },
+    { nama: "Banner Harga Menu", tipe: "banner", emoji: "💰", warna: "#dcfce7", canva: "https://www.canva.com/id_id/templates/?query=daftar+harga+menu+warung" },
+];
+
+let activeFilter = 'semua';
+
+function renderTemplates() {
+    const grid = document.getElementById('template_grid');
+    const filtered = activeFilter === 'semua' ? templates : templates.filter(t => t.tipe === activeFilter);
+    grid.innerHTML = filtered.map(t => `
+        <div class="template-card">
+            <div class="template-thumb" style="background:${t.warna};">${t.emoji}</div>
+            <div class="template-info">
+                <div class="template-name">${t.nama}</div>
+                <div class="template-type">${t.tipe === 'flyer' ? 'Flyer WA' : t.tipe === 'banner' ? 'Banner' : 'Story IG'}</div>
+                <a href="${t.canva}" target="_blank" class="template-btn">Edit di Canva →</a>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterTemplate(filter, el) {
+    activeFilter = filter;
+    document.querySelectorAll('#tab3 .gaya-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderTemplates();
+}
+
+// ======= INIT =======
+renderHariGrid();
+renderTemplates();
+</script>
+</body>
+</html>
