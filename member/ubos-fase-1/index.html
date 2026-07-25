@@ -362,7 +362,13 @@
                     .replace(/\n/g, '<br>');
                 document.getElementById('output_prompt').innerHTML = formattedText;
             } catch (error) {
-                document.getElementById('output_prompt').innerText = "Gagal memuat AI. Error: " + error.message;
+                let errorMsg = error.message;
+                if (errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED')) {
+                    errorMsg = "⏳ AI-nya lagi sibuk karena kebanyakan request. Tunggu 1-2 menit lalu coba lagi ya!";
+                } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
+                    errorMsg = "📡 Gagal terhubung ke server. Cek koneksi internet kamu lalu coba lagi.";
+                }
+                document.getElementById('output_prompt').innerText = errorMsg;
                 showToast("⚠️ Gagal menghubungi backend.");
             } finally {
                 btnText.classList.remove('opacity-0');
@@ -470,7 +476,13 @@
                     .replace(/\n/g, '<br>');
                 document.getElementById('mvp_ai_output').innerHTML = formattedText;
             } catch (error) {
-                document.getElementById('mvp_ai_output').innerText = "Gagal memuat AI. Error: " + error.message;
+                let errorMsg = error.message;
+                if (errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED')) {
+                    errorMsg = "⏳ AI-nya lagi sibuk karena kebanyakan request. Tunggu 1-2 menit lalu coba lagi ya!";
+                } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
+                    errorMsg = "📡 Gagal terhubung ke server. Cek koneksi internet kamu lalu coba lagi.";
+                }
+                document.getElementById('mvp_ai_output').innerText = errorMsg;
                 showToast("⚠️ Gagal menghubungi backend.");
             } finally {
                 btnText.classList.remove('opacity-0');
