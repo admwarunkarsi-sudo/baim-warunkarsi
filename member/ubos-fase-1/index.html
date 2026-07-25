@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UBOS Tools - Fase 1: BANGUN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#059669',
+                            dark: '#0F766E'
+                        },
+                        accent: '#F59E0B',
+                        bg: '#F9FAFB'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #e5e7eb; }
+        .app-container { max-width: 480px; margin: 0 auto; background-color: #F9FAFB; min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.1); position: relative; padding-bottom: 70px;}
+        /* Hide scrollbar for clean mobile look */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 10px 0; z-index: 50; padding-bottom: calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);}
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6b7280; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; flex: 1;}
+        .nav-item.active { color: #059669; }
+        .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
+        .nav-item:hover { color: #0F766E; }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+    <div class="app-container">
+        <!-- Header -->
+        <header class="bg-primary-dark text-white p-4 sticky top-0 z-40 shadow-md">
+            <h1 class="text-xl font-bold leading-tight">UBOS Tools - Fase 1: BANGUN</h1>
+            <p class="text-sm text-green-100 font-medium opacity-90 mt-1">Warunk Arsi Business Operating System</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-4">
+            <!-- TAB 1: Kalkulator MVP -->
+            <div id="tab1" class="tab-content active">
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <span>📊</span> Kalkulator Validasi Ide (MVP)
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Hitung modal, margin, dan target balik modal dengan cepat.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Modal Alat & Gerobak (Rp)</label>
+                            <input type="text" id="input_modal_alat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Contoh: 3.000.000" oninput="formatCurrency(this); calculateMVP()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Modal Bahan Baku Awal (Rp)</label>
+                            <input type="text" id="input_modal_bahan" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Contoh: 1.000.000" oninput="formatCurrency(this); calculateMVP()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Target Porsi Jualan per Hari</label>
+                            <input type="number" id="input_target_porsi" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Contoh: 50" oninput="calculateMVP()">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Harga Jual/Porsi</label>
+                                <input type="text" id="input_harga_jual" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Rp" oninput="formatCurrency(this); calculateMVP()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">HPP/Porsi</label>
+                                <input type="text" id="input_hpp_porsi" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Rp" oninput="formatCurrency(this); calculateMVP()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Card -->
+                <div id="mvp_output_card" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4 hidden transition-all duration-300">
+                    <h3 class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Hasil Kalkulasi Real-Time</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">Total Modal Awal</span>
+                            <span id="out_total_modal" class="font-semibold text-gray-800">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">Untung Bersih / Porsi</span>
+                            <span id="out_untung_porsi" class="font-semibold text-green-600">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">Estimasi Omzet / Bln</span>
+                            <span id="out_omzet_bulan" class="font-semibold text-gray-800">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">Estimasi Untung / Bln</span>
+                            <span id="out_untung_bulan" class="font-semibold text-primary">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">Margin per Porsi</span>
+                            <span id="out_margin" class="font-bold py-1 px-2 rounded-lg bg-gray-100">0%</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="text-gray-500">Balik Modal (BEP)</span>
+                            <span id="out_bep" class="font-bold py-1 px-2 rounded-lg bg-gray-100">0 Bulan</span>
+                        </div>
+                    </div>
+                    
+                    <div id="mvp_badge" class="mt-4 p-3 rounded-xl text-center font-bold text-sm">
+                        <!-- Badge goes here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Generator Prompt AI -->
+            <div id="tab2" class="tab-content">
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <span>🤖</span> Prompt AI Riset Pasar
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Hasilkan prompt cerdas untuk riset pasar otomatis via ChatGPT/Gemini.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Jenis Usaha F&B</label>
+                            <select id="input_jenis_usaha" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition appearance-none" onchange="generatePrompt()">
+                                <option value="" disabled selected>Pilih Jenis Usaha...</option>
+                                <option value="Makanan Berat">Makanan Berat</option>
+                                <option value="Minuman Kekinian">Minuman Kekinian</option>
+                                <option value="Camilan / Gorengan">Camilan / Gorengan</option>
+                                <option value="Sambal / Bumbu Rumahan">Sambal / Bumbu Rumahan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Usaha / Ide Produk</label>
+                            <input type="text" id="input_nama_usaha" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Cth: Nasi Goreng Rempah" oninput="generatePrompt()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Lokasi / Area Jualan</label>
+                            <input type="text" id="input_lokasi" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" placeholder="Cth: Kalibaru, Bekasi" oninput="generatePrompt()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-2xl border border-blue-100 p-4 mb-4 relative shadow-inner">
+                    <h3 class="text-xs font-bold text-blue-800 mb-2 uppercase flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        Hasil Prompt AI:
+                    </h3>
+                    <p id="output_prompt" class="text-sm text-gray-700 italic min-h-[120px]">Saya mau buka usaha kuliner [JENIS USAHA] dengan produk [NAMA USAHA] di daerah [LOKASI]. Bertindaklah sebagai konsultan bisnis F&B lokal. Tolong berikan: 1. 3 kelemahan umum pesaing sejenis di area tersebut. 2. 3 ide inovasi produk agar tampil beda tanpa membengkakkan modal. 3. Rekomendasi rentang harga jual ideal untuk pasar lokal. Gunakan bahasa Indonesia sehari-hari yang praktis dan to the point.</p>
+                </div>
+
+                <button onclick="copyPrompt()" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-green-200/50 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                    Salin Prompt AI (1-Tap Copy)
+                </button>
+            </div>
+
+            <!-- TAB 3: Generator Promo WA -->
+            <div id="tab3" class="tab-content">
+                <div class="mb-5">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <span>💬</span> Generator Promo WA (AI)
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Buat template broadcast WhatsApp jualan yang menggoda dengan AI.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Toko / Warung</label>
+                            <input type="text" id="input_wa_toko" value="Warunk Arsi" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition" placeholder="Cth: Warunk Arsi">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Produk Promo</label>
+                            <input type="text" id="input_wa_produk" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition" placeholder="Cth: Paket Ayam Bakar Madu">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Detail Promo / Diskon</label>
+                            <input type="text" id="input_wa_detail" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition" placeholder="Cth: Beli 1 Gratis Es Teh Manis">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Batas Waktu Promo</label>
+                            <input type="text" id="input_wa_waktu" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition" placeholder="Cth: Cuma sampai hari Jumat!">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Gaya Bahasa</label>
+                            <select id="input_wa_gaya" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition appearance-none">
+                                <option value="santai">Santai & Akrab</option>
+                                <option value="penasaran">Bikin Penasaran / Flash Sale</option>
+                                <option value="sopan">Sopan & Formal</option>
+                            </select>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mb-4">
+                    <button onclick="generateAIWAPromo()" id="btn_ai_promo" class="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-200/50 transition-all active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden">
+                        <span id="btn_ai_text" class="flex items-center gap-2 transition-opacity duration-200">✨ Bikin Teks Promo (AI)</span>
+                        <div id="btn_ai_spinner" class="opacity-0 pointer-events-none absolute inset-0 flex items-center justify-center bg-emerald-600 transition-opacity duration-200">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <button onclick="generateWAPromo()" class="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center" title="Gunakan Template Standar">
+                        🔄
+                    </button>
+                </div>
+
+                <div class="bg-[#f0fdf4] rounded-2xl border border-[#bbf7d0] p-4 mb-4 relative shadow-inner">
+                    <h3 class="text-xs font-bold text-green-800 mb-3 uppercase flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" /></svg> 
+                        Preview Pesan WA:
+                    </h3>
+                    <pre id="output_wa" class="text-sm text-gray-800 whitespace-pre-wrap font-sans leading-relaxed min-h-[150px]">Silakan isi form dan klik tombol untuk membuat pesan promosi WA.</pre>
+                </div>
+
+                <button onclick="copyWAPromo()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-green-200/50 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824z"/></svg>
+                    Salin Pesan WA (1-Tap Copy)
+                </button>
+            </div>
+            
+            <div class="h-10"></div> <!-- Spacer for bottom nav -->
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('tab1', this)">
+                <span class="nav-icon">📊</span>
+                <span>MVP</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('tab2', this)">
+                <span class="nav-icon">🤖</span>
+                <span>Prompt AI</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('tab3', this)">
+                <span class="nav-icon">💬</span>
+                <span>Promo WA</span>
+            </div>
+        </nav>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-full shadow-xl text-sm font-medium opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2 translate-y-[-10px]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+            <span id="toast-msg">Tersalin!</span>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching & Reset Scroll
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Format Ribuan (IDR) saat ketik
+        function formatCurrency(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            input.value = new Intl.NumberFormat('id-ID').format(value);
+        }
+
+        function getRawNumber(value) {
+            if (!value) return 0;
+            return parseInt(value.replace(/\D/g, '')) || 0;
+        }
+
+        function toRupiah(number) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('opacity-0', 'translate-y-[-10px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-10px]');
+            }, 3000);
+        }
+
+        // ==========================================
+        // TAB 1: KALKULATOR MVP LOGIC
+        // ==========================================
+        function calculateMVP() {
+            const modalAlat = getRawNumber(document.getElementById('input_modal_alat').value);
+            const modalBahan = getRawNumber(document.getElementById('input_modal_bahan').value);
+            const targetPorsi = parseInt(document.getElementById('input_target_porsi').value) || 0;
+            const hargaJual = getRawNumber(document.getElementById('input_harga_jual').value);
+            const hppPorsi = getRawNumber(document.getElementById('input_hpp_porsi').value);
+
+            const outputCard = document.getElementById('mvp_output_card');
+
+            if (hargaJual === 0 || hppPorsi === 0 || targetPorsi === 0) {
+                outputCard.classList.add('hidden');
+                return;
+            }
+            outputCard.classList.remove('hidden');
+
+            const totalModalAwal = modalAlat + modalBahan;
+            const untungBersihPorsi = hargaJual - hppPorsi;
+            const marginPorsi = hargaJual > 0 ? (untungBersihPorsi / hargaJual) * 100 : 0;
+            
+            // 30 hari kerja sebulan
+            const estimasiOmzetBulan = targetPorsi * hargaJual * 30;
+            const estimasiUntungBulan = targetPorsi * untungBersihPorsi * 30;
+            
+            let bepBulan = 0;
+            if (estimasiUntungBulan > 0) {
+                bepBulan = totalModalAwal / estimasiUntungBulan;
+            }
+
+            document.getElementById('out_total_modal').innerText = toRupiah(totalModalAwal);
+            document.getElementById('out_untung_porsi').innerText = toRupiah(untungBersihPorsi);
+            document.getElementById('out_omzet_bulan').innerText = toRupiah(estimasiOmzetBulan);
+            document.getElementById('out_untung_bulan').innerText = toRupiah(estimasiUntungBulan);
+            
+            const marginEl = document.getElementById('out_margin');
+            marginEl.innerText = marginPorsi.toFixed(1) + '%';
+            
+            const bepEl = document.getElementById('out_bep');
+            bepEl.innerText = bepBulan > 0 ? bepBulan.toFixed(1) + ' Bulan' : 'Belum Balik Modal';
+
+            // Styling Indikator Badge
+            const badgeEl = document.getElementById('mvp_badge');
+            
+            if (untungBersihPorsi <= 0) {
+                badgeEl.className = 'mt-4 p-3 rounded-xl text-center font-bold text-sm bg-red-100 text-red-700 border border-red-200';
+                badgeEl.innerText = 'RUGI: HPP Lebih Besar dari Harga Jual!';
+            } else if (marginPorsi < 30) {
+                badgeEl.className = 'mt-4 p-3 rounded-xl text-center font-bold text-sm bg-orange-100 text-orange-700 border border-orange-200';
+                badgeEl.innerText = 'MARGIN TIPIS: Rentan Terhadap Kenaikan Harga Bahan';
+            } else if (marginPorsi >= 30 && bepBulan > 6) {
+                badgeEl.className = 'mt-4 p-3 rounded-xl text-center font-bold text-sm bg-blue-100 text-blue-700 border border-blue-200';
+                badgeEl.innerText = 'CUKUP LAYAK: Pertimbangkan untuk menekan modal awal';
+            } else {
+                badgeEl.className = 'mt-4 p-3 rounded-xl text-center font-bold text-sm bg-green-100 text-green-800 border border-green-200';
+                badgeEl.innerText = 'SANGAT LAYAK: Bisnis Siap Diuji Coba! 🚀';
+            }
+        }
+
+        // ==========================================
+        // TAB 2: GENERATOR PROMPT AI LOGIC
+        // ==========================================
+        function generatePrompt() {
+            const jenisUsaha = document.getElementById('input_jenis_usaha').value || '[JENIS USAHA]';
+            const namaUsaha = document.getElementById('input_nama_usaha').value || '[NAMA USAHA]';
+            const lokasi = document.getElementById('input_lokasi').value || '[LOKASI]';
+
+            const promptText = `Saya mau buka usaha kuliner ${jenisUsaha} dengan produk ${namaUsaha} di daerah ${lokasi}. Bertindaklah sebagai konsultan bisnis F&B lokal. Tolong berikan: 1. 3 kelemahan umum pesaing sejenis di area tersebut. 2. 3 ide inovasi produk agar tampil beda tanpa membengkakkan modal. 3. Rekomendasi rentang harga jual ideal untuk pasar lokal. Gunakan bahasa Indonesia sehari-hari yang praktis dan to the point.`;
+
+            document.getElementById('output_prompt').innerText = promptText;
+        }
+
+        function copyPrompt() {
+            const text = document.getElementById('output_prompt').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Prompt disalin! Silakan buka ChatGPT/Gemini.");
+            }).catch(err => {
+                showToast("Gagal menyalin teks.");
+            });
+        }
+
+        // ==========================================
+        // TAB 3: GENERATOR PROMO WA LOGIC
+        // ==========================================
+        function getWaInputs() {
+            return {
+                toko: document.getElementById('input_wa_toko').value || 'Warunk Arsi',
+                produk: document.getElementById('input_wa_produk').value || '[NAMA PRODUK]',
+                detail: document.getElementById('input_wa_detail').value || '[DETAIL PROMO]',
+                waktu: document.getElementById('input_wa_waktu').value || '[BATAS WAKTU]',
+                gaya: document.getElementById('input_wa_gaya').value || 'santai'
+            };
+        }
+
+        function generateWAPromo() {
+            const { toko, produk, detail, waktu } = getWaInputs();
+
+            const poText = `Halo Kak/Bu/Pak! 👋
+
+Lagi cari yang enak-enak? Pas banget nih!
+Khusus hari ini, ${toko} lagi ada promo spesial buat penikmat ${produk}!
+
+🔥 PROMO KHUSUS HARI INI:
+- ${detail}
+
+Yuk buruan, promo ini ${waktu}!
+
+Langsung aja amankan porsimu dengan balas pesan ini ya kak.
+
+Terimakasih udah mampir dan dukung terus ${toko} yaa 🙏`;
+
+            document.getElementById('output_wa').innerText = poText;
+        }
+
+        async function generateAIWAPromo() {
+            const btnText = document.getElementById('btn_ai_text');
+            const btnSpinner = document.getElementById('btn_ai_spinner');
+            
+            // Show loading
+            btnText.classList.add('opacity-0');
+            btnSpinner.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('output_wa').innerText = "AI sedang merangkai kata...";
+
+            const { toko, produk, detail, waktu, gaya } = getWaInputs();
+
+            try {
+                const response = await fetch(`/api/generate-promo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ toko, produk, detail, waktu, gaya })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Gagal menghubungi server AI.");
+                }
+
+                const data = await response.json();
+                document.getElementById('output_wa').innerText = data.text;
+            } catch (error) {
+                document.getElementById('output_wa').innerText = "Gagal memuat AI. Pastikan Backend Server berjalan (port 3000). Error: " + error.message;
+                showToast("⚠️ Gagal menghubungi backend.");
+            } finally {
+                // Hide loading
+                btnText.classList.remove('opacity-0');
+                btnSpinner.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function copyWAPromo() {
+            const text = document.getElementById('output_wa').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Pesan WA berhasil disalin!");
+            }).catch(err => {
+                showToast("Gagal menyalin teks.");
+            });
+        }
+    </script>
+</body>
+</html>
