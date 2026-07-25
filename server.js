@@ -501,25 +501,29 @@ Aturan:
 - Langsung berikan hasil teksnya saja tanpa basa-basi pembuka.`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+            {
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                     temperature: 0.7,
                     maxOutputTokens: 500
                 }
-            })
-        });
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                validateStatus: function (status) {
+                    return status < 500; // Resolve only if the status code is less than 500
+                }
+            }
+        );
 
-        if (!response.ok) {
-            const errData = await response.text();
-            throw new Error(`Google API Error: ${errData}`);
+        if (response.status !== 200) {
+            const errData = response.data;
+            throw new Error(`Google API Error: ${JSON.stringify(errData)}`);
         }
 
-        const data = await response.json();
-        const aiText = data.candidates[0].content.parts[0].text;
+        const aiText = response.data.candidates[0].content.parts[0].text;
         
         return res.status(200).json({ text: aiText });
     } catch (error) {
