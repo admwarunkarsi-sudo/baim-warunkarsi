@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendampingan Offline | Baim Warunk Arsi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css?v=4">
+    <link rel="stylesheet" href="../css/member.css?v=6">
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .landing-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* HEADER SECTION */
+        .header-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0A192F, #193D71);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(10, 25, 47, 0.2);
+        }
+        .badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+        .header-title {
+            font-family: var(--font-heading, 'Outfit', sans-serif);
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        .header-subtitle {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* PAKET PENDAMPINGAN */
+        .section-title {
+            text-align: center;
+            font-family: var(--font-heading, 'Outfit', sans-serif);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #0f172a;
+        }
+        .packages-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        @media (min-width: 768px) {
+            .packages-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .package-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .package-card.popular {
+            border: 2px solid #10b981;
+        }
+        .popular-badge {
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: #10b981;
+            color: white;
+            padding: 5px 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+        }
+        .package-title {
+            font-family: var(--font-heading, 'Outfit', sans-serif);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+        .package-duration {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .package-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #10b981;
+            margin-bottom: 1.5rem;
+            font-family: var(--font-heading, 'Outfit', sans-serif);
+        }
+        .package-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .package-features li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: #475569;
+        }
+        .package-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* FORMULIR */
+        .form-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #475569;
+        }
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: #0A192F;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: var(--font-heading, 'Outfit', sans-serif);
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .btn-submit:hover {
+            background: #193D71;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #0A192F;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing-container">
+        <a href="../member.html" class="back-link">← Kembali ke Member Area</a>
+
+        <!-- 1. HEADER SECTION -->
+        <div class="header-section">
+            <div class="badge">🤝 PROGRAM KHUSUS MEMBER UBOS</div>
+            <h1 class="header-title">MAU LAPAK/WARUNGMU DI-AUDIT & DIDAMPINGI LANGSUNG OLEH MAS BAIM DI LOKASI?</h1>
+            <p class="header-subtitle">Kuota sangat terbatas! Khusus buat kamu yang mau usahanya dibedah total, dari hitung HPP presisi, bikin SOP dapur, sampai strategi banjir orderan langsung di tempat.</p>
+        </div>
+
+        <!-- 2. PILIHAN PAKET PENDAMPINGAN -->
+        <h2 class="section-title">Pilihan Paket Pendampingan</h2>
+        <div class="packages-grid">
+            
+            <!-- Paket 1 -->
+            <div class="package-card">
+                <h3 class="package-title">PRIVATE AUDIT LAPAK</h3>
+                <div class="package-duration">⏱️ 1 Day Visit (3 - 4 Jam di Lapakmu)</div>
+                <div class="package-price">Rp 950.000</div>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -1rem; margin-bottom: 1rem;">*Khusus Area Bekasi & Sekitarnya</p>
+                <ul class="package-features">
+                    <li>Audit Operasional & Alur Dapur</li>
+                    <li>Bedah HPP & Harga Jual Delivery Safe</li>
+                    <li>Pembuatan 1 Lembar Action Plan Usaha</li>
+                </ul>
+            </div>
+
+            <!-- Paket 2 -->
+            <div class="package-card popular">
+                <div class="popular-badge">FAVORIT</div>
+                <h3 class="package-title">INTENSIVE HYBRID MENTORING</h3>
+                <div class="package-duration">⏱️ 1 Bulan (1x Visit + 3x Online)</div>
+                <div class="package-price">Rp 2.500.000</div>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-top: -1rem; margin-bottom: 1rem;">*Pendampingan intensif sampai beres</p>
+                <ul class="package-features">
+                    <li>Semua Fitur Audit Lapak</li>
+                    <li>Pendampingan Penyusunan SOP Karyawan</li>
+                    <li>Evaluasi Laporan Kas Harian selama 1 Bulan</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- 3. FORMULIR PENDAFTARAN -->
+        <div class="form-section">
+            <h2 class="section-title" style="margin-bottom: 1.5rem; font-size: 1.5rem;">Formulir Pendaftaran</h2>
+            <form id="offline-form">
+                <div class="form-group">
+                    <label class="form-label" for="nama">Nama Lengkap Owner</label>
+                    <input type="text" id="nama" class="form-control" placeholder="Contoh: Dewa Eka Prayoga" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="usaha">Nama Warung / Usaha Kuliner</label>
+                    <input type="text" id="usaha" class="form-control" placeholder="Contoh: Seblak Kang Baim" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="alamat">Alamat Lengkap Lapak/Warung (Lokasi Visit)</label>
+                    <textarea id="alamat" class="form-control" rows="3" placeholder="Tulis alamat selengkap-lengkapnya..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="whatsapp">Nomor WhatsApp Aktif</label>
+                    <input type="tel" id="whatsapp" class="form-control" placeholder="Contoh: 081234567890" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="paket">Pilih Paket Pendampingan</label>
+                    <select id="paket" class="form-control" required>
+                        <option value="" disabled selected>-- Pilih Paket --</option>
+                        <option value="Paket 1 Day Visit (Rp 950.000)">Paket 1 Day Visit (Rp 950.000)</option>
+                        <option value="Paket Intensive 1 Bulan (Rp 2.500.000)">Paket Intensive 1 Bulan (Rp 2.500.000)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Masalah Utama Usaha saat ini (Boleh pilih lebih dari satu)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label"><input type="checkbox" name="masalah" value="HPP Tekor / Harga Jual Mepet"> HPP Tekor / Harga Jual Mepet</label>
+                        <label class="checkbox-label"><input type="checkbox" name="masalah" value="Sepi Pembeli / Orderan Mandek"> Sepi Pembeli / Orderan Mandek</label>
+                        <label class="checkbox-label"><input type="checkbox" name="masalah" value="Keuangan Campur Aduk"> Keuangan Pribadi & Usaha Campur Aduk</label>
+                        <label class="checkbox-label"><input type="checkbox" name="masalah" value="Karyawan Susah Diatur / Sering Resign"> Karyawan Susah Diatur / Sering Resign</label>
+                        <label class="checkbox-label"><input type="checkbox" name="masalah" id="masalah-lain-check" value="Lainnya"> Lainnya (Sebutkan di bawah)</label>
+                    </div>
+                    <input type="text" id="masalah-lain" class="form-control" placeholder="Masalah lainnya..." style="margin-top: 0.5rem; display: none;">
+                </div>
+
+                <button type="submit" class="btn-submit">KIRIM FORMULIR & JADWALKAN VISIT ➔</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tampilkan input masalah lainnya jika checkbox 'Lainnya' dicentang
+        document.getElementById('masalah-lain-check').addEventListener('change', function() {
+            document.getElementById('masalah-lain').style.display = this.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('offline-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nama = document.getElementById('nama').value.trim();
+            const usaha = document.getElementById('usaha').value.trim();
+            const alamat = document.getElementById('alamat').value.trim();
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const paket = document.getElementById('paket').value;
+
+            // Ambil masalah yang dicentang
+            const masalahCheckboxes = document.querySelectorAll('input[name="masalah"]:checked');
+            let masalahList = [];
+            masalahCheckboxes.forEach(cb => {
+                if (cb.value === 'Lainnya') {
+                    const lain = document.getElementById('masalah-lain').value.trim();
+                    if (lain) masalahList.push(`Lainnya: ${lain}`);
+                } else {
+                    masalahList.push(cb.value);
+                }
+            });
+
+            if (masalahList.length === 0) {
+                alert('Tolong pilih minimal satu masalah utama usaha Anda.');
+                return;
+            }
+
+            // Susun pesan WhatsApp
+            const waNumber = "6282136015569"; // Nomor WA Admin/Mas Baim (Ganti jika perlu)
+            
+            let message = `Halo Mas Baim, saya tertarik ikut *Program Pendampingan Offline*! 🔥\n\n`;
+            message += `Berikut data pendaftaran saya:\n`;
+            message += `*Nama Owner:* ${nama}\n`;
+            message += `*Nama Usaha:* ${usaha}\n`;
+            message += `*Nomor WA:* ${whatsapp}\n`;
+            message += `*Alamat Visit:* ${alamat}\n`;
+            message += `*Pilihan Paket:* ${paket}\n\n`;
+            message += `*Masalah Utama Usaha Saat Ini:*\n`;
+            masalahList.forEach((m, i) => {
+                message += `${i+1}. ${m}\n`;
+            });
+            message += `\nMohon info jadwal dan teknis selanjutnya ya, Mas. Joss! 🚀`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+            
+            window.location.href = waUrl;
+        });
+    </script>
+</body>
+</html>
