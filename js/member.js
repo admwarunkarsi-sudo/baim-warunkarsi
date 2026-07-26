@@ -1088,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Determine backend URL
             const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const apiUrl = isLocal ? 'http://localhost:3000/api/chat' : 'https://baim.warunkarsi.com/api/chat';
+            const apiUrl = isLocal ? 'http://localhost:3000/api/chat' : 'https://baim-warunkarsi.vercel.app/api/chat';
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
