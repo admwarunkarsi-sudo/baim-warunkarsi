@@ -1041,4 +1041,112 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // ============================================================
+    // AI CHATBOT LOGIC
+    // ============================================================
+    const chatBtn = document.getElementById('ai-chat-btn');
+    const chatWindow = document.getElementById('ai-chat-window');
+    const closeChatBtn = document.getElementById('close-chat-btn');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Chat history state
+    let chatHistory = [];
+
+    // Open/Close chat
+    chatBtn.addEventListener('click', () => {
+        chatWindow.classList.remove('hidden');
+        chatInput.focus();
+    });
+
+    closeChatBtn.addEventListener('click', () => {
+        chatWindow.classList.add('hidden');
+    });
+
+    // Handle sending message
+    const sendChatMessage = async () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        // Add user message to UI
+        addMessageToUI('user', text);
+        chatInput.value = '';
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+
+        // Show typing indicator
+        const typingId = 'typing-' + Date.now();
+        const typingEl = document.createElement('div');
+        typingEl.id = typingId;
+        typingEl.className = 'chat-typing';
+        typingEl.style.display = 'block';
+        typingEl.textContent = 'Kang Baim AI sedang mengetik...';
+        chatMessages.appendChild(typingEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+            // Determine backend URL
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const apiUrl = isLocal ? 'http://localhost:3000/api/chat' : 'https://baim.warunkarsi.com/api/chat';
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    history: chatHistory,
+                    message: text
+                })
+            });
+
+            document.getElementById(typingId).remove();
+
+            if (!response.ok) {
+                throw new Error('Server error');
+            }
+
+            const data = await response.json();
+            
+            // Add AI response to UI
+            addMessageToUI('ai', data.reply);
+
+            // Update history
+            chatHistory.push({ role: 'user', content: text });
+            chatHistory.push({ role: 'ai', content: data.reply });
+            
+        } catch (error) {
+            console.error('Chat error:', error);
+            if (document.getElementById(typingId)) {
+                document.getElementById(typingId).remove();
+            }
+            addMessageToUI('ai', 'Maaf kang, koneksi lagi bermasalah nih. Coba refresh atau tanya lagi nanti ya! 🙏');
+        } finally {
+            chatInput.disabled = false;
+            chatSendBtn.disabled = false;
+            chatInput.focus();
+        }
+    };
+
+    const addMessageToUI = (role, text) => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${role}`;
+        
+        // Convert simple markdown (bold) to HTML and preserve line breaks
+        let formattedText = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+
+        msgDiv.innerHTML = formattedText;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    chatSendBtn.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendChatMessage();
+    });
+
 });
