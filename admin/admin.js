@@ -9,7 +9,7 @@ if (authToken !== ADMIN_PASSWORD) {
 let productsData = [];
 let articlesData = [];
 
-const API_BASE = '/api';
+const API_BASE = 'https://baim-warunkarsi.vercel.app/api';
 
 // --- Auth & Init ---
 document.addEventListener('DOMContentLoaded', () => {

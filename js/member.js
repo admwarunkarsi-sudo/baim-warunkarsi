@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('articles-container');
         container.innerHTML = '<p style="color:var(--text-muted);">Memuat artikel...</p>';
         try {
-            const res = await fetch('/api/articles');
+            const res = await fetch('https://baim-warunkarsi.vercel.app/api/articles');
             const data = await res.json();
             
             // Filter only member/both
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Render product link if any
         const prodCont = document.getElementById('ar-product-link');
         if (a.related_product) {
-            fetch('/api/products').then(r => r.json()).then(prods => {
+            fetch('https://baim-warunkarsi.vercel.app/api/products').then(r => r.json()).then(prods => {
                 const prod = prods.find(p => p.id == a.related_product);
                 if (prod) {
                     prodCont.innerHTML = `
