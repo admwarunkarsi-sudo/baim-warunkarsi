@@ -378,7 +378,7 @@
                         <li>✅ Grup Komunitas & Tanya Jawab</li>
                         <li>✅ Update Tools AI Otomatis</li>
                     </ul>
-                    <a href="https://baimwarunkarsi.myr.id/m/klub-pendampingan-kuliner-go-digital" target="_blank" class="btn btn-primary" style="width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem;">
+                    <a href="#" onclick="openCheckout(event, 'https://baimwarunkarsi.myr.id/m/klub-pendampingan-kuliner-go-digital')" class="btn btn-primary" style="width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem;">
                         DAFTAR SEKARANG JUGA ➔
                     </a>
                 </div>
@@ -390,6 +390,16 @@
             </div>
         </div>
     </section>
+
+    <!-- Checkout Container -->
+    <div id="checkout-container" style="display: none; width: 100%; height: 90vh; padding-top: 100px; padding-bottom: 2rem; background: var(--bg-light);">
+        <div class="container text-center" style="margin-bottom: 1rem;">
+            <button onclick="closeCheckout()" class="btn btn-outline" style="border-color: var(--navy); color: var(--navy);">⬅ Kembali ke Halaman Sebelumnya</button>
+        </div>
+        <div class="container" style="height: calc(100% - 60px);">
+            <iframe id="checkout-iframe" src="" style="width: 100%; height: 100%; border: none; border-radius: 12px; box-shadow: var(--shadow-lg);"></iframe>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="container text-center">
@@ -426,6 +436,22 @@
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', closeMenu);
         });
+
+        // Checkout Iframe Logic
+        function openCheckout(e, url) {
+            e.preventDefault();
+            document.querySelectorAll('section').forEach(sec => sec.style.display = 'none');
+            document.getElementById('checkout-container').style.display = 'block';
+            document.getElementById('checkout-iframe').src = url;
+            window.scrollTo(0, 0);
+        }
+
+        function closeCheckout() {
+            document.querySelectorAll('section').forEach(sec => sec.style.display = '');
+            document.getElementById('checkout-container').style.display = 'none';
+            document.getElementById('checkout-iframe').src = '';
+            window.scrollTo(0, 0);
+        }
     </script>
 </body>
 </html>
