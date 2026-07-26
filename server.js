@@ -755,6 +755,75 @@ Isi setiap tugas dengan hal yang SPESIFIK sesuai usaha ${produkUtama} dan peran 
     }
 });
 
+// UBOS AI Chatbot Endpoint (Member Area)
+app.post('/api/chat', async (req, res) => {
+    const { history, message } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
+    }
+
+    const systemPrompt = `Kamu adalah Asisten AI untuk "Baim Warunk Arsi". 
+Gaya bahasamu harus persis seperti Dewa Eka Prayoga: asyik, santai, to the point, pakai kata-kata seperti "bro", "kang", "teh", "om", "tante", "kawan", "goks", "joss", "sadis", "cadas".
+Gunakan bahasa sehari-hari yang akrab. Jawab pertanyaan member dengan ringkas tapi nendang.
+
+TUJUAN UTAMAMU: Setelah menjawab pertanyaan mereka, SELALU cari celah secara halus dan persuasif untuk mengajak mereka upgrade ilmu dengan ikut "Pelatihan Offline Baim Warunk Arsi".
+Kasih tahu mereka kalau di pelatihan offline, mereka bisa praktek langsung, di-mentoring intensif, dan dibongkar rahasia dapur yang gak ada di materi online.
+Jangan terlalu kaku jualan, bikin mengalir kayak ngobrol.`;
+
+    try {
+        // Format history for Gemini API
+        // Gemini expects: { contents: [ {role: 'user', parts: [{text: '...'}]}, {role: 'model', parts: [{text: '...'}]} ] }
+        const formattedHistory = [];
+        if (history && history.length > 0) {
+            history.forEach(msg => {
+                formattedHistory.push({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.content }]
+                });
+            });
+        }
+        
+        // Add system prompt to the first user message, or as a prefix
+        const currentMessage = formattedHistory.length === 0 
+            ? `${systemPrompt}\n\nPertanyaan user: ${message}`
+            : `PENGINGAT INSTRUKSI: ${systemPrompt}\n\nPertanyaan user: ${message}`;
+
+        formattedHistory.push({
+            role: 'user',
+            parts: [{ text: currentMessage }]
+        });
+
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+            {
+                contents: formattedHistory,
+                generationConfig: {
+                    temperature: 0.8, // Slightly higher for more creative/casual tone
+                    maxOutputTokens: 800
+                }
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                validateStatus: function (status) {
+                    return status < 500;
+                }
+            }
+        );
+
+        if (response.status !== 200) {
+            throw new Error(`Google API Error: ${JSON.stringify(response.data)}`);
+        }
+
+        const aiText = response.data.candidates[0].content.parts[0].text;
+        return res.status(200).json({ reply: aiText });
+    } catch (error) {
+        console.error("AI Chatbot Error:", error);
+        return res.status(500).json({ error: 'Maaf kang, server lagi agak sibuk nih. Coba tanya lagi nanti ya! 🙏' });
+    }
+});
+
 // Start Server (if not in serverless environment)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {

@@ -459,6 +459,34 @@
             }
         })();
     </script>
+
+    <!-- AI CHATBOT UI -->
+    <div id="ai-chat-btn" class="chat-floating-btn" title="Tanya AI Asisten Baim">
+        💬
+    </div>
+
+    <div id="ai-chat-window" class="chat-window hidden">
+        <div class="chat-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="chat-avatar">🤖</div>
+                <div>
+                    <h3 style="margin:0;font-size:1rem;color:white;">Kang Baim AI</h3>
+                    <p style="margin:0;font-size:0.75rem;color:rgba(255,255,255,0.8);">Asisten Pintar 24/7</p>
+                </div>
+            </div>
+            <button id="close-chat-btn" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="message ai">
+                Halo bos! 😎 Ada materi yang bikin pusing? Sini tanya ane aja, langsung dijawab anti ribet!
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Tanya apa aja..." autocomplete="off">
+            <button id="chat-send-btn">Kirim</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/member.js?v=12"></script>
 </body>
