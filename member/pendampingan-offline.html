@@ -226,6 +226,47 @@
         .back-link:hover {
             color: #0A192F;
         }
+
+        /* PAYMENT MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #f1f5f9;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+        .modal-close:hover {
+            background: #e2e8f0;
+        }
     </style>
 </head>
 <body>
@@ -323,6 +364,14 @@
         </div>
     </div>
 
+    <!-- PAYMENT MODAL -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal">&times;</button>
+            <iframe id="payment-iframe" src="" frameborder="0" width="100%" height="100%" style="flex-grow: 1;"></iframe>
+        </div>
+    </div>
+
     <script>
         // Tampilkan input masalah lainnya jika checkbox 'Lainnya' dicentang
         document.getElementById('masalah-lain-check').addEventListener('change', function() {
@@ -355,26 +404,42 @@
                 return;
             }
 
-            // Susun pesan WhatsApp
-            const waNumber = "6282136015569"; // Nomor WA Admin/Mas Baim (Ganti jika perlu)
-            
-            let message = `Halo Mas Baim, saya tertarik ikut *Program Pendampingan Offline*! 🔥\n\n`;
-            message += `Berikut data pendaftaran saya:\n`;
-            message += `*Nama Owner:* ${nama}\n`;
-            message += `*Nama Usaha:* ${usaha}\n`;
-            message += `*Nomor WA:* ${whatsapp}\n`;
-            message += `*Alamat Visit:* ${alamat}\n`;
-            message += `*Pilihan Paket:* ${paket}\n\n`;
-            message += `*Masalah Utama Usaha Saat Ini:*\n`;
-            masalahList.forEach((m, i) => {
-                message += `${i+1}. ${m}\n`;
-            });
-            message += `\nMohon info jadwal dan teknis selanjutnya ya, Mas. Joss! 🚀`;
+            // Validasi paket sudah dipilih
+            if (!paket) {
+                alert('Silakan pilih paket pendampingan terlebih dahulu!');
+                return;
+            }
 
-            const encodedMessage = encodeURIComponent(message);
-            const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+            // Tentukan Link Checkout Mayar berdasarkan paket
+            let checkoutUrl = '';
+            if (paket.includes('1 Day Visit')) {
+                checkoutUrl = 'https://baimwarunkarsi.myr.id/pl/pendampingan-offline-1-on-1-private-audit-lapak-kuliner';
+            } else if (paket.includes('Intensive 1 Bulan')) {
+                checkoutUrl = 'https://baimwarunkarsi.myr.id/pl/pendampingan-offline-intensive-1-month-hybrid-mentoring';
+            } else {
+                alert('Silakan pilih paket pendampingan terlebih dahulu!');
+                return;
+            }
+
+            // Masukkan data ke URL Parameter untuk autofill di Mayar (jika didukung)
+            const params = new URLSearchParams({
+                name: nama,
+                phone: whatsapp
+            });
+            const finalUrl = checkoutUrl + '?' + params.toString();
+
+            // Tampilkan Modal Overlay Iframe
+            const modal = document.getElementById('payment-modal');
+            const iframe = document.getElementById('payment-iframe');
             
-            window.location.href = waUrl;
+            iframe.src = finalUrl;
+            modal.classList.add('active');
+        });
+
+        // Tutup Modal
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('payment-modal').classList.remove('active');
+            document.getElementById('payment-iframe').src = '';
         });
     </script>
 </body>
