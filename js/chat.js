@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendChat = document.getElementById('send-chat');
     const chatBody = document.getElementById('chat-body');
 
-    let isFirstMessage = true;
+    let chatHistory = [];
 
     if (chatToggle && chatWindow) {
         const toggleChat = () => {
@@ -24,41 +24,93 @@ document.addEventListener('DOMContentLoaded', () => {
         chatToggle.addEventListener('click', toggleChat);
         closeChat.addEventListener('click', toggleChat);
 
-        const sendMessage = () => {
+        const addMessageToUI = (role, text) => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${role}`;
+            
+            // Convert simple markdown (bold) to HTML and preserve line breaks
+            let formattedText = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="chat-btn-link">$1</a>')
+                .replace(/\n/g, '<br>');
+
+            msgDiv.innerHTML = formattedText;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        };
+
+        const sendMessage = async () => {
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // Add user message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-message user';
-            userMsg.textContent = text;
-            chatBody.appendChild(userMsg);
+            // Add user message to UI
+            addMessageToUI('user', text);
+            
+            // Add to history
+            chatHistory.push({ role: 'user', content: text });
             
             chatInput.value = '';
+            chatInput.disabled = true;
+            sendChat.disabled = true;
+
+            // Show typing indicator
+            const typingId = 'typing-' + Date.now();
+            const typingEl = document.createElement('div');
+            typingEl.id = typingId;
+            typingEl.className = 'chat-typing';
+            typingEl.style.display = 'block';
+            typingEl.textContent = 'Kang Baim AI sedang mengetik...';
+            chatBody.appendChild(typingEl);
             chatBody.scrollTop = chatBody.scrollHeight;
 
-            if (isFirstMessage) {
-                isFirstMessage = false;
-                
-                // Bot typing simulation
-                const botTyping = document.createElement('div');
-                botTyping.className = 'chat-message bot';
-                botTyping.textContent = 'Mengetik...';
-                chatBody.appendChild(botTyping);
-                chatBody.scrollTop = chatBody.scrollHeight;
+            try {
+                // Determine backend URL
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const apiUrl = isLocal ? 'http://localhost:3000/api/chat-public' : 'https://baim-warunkarsi.vercel.app/api/chat-public';
 
-                setTimeout(() => {
-                    chatBody.removeChild(botTyping);
-                    
-                    const botReply = document.createElement('div');
-                    botReply.className = 'chat-message bot';
-                    
-                    const waLink = `https://wa.me/6285179660408?text=${encodeURIComponent(text)}`;
-                    botReply.innerHTML = `Siap, Kak! Pesan Kakak sudah saya terima. Agar Baim bisa memberikan respon lebih lengkap, mari kita lanjutkan obrolan ini via WhatsApp ya! 😊<br><br><a href="${waLink}" target="_blank" style="display:inline-block; background-color:#20c997; color:white; padding:8px 12px; border-radius:15px; text-decoration:none; font-weight:bold; font-size:0.85rem; width:100%; text-align:center; margin-top:8px;">Lanjut ke WhatsApp</a>`;
-                    
-                    chatBody.appendChild(botReply);
-                    chatBody.scrollTop = chatBody.scrollHeight;
-                }, 1000);
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        history: chatHistory.slice(0, -1), // Exclude the message just added
+                        message: text
+                    })
+                });
+
+                // Remove typing indicator
+                const typingToRemove = document.getElementById(typingId);
+                if (typingToRemove) typingToRemove.remove();
+
+                if (!response.ok) {
+                    throw new Error('Server error');
+                }
+
+                const data = await response.json();
+                
+                // Add AI response to UI
+                addMessageToUI('bot', data.reply);
+                
+                // Add to history
+                chatHistory.push({ role: 'model', content: data.reply });
+
+            } catch (error) {
+                console.error('Chat error:', error);
+                
+                // Remove typing indicator
+                const typingToRemove = document.getElementById(typingId);
+                if (typingToRemove) typingToRemove.remove();
+                
+                addMessageToUI('bot', 'Maaf kang, koneksi lagi bermasalah nih. Coba refresh atau tanya lagi nanti ya! 🙏');
+            } finally {
+                chatInput.disabled = false;
+                sendChat.disabled = false;
+                chatInput.focus();
             }
         };
 

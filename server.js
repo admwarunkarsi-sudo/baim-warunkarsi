@@ -827,6 +827,74 @@ PENTING: Di akhir kalimat ajakanmu, KAMU WAJIB memberikan tombol link pendaftara
     }
 });
 
+app.post('/api/chat-public', async (req, res) => {
+    const { history, message } = req.body;
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'API Key Gemini belum disetting di Vercel.' });
+    }
+
+    const systemPrompt = `Kamu adalah Asisten AI untuk "Baim Warunk Arsi". 
+Gaya bahasamu harus persis seperti Dewa Eka Prayoga: asyik, santai, to the point, pakai kata-kata seperti "bro", "kang", "teh", "om", "tante", "kawan", "goks", "joss", "sadis", "cadas".
+Gunakan bahasa sehari-hari yang akrab. Jawab pertanyaan calon member dengan ringkas tapi nendang.
+
+TUJUAN UTAMAMU: Setelah menjawab pertanyaan mereka, SELALU cari celah secara halus dan persuasif untuk mengajak mereka join "Kelas Bisnis Kuliner Baim Warunk Arsi".
+Kasih tahu mereka kalau di kelas ini mereka bakal dapat semua ilmu dari nol sampai bisa buka usaha kuliner yang banjir orderan.
+Jangan terlalu kaku jualan, bikin mengalir kayak ngobrol.
+
+PENTING: Di akhir kalimat ajakanmu, KAMU WAJIB memberikan tombol link pendaftaran dengan format persis seperti ini (gunakan kurung siku dan kurung biasa):
+[DAFTAR KELAS SEKARANG](https://baim.warunkarsi.com/kelas-kuliner)`;
+
+    try {
+        const formattedHistory = [];
+        if (history && history.length > 0) {
+            history.forEach(msg => {
+                formattedHistory.push({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.content }]
+                });
+            });
+        }
+        
+        const currentMessage = formattedHistory.length === 0 
+            ? `${systemPrompt}\n\nPertanyaan user: ${message}`
+            : `PENGINGAT INSTRUKSI: ${systemPrompt}\n\nPertanyaan user: ${message}`;
+
+        formattedHistory.push({
+            role: 'user',
+            parts: [{ text: currentMessage }]
+        });
+
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+            {
+                contents: formattedHistory,
+                generationConfig: {
+                    temperature: 0.8,
+                    maxOutputTokens: 2000
+                }
+            },
+            {
+                headers: { 'Content-Type': 'application/json' },
+                validateStatus: function (status) {
+                    return status < 500;
+                }
+            }
+        );
+
+        if (response.status !== 200) {
+            throw new Error(`Google API Error: ${JSON.stringify(response.data)}`);
+        }
+
+        const aiText = response.data.candidates[0].content.parts[0].text;
+        return res.status(200).json({ reply: aiText });
+    } catch (error) {
+        console.error("AI Chatbot Error:", error);
+        return res.status(500).json({ error: 'Maaf kang, server lagi agak sibuk nih. Coba tanya lagi nanti ya! 🙏' });
+    }
+});
+
 // Start Server (if not in serverless environment)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {

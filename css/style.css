@@ -1355,3 +1355,6 @@ span.highlight, h1 span, h2 span { color: var(--accent-color); }
         right: 20px;
     }
 }
+
+.chat-btn-link { display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #E8A020; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-align: center; box-shadow: 0 4px 6px rgba(232, 160, 32, 0.3); transition: all 0.2s; } 
+.chat-btn-link:hover { background-color: #d18d1a; transform: translateY(-2px); }
