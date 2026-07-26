@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // PANEL NAVIGATION
     // ============================================================
-    const allPanels = ['panel-dashboard', 'panel-video', 'panel-download', 'panel-profile'];
+    const allPanels = ['panel-dashboard', 'panel-video', 'panel-download', 'panel-profile', 'panel-articles', 'panel-article-read'];
 
     function showPanel(panelId) {
         allPanels.forEach(p => {
@@ -430,8 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 .order('created_at', { ascending: false });
             
             if (error) {
-                if (error.code === '42P01') {
-                    historyContainer.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">Fitur diskusi artikel belum aktif (Tabel tidak ditemukan).</p>';
+                if (error.code === '42P01' || (error.message && error.message.toLowerCase().includes('relation'))) {
+                    historyContainer.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">Fitur diskusi artikel belum aktif (Tabel tidak ditemukan di Supabase).</p>';
                     return;
                 }
                 throw error;
