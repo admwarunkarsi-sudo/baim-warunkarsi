@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeLessonModIdx = 0;
     let activeLessonIdx = 0;
     let currentUserId = null;
+    let globalCompletedIds = new Set();
     let currentUserData = null;
     const CLOUDINARY_CLOUD = 'heswgpdc';
     const CLOUDINARY_PRESET = 'baim warunk arsi';
@@ -307,12 +308,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.style.background = '';
                 }, 2000);
 
+                // Update local state and re-render sidebar to unlock next lesson
+                globalCompletedIds.add(activeLessonId);
+                renderSidebar(currentModules);
+
                 // Auto navigate to next lesson
                 const mod = currentModules[modIdx];
                 if (lesIdx + 1 < mod.lessons.length) {
                     loadLesson(modIdx, lesIdx + 1);
                 } else if (modIdx + 1 < currentModules.length && currentModules[modIdx + 1].lessons.length > 0) {
                     loadLesson(modIdx + 1, 0);
+                } else {
+                    // Last lesson of the course: re-apply active state since we just re-rendered sidebar
+                    const link = document.getElementById(`lesson-link-${activeLessonId}`);
+                    if (link) link.classList.add('active');
                 }
             } catch (err) {
                 console.error('Error marking complete:', err);
@@ -521,6 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderSidebar = (modules) => {
         const container = document.getElementById('module-list-container');
         let html = '';
+        let isLocked = false;
+        
         modules.forEach((mod, modIndex) => {
             html += `
                 <div class="nav-item" style="font-weight:600;cursor:default;margin-top:1rem;color:var(--text-dark);border-left:3px solid transparent;">
@@ -529,18 +540,32 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mod.lessons && mod.lessons.length > 0) {
                 html += `<div style="display:flex;flex-direction:column;">`;
                 mod.lessons.forEach((lesson, lessonIndex) => {
-                    html += `
+                    const completed = globalCompletedIds.has(lesson.id);
+                    
+                    if (isLocked) {
+                        html += `
+                        <div class="nav-item lesson-item-locked" style="padding-left:3rem;font-size:0.9rem;min-height:2.5rem;border-left:3px solid transparent;opacity:0.5;cursor:not-allowed;">
+                            <span class="icon" style="font-size:0.8rem;margin-right:0.5rem;">&#128274;</span>
+                            <span>${lesson.title}</span>
+                        </div>`;
+                    } else {
+                        html += `
                         <a href="#" class="nav-item lesson-item" id="lesson-link-${lesson.id}" data-mod="${modIndex}" data-les="${lessonIndex}" style="padding-left:3rem;font-size:0.9rem;min-height:2.5rem;border-left:3px solid transparent;">
                             <span class="icon" style="font-size:0.8rem;margin-right:0.5rem;">&#9654;</span>
                             <span>${lesson.title}</span>
                         </a>`;
+                    }
+                    
+                    if (!completed) {
+                        isLocked = true;
+                    }
                 });
                 html += `</div>`;
             }
         });
         container.innerHTML = html;
 
-        // Click events
+        // Click events (only unlocked lessons have .lesson-item class)
         document.querySelectorAll('.lesson-item').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -570,6 +595,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (modules && modules.length > 0) {
                 currentModules = modules;
+                
+                // Fetch progress first for locking logic
+                if (currentUserId) {
+                    const { data: progress } = await window.supabaseClient
+                        .from('user_progress')
+                        .select('lesson_id')
+                        .eq('user_id', currentUserId)
+                        .eq('is_completed', true);
+                    if (progress) {
+                        globalCompletedIds = new Set(progress.map(p => p.lesson_id));
+                    }
+                }
+
                 renderSidebar(modules);
                 // Tampilkan Dashboard sebagai halaman utama
                 showPanel('panel-dashboard');
