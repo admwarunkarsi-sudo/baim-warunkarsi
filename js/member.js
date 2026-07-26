@@ -583,7 +583,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.lesson-item-locked').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.preventDefault();
-                alert('Materi ini terkunci.\n\nSilakan tonton dan "Tandai Selesai" pada materi sebelumnya terlebih dahulu agar pembelajaran Anda runut dan mudah dipahami.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Materi Terkunci 🔒',
+                    html: 'Silakan tonton dan <b>"Tandai Selesai"</b> pada materi sebelumnya terlebih dahulu agar pembelajaran Anda runut dan mudah dipahami.',
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#10b981',
+                    background: '#ffffff',
+                    color: '#0f172a'
+                });
             });
         });
     };
