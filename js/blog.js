@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const html = `
             <article>
-                <div class="container">
+                <div class="container" style="padding-top: 120px;">
                     <div class="blog-detail-image">
                         <img src="${article.image}" alt="${article.title}" style="width:100%; display:block; background-color: var(--bg-light);">
                     </div>
