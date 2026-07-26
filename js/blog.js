@@ -88,9 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
 
-                <div class="blog-detail-hero container" style="margin-top: 2rem;">
+                <div class="blog-detail-hero container" style="margin-top: 1rem; padding-left: 20px; padding-right: 20px;">
                     <span class="blog-tag" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:1rem;">${article.tag}</span>
-                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-color);">${article.title}</h1>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-color); line-height: 1.2;">${article.title}</h1>
                     <p style="color: var(--text-muted); font-size: 1rem;">Diterbitkan pada ${dateStr}</p>
                 </div>
                 
