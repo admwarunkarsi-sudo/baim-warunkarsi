@@ -82,16 +82,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const html = `
             <article>
-                <div class="blog-detail-hero container">
-                    <span class="blog-tag" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:1rem;">${article.tag}</span>
-                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-color);">${article.title}</h1>
-                    <p style="color: var(--text-muted); font-size: 1rem;">Diterbitkan pada ${dateStr}</p>
-                </div>
-                
                 <div class="container">
                     <div class="blog-detail-image">
                         <img src="${article.image}" alt="${article.title}" style="width:100%; display:block; background-color: var(--bg-light);">
                     </div>
+                </div>
+
+                <div class="blog-detail-hero container" style="margin-top: 2rem;">
+                    <span class="blog-tag" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:1rem;">${article.tag}</span>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-color);">${article.title}</h1>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Diterbitkan pada ${dateStr}</p>
                 </div>
                 
                 <div class="blog-content-wrapper">
