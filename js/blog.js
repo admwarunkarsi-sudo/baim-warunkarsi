@@ -114,6 +114,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('blog-main-content').innerHTML = html;
 
+        setTimeout(() => {
+            const checkboxes = document.querySelectorAll('.audit-chk');
+            const resultBox = document.getElementById('audit-result');
+            if (checkboxes.length > 0 && resultBox) {
+                const updateResult = () => {
+                    let checkedCount = 0;
+                    checkboxes.forEach(chk => {
+                        if(chk.checked) checkedCount++;
+                        const label = chk.closest('label');
+                        if(chk.checked) {
+                            label.style.background = '#eff6ff';
+                            label.style.borderColor = '#3b82f6';
+                        } else {
+                            label.style.background = '#f8fafc';
+                            label.style.borderColor = 'transparent';
+                        }
+                    });
+
+                    resultBox.style.display = 'block';
+                    if (checkedCount < 3) {
+                        resultBox.style.background = '#fef2f2';
+                        resultBox.style.color = '#ef4444';
+                        resultBox.style.border = '1px solid #fca5a5';
+                        resultBox.innerHTML = '🚨 WARUNGMU DALAM BAHAYA! Kebocoran sistem masih parah.';
+                    } else if (checkedCount >= 4) {
+                        resultBox.style.background = '#f0fdf4';
+                        resultBox.style.color = '#22c55e';
+                        resultBox.style.border = '1px solid #86efac';
+                        resultBox.innerHTML = '✅ WARUNGMU SUDAH BAGUS! Siap di-scale up.';
+                    } else {
+                        resultBox.style.background = '#fffbeb';
+                        resultBox.style.color = '#f59e0b';
+                        resultBox.style.border = '1px solid #fcd34d';
+                        resultBox.innerHTML = '⚠️ LUMAYAN, tapi masih ada ruang untuk perbaikan.';
+                    }
+                };
+                checkboxes.forEach(chk => chk.addEventListener('change', updateResult));
+                updateResult();
+            }
+        }, 500);
+
     } catch (error) {
         console.error('Error loading article:', error);
     }
