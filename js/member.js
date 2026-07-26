@@ -578,6 +578,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        // Click events for locked lessons
+        document.querySelectorAll('.lesson-item-locked').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('Materi ini terkunci.\n\nSilakan tonton dan "Tandai Selesai" pada materi sebelumnya terlebih dahulu agar pembelajaran Anda runut dan mudah dipahami.');
+            });
+        });
     };
 
     // ============================================================
