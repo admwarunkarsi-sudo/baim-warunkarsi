@@ -801,7 +801,7 @@ Jangan terlalu kaku jualan, bikin mengalir kayak ngobrol.`;
                 contents: formattedHistory,
                 generationConfig: {
                     temperature: 0.8, // Slightly higher for more creative/casual tone
-                    maxOutputTokens: 800
+                    maxOutputTokens: 2000
                 }
             },
             {
