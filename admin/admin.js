@@ -629,6 +629,7 @@ document.getElementById('article-form').addEventListener('submit', async (e) => 
         date: document.getElementById('a-date').value,
         image: document.getElementById('a-image').value,
         excerpt: document.getElementById('a-excerpt').value,
+        visibility: document.getElementById('a-visibility').value,
         related_product: document.getElementById('a-related-product').value,
         content: $('#a-content').summernote('code')
     };
@@ -763,6 +764,7 @@ window.admin = {
         document.getElementById('a-image-file').value = '';
         document.getElementById('a-image-preview').src = '';
         document.getElementById('a-image-preview').classList.add('hidden');
+        document.getElementById('a-visibility').value = 'edukasi';
         document.getElementById('a-related-product').value = '';
         $('#a-content').summernote('reset'); // Clear editor
         document.getElementById('article-modal-title').textContent = 'Tambah Artikel';
@@ -779,6 +781,7 @@ window.admin = {
             document.getElementById('a-title').value = a.title;
             document.getElementById('a-tag').value = a.tag;
             document.getElementById('a-date').value = a.date;
+            document.getElementById('a-visibility').value = a.visibility || 'edukasi';
             document.getElementById('a-image').value = a.image;
             if (a.image) {
                 document.getElementById('a-image-preview').src = a.image;

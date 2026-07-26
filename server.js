@@ -149,6 +149,7 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
             
             for (const article of newArticles) {
                 if(!article.slug) continue;
+                if(article.visibility === 'member') continue;
                 let html = templateHtml;
                 const pageTitle = `${article.title} | Blog Baim`;
                 const rawContent = article.excerpt || article.content || "";

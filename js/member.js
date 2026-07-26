@@ -45,6 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
         loadDownloadArea();
     });
 
+    document.getElementById('nav-articles').addEventListener('click', e => {
+        e.preventDefault();
+        showPanel('panel-articles');
+        document.getElementById('nav-articles').classList.add('active');
+        loadMemberArticles();
+    });
+
+    document.getElementById('btn-back-articles').addEventListener('click', e => {
+        e.preventDefault();
+        showPanel('panel-articles');
+        document.getElementById('nav-articles').classList.add('active');
+    });
+
     document.getElementById('nav-community').addEventListener('click', async e => {
         e.preventDefault();
         try {
@@ -306,6 +319,201 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     };
+
+    // ============================================================
+    // ARTICLES
+    // ============================================================
+    let memberArticles = [];
+
+    const loadMemberArticles = async () => {
+        const container = document.getElementById('articles-container');
+        container.innerHTML = '<p style="color:var(--text-muted);">Memuat artikel...</p>';
+        try {
+            const res = await fetch('/api/articles');
+            const data = await res.json();
+            
+            // Filter only member/both
+            memberArticles = data.filter(a => a.visibility === 'member' || a.visibility === 'both');
+            
+            if (memberArticles.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted);">Belum ada artikel edukasi.</p>';
+                return;
+            }
+
+            let html = '';
+            memberArticles.forEach(a => {
+                const img = a.image || 'https://res.cloudinary.com/heswgpdc/image/upload/v1784105147/cjxn9nkbq9fk27itqs0z.png';
+                html += `
+                    <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;">
+                        <img src="${img}" style="width:100%;height:160px;object-fit:cover;">
+                        <div style="padding:1.5rem;flex:1;display:flex;flex-direction:column;">
+                            <span style="font-size:0.75rem;font-weight:700;color:white;background:var(--accent-color);padding:0.25rem 0.5rem;border-radius:4px;align-self:flex-start;margin-bottom:0.75rem;">${a.tag || 'Artikel'}</span>
+                            <h3 style="margin:0 0 0.5rem;font-size:1.1rem;color:var(--navy);font-weight:800;line-height:1.4;">${a.title}</h3>
+                            <p style="margin:0 0 1.5rem;font-size:0.9rem;color:var(--text-muted);line-height:1.5;flex:1;">${a.excerpt}</p>
+                            <button onclick="window.openMemberArticle('${a.slug}')" class="btn btn-outline" style="width:100%;text-align:center;">Baca Artikel</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch (err) {
+            console.error('Error fetching articles:', err);
+            container.innerHTML = '<p style="color:red;">Gagal memuat artikel.</p>';
+        }
+    };
+
+    window.openMemberArticle = (slug) => {
+        const a = memberArticles.find(x => x.slug === slug);
+        if(!a) return;
+
+        showPanel('panel-article-read');
+        document.getElementById('nav-articles').classList.add('active');
+
+        document.getElementById('ar-title').textContent = a.title;
+        document.getElementById('ar-tag').textContent = a.tag || 'Artikel';
+        document.getElementById('ar-date').textContent = a.date;
+        
+        if(a.image) {
+            document.getElementById('ar-cover').src = a.image;
+            document.getElementById('ar-cover').style.display = 'block';
+        } else {
+            document.getElementById('ar-cover').style.display = 'none';
+        }
+
+        let htmlContent = a.content || '';
+        if (htmlContent && !htmlContent.startsWith('<') && window.marked) {
+            htmlContent = marked.parse(htmlContent);
+        }
+        document.getElementById('ar-content').innerHTML = htmlContent || a.excerpt;
+
+        // Render product link if any
+        const prodCont = document.getElementById('ar-product-link');
+        if (a.related_product) {
+            fetch('/api/products').then(r => r.json()).then(prods => {
+                const prod = prods.find(p => p.id == a.related_product);
+                if (prod) {
+                    prodCont.innerHTML = `
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                            <div>
+                                <h4 style="margin:0 0 0.25rem;color:var(--navy);font-size:1.1rem;">Tertarik untuk praktik lebih dalam?</h4>
+                                <p style="margin:0;color:var(--text-muted);font-size:0.9rem;">Dapatkan <strong>${prod.name}</strong> sekarang juga.</p>
+                            </div>
+                            <a href="checkout.html?product=${prod.id}" class="btn btn-primary">Beli Sekarang</a>
+                        </div>
+                    `;
+                    prodCont.style.display = 'block';
+                } else {
+                    prodCont.style.display = 'none';
+                }
+            }).catch(() => {
+                prodCont.style.display = 'none';
+            });
+        } else {
+            prodCont.style.display = 'none';
+        }
+
+        // Load discussions
+        window.loadArticleDiscussions(a.slug);
+    };
+
+    // --- Article Discussions ---
+    window.loadArticleDiscussions = async function(articleSlug) {
+        window.currentArticleSlug = articleSlug;
+        const historyContainer = document.getElementById('ar-discussion-history');
+        if (!historyContainer) return;
+        historyContainer.innerHTML = '<p style="color:var(--text-muted);">Memuat diskusi...</p>';
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('article_discussions')
+                .select('id, question, reply, created_at, users(full_name, email)')
+                .eq('article_slug', articleSlug)
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                if (error.code === '42P01') {
+                    historyContainer.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">Fitur diskusi artikel belum aktif (Tabel tidak ditemukan).</p>';
+                    return;
+                }
+                throw error;
+            }
+
+            if (!data || data.length === 0) {
+                historyContainer.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">Belum ada diskusi untuk artikel ini.</p>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(d => {
+                const name = d.users ? (d.users.full_name || d.users.email) : 'Member';
+                const date = new Date(d.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                let replyHtml = '';
+                if (d.reply) {
+                    replyHtml = `
+                        <div style="margin-top:1rem;background:#f8fafc;border-left:4px solid var(--accent-color);padding:1rem;border-radius:0 8px 8px 0;">
+                            <div style="font-weight:700;font-size:0.85rem;color:var(--navy);margin-bottom:0.25rem;">Admin membalas:</div>
+                            <div style="font-size:0.9rem;color:#334155;line-height:1.5;">${d.reply.replace(/\\n/g, '<br>')}</div>
+                        </div>
+                    `;
+                }
+                html += `
+                    <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:1.5rem;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+                            <div style="width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-muted);">${name.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div style="font-weight:700;font-size:0.95rem;color:var(--text-dark);">${name}</div>
+                                <div style="font-size:0.8rem;color:var(--text-muted);">${date}</div>
+                            </div>
+                        </div>
+                        <div style="font-size:0.95rem;line-height:1.6;color:#334155;">${d.question.replace(/\\n/g, '<br>')}</div>
+                        ${replyHtml}
+                    </div>
+                `;
+            });
+            historyContainer.innerHTML = html;
+        } catch (err) {
+            console.error('Error fetching article discussions:', err);
+            historyContainer.innerHTML = '<p style="color:red;">Gagal memuat diskusi.</p>';
+        }
+    };
+
+    document.getElementById('ar-btn-submit-discussion').addEventListener('click', async () => {
+        const input = document.getElementById('ar-discussion-input');
+        const status = document.getElementById('ar-discussion-status');
+        const text = input.value.trim();
+        if (!text) {
+            status.textContent = 'Masukkan pertanyaan terlebih dahulu!';
+            status.style.color = 'red';
+            return;
+        }
+        if (!currentUserId || !window.currentArticleSlug) {
+            status.textContent = 'Silakan login terlebih dahulu.';
+            status.style.color = 'red';
+            return;
+        }
+        status.textContent = 'Mengirim pertanyaan...';
+        status.style.color = 'var(--text-muted)';
+        
+        try {
+            const { error } = await window.supabaseClient.from('article_discussions').insert([{
+                user_id: currentUserId,
+                article_slug: window.currentArticleSlug,
+                question: text
+            }]);
+            if (error) {
+                if (error.code === '42P01') throw new Error('Fitur diskusi artikel belum aktif (Tabel tidak ditemukan)');
+                throw error;
+            }
+            status.textContent = 'Pertanyaan berhasil dikirim!';
+            status.style.color = '#10b981';
+            input.value = '';
+            setTimeout(() => { status.textContent = ''; }, 3000);
+            window.loadArticleDiscussions(window.currentArticleSlug);
+        } catch (err) {
+            console.error('Submit article discussion error:', err);
+            status.textContent = 'Gagal mengirim pertanyaan: ' + err.message;
+            status.style.color = 'red';
+        }
+    });
 
     // ============================================================
     // RENDER SIDEBAR

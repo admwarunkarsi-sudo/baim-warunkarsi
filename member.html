@@ -33,6 +33,7 @@
                 <div id="module-list-container"><p style="padding:1rem;color:#94a3b8;font-size:0.9rem;text-align:center;">Memuat modul...</p></div>
                 <div class="nav-section-title">Sumber Daya</div>
                 <a href="#" class="nav-item" id="nav-download"><span class="icon">&#128193;</span><span>Download Area</span></a>
+                <a href="#" class="nav-item" id="nav-articles"><span class="icon">📰</span><span>Artikel Edukasi</span></a>
                 <a href="#" class="nav-item" id="nav-community"><span class="icon">&#128172;</span><span>Grup Komunitas</span></a>
                 <a href="affiliate-dashboard.html" class="nav-item" style="color: #10b981;"><span class="icon">💰</span><span>Program Affiliate</span></a>
                 <a href="https://baimwarunkarsi.myr.id/pay-membership" target="_blank" class="nav-item" style="color: #f59e0b;"><span class="icon">🔄</span><span>Perpanjang Membership</span></a>
@@ -127,6 +128,40 @@
                 <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);">
                     <h3 style="margin-top:0;margin-bottom:1.5rem;">&#127873; File Bonus Eksklusif</h3>
                     <div id="download-bonus"><p style="color:var(--text-muted);">Memuat file bonus...</p></div>
+                </div>
+            </div>
+            <!-- PANEL: ARTIKEL -->
+            <div id="panel-articles" class="main-panel hidden">
+                <div class="content-header">
+                    <h1 class="content-title">📰 Artikel Edukasi & Tambahan</h1>
+                    <p style="color:var(--text-muted);">Materi bacaan eksklusif untuk member.</p>
+                </div>
+                <div id="articles-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-bottom:2rem;">
+                    <p style="color:var(--text-muted);">Memuat artikel...</p>
+                </div>
+            </div>
+            <!-- PANEL: ARTIKEL BACA -->
+            <div id="panel-article-read" class="main-panel hidden">
+                <button id="btn-back-articles" class="btn btn-outline" style="margin-bottom:1.5rem;border-color:#cbd5e1;padding:0.5rem 1rem;">&larr; Kembali ke Daftar Artikel</button>
+                <div style="background:white;border-radius:12px;padding:2rem;box-shadow:var(--shadow-sm);margin-bottom:2rem;">
+                    <img id="ar-cover" src="" style="width:100%;height:300px;object-fit:cover;border-radius:8px;margin-bottom:1.5rem;display:none;">
+                    <h1 id="ar-title" style="font-size:2rem;font-weight:800;color:var(--navy);margin-bottom:0.5rem;">Memuat...</h1>
+                    <div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:2rem;"><span id="ar-tag"></span> &bull; <span id="ar-date"></span></div>
+                    <div id="ar-content" class="blog-content" style="line-height:1.7;color:#334155;"></div>
+                    <div id="ar-product-link" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e2e8f0;display:none;"></div>
+                </div>
+                <div style="background:white;padding:2rem;border-radius:12px;box-shadow:var(--shadow-sm);">
+                    <h3>Diskusi &amp; Pertanyaan Artikel</h3>
+                    <p style="color:var(--text-muted);margin-bottom:1.5rem;">Diskusikan materi bacaan ini bersama member lain.</p>
+                    <div style="margin-bottom:2rem;">
+                        <textarea id="ar-discussion-input" style="width:100%;padding:1rem;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:1rem;font-family:inherit;box-sizing:border-box;" rows="4" placeholder="Ketik pertanyaan Anda di sini..."></textarea>
+                        <button id="ar-btn-submit-discussion" class="btn btn-primary">Kirim Pertanyaan</button>
+                        <div id="ar-discussion-status" style="margin-top:0.5rem;font-size:0.9rem;font-weight:600;"></div>
+                    </div>
+                    <h4 style="margin-bottom:1rem;border-bottom:1px solid #e2e8f0;padding-bottom:0.5rem;">Riwayat Tanya-Jawab</h4>
+                    <div id="ar-discussion-history" style="display:flex;flex-direction:column;gap:1.5rem;">
+                        <p style="color:var(--text-muted);font-style:italic;">Belum ada diskusi untuk artikel ini.</p>
+                    </div>
                 </div>
             </div>
             <!-- PANEL: PROFIL -->
