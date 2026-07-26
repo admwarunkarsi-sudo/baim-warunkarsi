@@ -154,7 +154,10 @@ app.post('/api/articles', authMiddleware, async (req, res) => {
                 const pageTitle = `${article.title} | Blog Baim`;
                 const rawContent = article.excerpt || article.content || "";
                 const cleanDesc = rawContent.replace(/(<([^>]+)>)/gi, "").substring(0, 150) + "...";
-                const img = article.image || 'https://res.cloudinary.com/heswgpdc/image/upload/v1784105147/cjxn9nkbq9fk27itqs0z.png';
+                let img = article.image || 'https://res.cloudinary.com/heswgpdc/image/upload/w_1200,h_630,c_fill,q_auto/v1784105147/cjxn9nkbq9fk27itqs0z.png';
+                if(img.includes('cloudinary.com') && !img.includes('w_1200')) {
+                    img = img.replace('/image/upload/', '/image/upload/w_1200,h_630,c_fill,q_auto/');
+                }
                 
                 html = html.replace(/<title id="meta-title">.*?<\/title>/, `<title id="meta-title">${pageTitle}</title>`);
                 html = html.replace(/content="[^"]*"/g, (match) => match);
