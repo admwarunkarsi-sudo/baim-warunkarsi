@@ -16,6 +16,13 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- Prevent Iframe Embedding (Frame-buster for Checkout Redirect) -->
+    <script>
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
+    
     <style>
         body {
             background-color: var(--bg-light);

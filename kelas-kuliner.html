@@ -452,6 +452,19 @@
             document.getElementById('checkout-iframe').src = '';
             window.scrollTo(0, 0);
         }
+
+        // Listen for messages from Mayar iframe just in case it posts a success event
+        window.addEventListener('message', function(event) {
+            try {
+                const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                // Common success indicators from payment gateways
+                if (data && (data.status === 'success' || data.event === 'payment_success' || data.status === 'paid')) {
+                    window.location.href = '/login';
+                }
+            } catch(e) {
+                // Ignore parsing errors for other messages
+            }
+        });
     </script>
 </body>
 </html>
