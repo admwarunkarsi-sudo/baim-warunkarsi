@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const checkboxes = document.querySelectorAll('.audit-chk');
             const resultBox = document.getElementById('audit-result');
             if (checkboxes.length > 0 && resultBox) {
+                let hasInteracted = false;
                 const updateResult = () => {
                     let checkedCount = 0;
                     checkboxes.forEach(chk => {
@@ -131,6 +132,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                             label.style.borderColor = 'transparent';
                         }
                     });
+
+                    if (!hasInteracted) {
+                        resultBox.style.display = 'block';
+                        resultBox.style.background = '#f8fafc';
+                        resultBox.style.color = '#64748b';
+                        resultBox.style.border = '1px solid #e2e8f0';
+                        resultBox.innerHTML = 'Pilih/centang kotak di atas untuk melihat hasil evaluasi sistem warungmu.';
+                        return;
+                    }
 
                     resultBox.style.display = 'block';
                     if (checkedCount < 3) {
@@ -150,7 +160,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         resultBox.innerHTML = '⚠️ LUMAYAN, tapi masih ada ruang untuk perbaikan.';
                     }
                 };
-                checkboxes.forEach(chk => chk.addEventListener('change', updateResult));
+                checkboxes.forEach(chk => chk.addEventListener('change', () => {
+                    hasInteracted = true;
+                    updateResult();
+                }));
                 updateResult();
             }
         }, 500);
