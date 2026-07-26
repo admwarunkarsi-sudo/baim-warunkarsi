@@ -1140,6 +1140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/>/g, '&gt;')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="chat-btn-link">$1</a>')
             .replace(/\n/g, '<br>');
 
         msgDiv.innerHTML = formattedText;
