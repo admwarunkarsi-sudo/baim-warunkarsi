@@ -54,6 +54,28 @@
 
         <!-- UTAMA - CALL TO ACTION BUTTONS -->
         <main class="flex flex-col gap-5 w-full mb-12">
+
+            <!-- YOUTUBE VIDEO -->
+            <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.3)] border border-[#2a2a2a] mb-2 relative bg-black">
+                <iframe class="w-full h-full absolute top-0 left-0" src="https://www.youtube.com/embed/4i8HLUOZAu0?si=VcUkG3fyqcD-MHmN&autoplay=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <!-- TOMBOL 3 (KALKULATOR) - PINDAH KE ATAS -->
+            <button onclick="openFollowGate()" 
+               class="block w-full text-left rounded-2xl bg-[#1c1c1e] border border-blue-900/50 hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:bg-[#20242d] active:translate-y-0 active:scale-[0.98] p-5 shadow-sm relative overflow-hidden group">
+                
+                <div class="flex items-start gap-3 relative z-10">
+                    <span class="text-2xl mt-0.5 flex-shrink-0">🧮</span>
+                    <div>
+                        <h2 class="text-[16px] font-semibold text-blue-400 mb-1.5 leading-snug group-hover:text-blue-300 transition-colors">
+                            Kalkulator Backward Mapping UMKM
+                        </h2>
+                        <p class="text-[13px] text-gray-400/90 leading-relaxed">
+                            Hitung target penjualan harian dan breakdown operasional warung/resto kamu di sini.
+                        </p>
+                    </div>
+                </div>
+            </button>
             
             <!-- TOMBOL 1 (HIGHLIGHT UTAMA) -->
             <a href="https://ubos.logaritma.id" 
@@ -83,27 +105,6 @@
                 </div>
             </a>
 
-            <!-- TOMBOL 2 -->
-            <a href="https://logaritma.id" 
-               target="_blank" rel="noopener noreferrer"
-               class="block w-full rounded-2xl bg-[#1c1c1e] border border-gray-800 hover:border-gray-600 transition-all duration-300 transform hover:-translate-y-1 hover:bg-[#252528] active:translate-y-0 active:scale-[0.98] p-5 shadow-sm relative overflow-hidden group">
-                
-                <!-- Subtle hover glow -->
-                <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-gray-500/5 rounded-full blur-3xl transition-opacity opacity-0 group-hover:opacity-100"></div>
-
-                <div class="flex items-start gap-3 relative z-10">
-                    <span class="text-2xl mt-0.5 flex-shrink-0">🎯</span>
-                    <div>
-                        <h2 class="text-[16px] font-semibold text-gray-200 mb-1.5 leading-snug group-hover:text-white transition-colors">
-                            Punya Target Tapi Bingung Mulai Dari Mana?
-                        </h2>
-                        <p class="text-[13px] text-gray-400/90 leading-relaxed">
-                            Pelajari Metode Logaritma (Backward Mapping) untuk susun action plan bisnis lo.
-                        </p>
-                    </div>
-                </div>
-            </a>
-
         </main>
 
         <!-- FOOTER BERSAMA -->
@@ -127,5 +128,94 @@
 
     </div>
 
+    <!-- MODAL FOLLOW GATE -->
+    <div id="followGateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-[#1a1a1c] border border-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl transform scale-95 transition-transform duration-300" id="followGateContent">
+            
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-white">Syarat Akses Kalkulator</h3>
+                <button onclick="closeFollowGate()" class="text-gray-500 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-400 mb-6 leading-relaxed">
+                Kalkulator Backward Mapping 100% Gratis. Mohon dukung kami dengan mem-follow kedua akun Instagram di bawah ini untuk membuka akses:
+            </p>
+
+            <div class="space-y-3 mb-6">
+                <!-- Akun 1 -->
+                <a href="https://www.instagram.com/baimdaily" target="_blank" rel="noopener noreferrer" onclick="clickedIg1()" id="btnIg1"
+                   class="flex items-center justify-between w-full p-4 rounded-xl bg-[#252528] border border-gray-700 hover:border-orange-500 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">📸</span>
+                        <span class="font-semibold text-gray-200 group-hover:text-white">@baimdaily</span>
+                    </div>
+                    <span id="checkIg1" class="text-gray-500 text-sm font-bold bg-gray-800 px-3 py-1 rounded-full group-hover:text-white">Cek</span>
+                </a>
+
+                <!-- Akun 2 -->
+                <a href="https://www.instagram.com/warunkarsi.bekasi" target="_blank" rel="noopener noreferrer" onclick="clickedIg2()" id="btnIg2"
+                   class="flex items-center justify-between w-full p-4 rounded-xl bg-[#252528] border border-gray-700 hover:border-orange-500 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🍜</span>
+                        <span class="font-semibold text-gray-200 group-hover:text-white">@warunkarsi.bekasi</span>
+                    </div>
+                    <span id="checkIg2" class="text-gray-500 text-sm font-bold bg-gray-800 px-3 py-1 rounded-full group-hover:text-white">Cek</span>
+                </a>
+            </div>
+
+            <!-- Tombol Lanjut -->
+            <a href="kalkulator.html" id="btnContinue" 
+               class="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold transition-all duration-300 bg-gray-800 text-gray-500 cursor-not-allowed pointer-events-none">
+                🔒 Follow 2 Akun Untuk Lanjut
+            </a>
+        </div>
+    </div>
+
+    <!-- Script for Modal Logic -->
+    <script>
+        let hasClickedIg1 = false;
+        let hasClickedIg2 = false;
+        
+        function openFollowGate() {
+            const modal = document.getElementById('followGateModal');
+            const content = document.getElementById('followGateContent');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+        }
+
+        function closeFollowGate() {
+            const modal = document.getElementById('followGateModal');
+            const content = document.getElementById('followGateContent');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.add('scale-95');
+        }
+
+        function clickedIg1() {
+            hasClickedIg1 = true;
+            document.getElementById('checkIg1').innerText = '✅';
+            document.getElementById('checkIg1').classList.replace('bg-gray-800', 'bg-green-500/20');
+            document.getElementById('btnIg1').classList.replace('border-gray-700', 'border-green-500');
+            checkUnlock();
+        }
+
+        function clickedIg2() {
+            hasClickedIg2 = true;
+            document.getElementById('checkIg2').innerText = '✅';
+            document.getElementById('checkIg2').classList.replace('bg-gray-800', 'bg-green-500/20');
+            document.getElementById('btnIg2').classList.replace('border-gray-700', 'border-green-500');
+            checkUnlock();
+        }
+
+        function checkUnlock() {
+            if (hasClickedIg1 && hasClickedIg2) {
+                const btn = document.getElementById('btnContinue');
+                btn.classList.remove('bg-gray-800', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
+                btn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-500', 'shadow-[0_0_15px_rgba(37,99,235,0.4)]');
+                btn.innerHTML = '🚀 Lanjutkan ke Kalkulator';
+            }
+        }
+    </script>
 </body>
 </html>
