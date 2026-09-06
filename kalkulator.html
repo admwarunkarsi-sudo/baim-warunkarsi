@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Backward Mapping UMKM | Logaritma</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0B3C5D',
+                        gold: '#F1A93B',
+                        vibrant: '#328CC1',
+                        offwhite: '#F4F7F6',
+                        charcoal: '#1D2731'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Custom Checkbox/Radio */
+        .custom-radio:checked + div {
+            border-color: #0B3C5D;
+            background-color: #F8FAFC;
+            color: #0B3C5D;
+        }
+        .custom-radio:checked + div .radio-dot {
+            background-color: #0B3C5D;
+            transform: scale(1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Glass effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 1);
+        }
+
+        /* Dot Pattern Background */
+        .bg-dots {
+            background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-offwhite text-charcoal antialiased selection:bg-gold selection:text-navy">
+
+    <!-- Header / Hero Section -->
+    <header class="bg-gradient-to-br from-[#0B3C5D] via-[#10517D] to-[#082E47] text-white pt-16 md:pt-24 pb-28 px-6 rounded-b-[2.5rem] md:rounded-b-[4rem] shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-dots opacity-60"></div>
+        <!-- Decorative Glow -->
+        <div class="absolute -top-20 -right-20 w-72 h-72 bg-vibrant/30 rounded-full blur-[80px]"></div>
+        <div class="absolute bottom-0 -left-10 w-60 h-60 bg-gold/20 rounded-full blur-[60px]"></div>
+
+        <div class="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gold"></span>
+                </span>
+                <span class="text-xs font-bold tracking-wider text-gold uppercase">Kalkulator Operasional 2.0</span>
+            </div>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5 text-white tracking-tight">
+                Berhenti Mengira-ngira Omset.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">
+                    Mulai Hitung Aksi Pasti.
+                </span>
+            </h1>
+            <p class="text-base md:text-lg text-blue-100 max-w-2xl mx-auto font-light leading-relaxed">
+                Bedah target bulanan Anda menjadi target jam-jaman yang realistis, lalu temukan strategi paling jitu saat omset mendadak macet hari ini.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-8 -mt-20 md:-mt-24 relative z-20">
+        
+        <!-- Langkah 1: Form Input -->
+        <div class="glass-card rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(11,60,93,0.1)] p-6 md:p-10 mb-8">
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
+                <div class="w-10 h-10 rounded-xl bg-vibrant text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-vibrant/30">1</div>
+                <div>
+                    <h2 class="text-2xl font-bold text-navy">Profil & Data Bisnis</h2>
+                    <p class="text-sm text-gray-500">Masukkan detail operasional untuk memetakan target.</p>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Model Bisnis -->
+                    <div class="group">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Kategori Bisnis</label>
+                        <select id="modelBisnis" class="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/10 rounded-2xl py-3.5 px-4 text-charcoal font-semibold transition-all outline-none appearance-none cursor-pointer">
+                            <option value="kuliner">🍲 Kuliner (F&B)</option>
+                            <option value="retail">🛍️ Retail / Toko</option>
+                            <option value="jasa">✂️ Jasa (Salon, Cuci, dll)</option>
+                        </select>
+                    </div>
+
+                    <!-- Lokasi Toko -->
+                    <div class="group">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Lokasi Usaha</label>
+                        <select id="lokasiToko" class="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/10 rounded-2xl py-3.5 px-4 text-charcoal font-semibold transition-all outline-none appearance-none cursor-pointer">
+                            <option value="pinggir_jalan">🛣️ Pinggir Jalan Besar</option>
+                            <option value="gang">🏘️ Dalam Gang / Pemukiman</option>
+                            <option value="ruko">🏢 Kawasan Ruko / Perkantoran</option>
+                            <option value="mall">🏬 Foodcourt / Mall</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Target Omset Bulanan -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Target Omset Bulanan</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">Rp</span>
+                            <input type="text" id="targetBulanan" class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-vibrant focus:ring-4 focus:ring-vibrant/10 rounded-2xl text-xl font-bold text-navy outline-none transition-all placeholder:text-gray-300 placeholder:font-normal" placeholder="30.000.000" oninput="formatCurrency(this)">
+                        </div>
+                    </div>
+
+                    <!-- AOV -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rata-Rata Belanja (AOV)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">Rp</span>
+                            <input type="text" id="aov" class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-vibrant focus:ring-4 focus:ring-vibrant/10 rounded-2xl text-xl font-bold text-navy outline-none transition-all placeholder:text-gray-300 placeholder:font-normal" placeholder="25.000" oninput="formatCurrency(this)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <!-- Hari Kerja -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hari Kerja (Per Bulan)</label>
+                        <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+                            <label class="relative flex-1 cursor-pointer">
+                                <input type="radio" name="hariKerja" value="30" checked onchange="toggleCustomHari()" class="peer custom-radio sr-only">
+                                <div class="px-3 py-3.5 rounded-xl border-2 border-slate-100 bg-white hover:bg-slate-50 text-gray-500 font-semibold text-sm text-center transition-all flex items-center justify-center gap-2">
+                                    <div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center"><div class="w-2 h-2 rounded-full radio-dot scale-0 transition-transform"></div></div>
+                                    30 Hari
+                                </div>
+                            </label>
+                            <label class="relative flex-1 cursor-pointer">
+                                <input type="radio" name="hariKerja" value="26" onchange="toggleCustomHari()" class="peer custom-radio sr-only">
+                                <div class="px-3 py-3.5 rounded-xl border-2 border-slate-100 bg-white hover:bg-slate-50 text-gray-500 font-semibold text-sm text-center transition-all flex items-center justify-center gap-2">
+                                    <div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center"><div class="w-2 h-2 rounded-full radio-dot scale-0 transition-transform"></div></div>
+                                    26 Hari
+                                </div>
+                            </label>
+                            <label class="relative flex-1 cursor-pointer">
+                                <input type="radio" name="hariKerja" value="custom" id="radioCustomHari" onchange="toggleCustomHari()" class="peer custom-radio sr-only">
+                                <div class="px-3 py-3.5 rounded-xl border-2 border-slate-100 bg-white hover:bg-slate-50 text-gray-500 font-semibold text-sm text-center transition-all flex items-center justify-center gap-2">
+                                    <div class="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center"><div class="w-2 h-2 rounded-full radio-dot scale-0 transition-transform"></div></div>
+                                    Lainnya
+                                </div>
+                            </label>
+                        </div>
+                        <div id="customHariContainer" class="hidden mt-3 animate-fade-in">
+                            <input type="number" id="customHari" min="1" max="31" class="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/10 rounded-xl py-3 px-4 font-semibold outline-none transition-all" placeholder="Tulis jumlah hari (Contoh: 28)">
+                        </div>
+                    </div>
+
+                    <!-- Jam Buka -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Jam Buka Harian</label>
+                        <select id="jamBuka" class="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-navy focus:ring-4 focus:ring-navy/10 rounded-2xl py-3.5 px-4 text-charcoal font-semibold transition-all outline-none appearance-none cursor-pointer">
+                            <option value="8">8 Jam / Hari</option>
+                            <option value="10" selected>10 Jam / Hari</option>
+                            <option value="12">12 Jam / Hari</option>
+                            <option value="14">14 Jam / Hari</option>
+                            <option value="24">24 Jam (Non-stop)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="hitungTarget()" class="mt-10 w-full relative overflow-hidden bg-gradient-to-r from-gold to-yellow-400 hover:from-yellow-400 hover:to-gold text-navy font-extrabold text-lg py-4 md:py-5 rounded-2xl shadow-[0_15px_30px_rgba(241,169,59,0.4)] hover:shadow-[0_15px_35px_rgba(241,169,59,0.6)] transition-all transform hover:-translate-y-1 active:translate-y-0 group">
+                <span class="relative z-10 flex items-center justify-center gap-2">
+                    🚀 BEDAH TARGET SAYA SEKARANG
+                </span>
+                <div class="absolute inset-0 h-full w-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+            </button>
+        </div>
+
+        <!-- Langkah 2: Dashboard Output (Hidden) -->
+        <div id="resultSection" class="hidden animate-fade-in scroll-mt-10">
+            <div class="flex items-center gap-4 mb-6 mt-12">
+                <div class="w-10 h-10 rounded-xl bg-vibrant text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-vibrant/30">2</div>
+                <h2 class="text-2xl font-bold text-navy">Dashboard KPI Harian Anda</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+                <!-- KPI 1 -->
+                <div class="bg-gradient-to-br from-navy to-[#0F4C75] p-6 rounded-[2rem] shadow-xl text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-xl transform translate-x-1/2 -translate-y-1/2"></div>
+                    <div class="flex flex-col h-full justify-between relative z-10">
+                        <p class="text-xs text-blue-200 font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><span class="text-lg">💰</span> Target Omset</p>
+                        <p class="text-3xl font-extrabold tracking-tight mt-2" id="outOmzetHarian">Rp 0</p>
+                        <p class="text-xs text-blue-300 mt-1">Per hari buka</p>
+                    </div>
+                </div>
+                <!-- KPI 2 -->
+                <div class="bg-gradient-to-br from-vibrant to-[#2A75A3] p-6 rounded-[2rem] shadow-xl text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-xl transform translate-x-1/2 -translate-y-1/2"></div>
+                    <div class="flex flex-col h-full justify-between relative z-10">
+                        <p class="text-xs text-blue-100 font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><span class="text-lg">👥</span> Target Pembeli</p>
+                        <p class="text-4xl font-extrabold tracking-tight mt-2"><span id="outPembeliHarian">0</span></p>
+                        <p class="text-xs text-blue-200 mt-1">Orang / Nota (Rata-rata)</p>
+                    </div>
+                </div>
+                <!-- KPI 3 -->
+                <div class="bg-gradient-to-br from-gold to-orange-400 p-6 rounded-[2rem] shadow-xl text-navy relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-xl transform translate-x-1/2 -translate-y-1/2"></div>
+                    <div class="flex flex-col h-full justify-between relative z-10">
+                        <p class="text-xs text-orange-900/70 font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><span class="text-lg">⏱️</span> Pace Minimal</p>
+                        <p class="text-4xl font-extrabold tracking-tight mt-2"><span id="outPaceJam">0</span></p>
+                        <p class="text-xs text-orange-900/80 font-medium mt-1">Pembeli harus datang per jam</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Langkah 3: Diagnostik GAP & Aksi -->
+            <div class="glass-card rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(229,57,53,0.15)] p-6 md:p-10 mb-10 border-t-4 border-t-[#E53935]">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-[#E53935] text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-red-500/30 flex-shrink-0 mt-1">3</div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-navy mb-1">Diagnostik Darurat (Gap Sore Hari)</h2>
+                        <p class="text-sm text-gray-500">Omset mandek di tengah hari? Masukkan angka aktual Anda sekarang, biarkan sistem merekomendasikan solusi penyelamatannya.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Omset Aktual Saat Ini</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">Rp</span>
+                            <input type="text" id="omzetSore" class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 focus:border-[#E53935] focus:ring-4 focus:ring-[#E53935]/10 rounded-xl text-lg font-bold text-charcoal outline-none transition-all placeholder:font-normal" placeholder="0" oninput="formatCurrency(this)">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Jumlah Pembeli Saat Ini</label>
+                        <div class="relative">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs uppercase">Orang</span>
+                            <input type="number" id="pembeliSore" class="w-full pl-4 pr-16 py-3 bg-white border border-slate-200 focus:border-[#E53935] focus:ring-4 focus:ring-[#E53935]/10 rounded-xl text-lg font-bold text-charcoal outline-none transition-all" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="hitungGap()" class="w-full bg-navy hover:bg-[#062438] text-white font-bold py-4 md:py-5 rounded-2xl transition-all shadow-[0_10px_20px_rgba(11,60,93,0.3)] hover:shadow-[0_15px_30px_rgba(11,60,93,0.4)] transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 text-lg">
+                    <span>🔍</span> DIAGNOSIS MASALAH SAYA SEKARANG
+                </button>
+
+                <!-- Hasil Diagnostik (Hidden) -->
+                <div id="gapResult" class="hidden mt-10 pt-10 border-t border-gray-100 animate-fade-in">
+                    
+                    <h3 class="text-center font-bold text-gray-400 uppercase tracking-widest text-xs mb-6">— Hasil Analisis Sistem —</h3>
+
+                    <div class="flex flex-wrap gap-5 mb-8">
+                        <div class="flex-1 bg-red-50 p-5 rounded-2xl border border-red-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-red-500 font-bold uppercase tracking-wider mb-1">Kekurangan Omset</p>
+                                <p class="text-2xl font-extrabold text-red-700" id="outGapOmzet">Rp 0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-red-500 text-xl">📉</div>
+                        </div>
+                        <div class="flex-1 bg-orange-50 p-5 rounded-2xl border border-orange-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">Kurang Pembeli</p>
+                                <p class="text-2xl font-extrabold text-orange-700"><span id="outKurangPembeli">0</span> <span class="text-base font-semibold">Orang</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500 text-xl">🚶‍♂️</div>
+                        </div>
+                    </div>
+
+                    <div id="skenarioAksi" class="space-y-4">
+                        <!-- Aksi Dinamis di-inject JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bridge to UBOS CTA -->
+        <div class="bg-gradient-to-br from-navy via-[#0c4061] to-navy rounded-[2.5rem] p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl mt-16 border border-white/10">
+            <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-gold/20 rounded-full blur-[80px]"></div>
+            <div class="absolute top-10 right-10 w-32 h-32 bg-vibrant/30 rounded-full blur-[60px]"></div>
+            
+            <div class="inline-block bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/20 mb-5">
+                <span class="text-xs font-bold uppercase tracking-wider text-gold">🚀 Otomatisasi Bisnis</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-4 relative z-10 leading-tight">Masih Ribet Menghitung Manual?</h2>
+            <p class="text-base text-blue-100 mb-8 max-w-xl mx-auto relative z-10 leading-relaxed font-light">
+                Di era digital, insting saja tidak cukup. Anda butuh <strong>Mesin Keputusan</strong>. Gunakan sistem UBOS untuk Kasir POS, lacak HPP, dan pantau kesehatan bisnis otomatis dalam satu layar.
+            </p>
+            
+            <a href="https://ubos.logaritma.id" target="_blank" rel="noopener noreferrer" 
+               class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-navy font-bold text-base md:text-lg px-8 py-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all transform hover:-translate-y-1 active:translate-y-0 relative z-10 w-full sm:w-auto">
+                <span class="text-xl">✨</span> Mulai Gunakan UBOS (Gratis)
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-xs text-gray-400 font-medium">
+        Dibuat oleh Anak Lapangan untuk UMKM Kuliner Indonesia.<br>
+        <span class="text-navy font-bold mt-1 inline-block">Powered by Warunk Arsi.</span>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Global variables
+        let globalTargetHarian = 0;
+        let globalAOV = 0;
+        let globalBisnis = 'kuliner';
+        let globalLokasi = 'pinggir_jalan';
+        let globalTargetPembeli = 0;
+
+        // Auto-format currency
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^,\d]/g, '').toString();
+            let split = value.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            input.value = rupiah;
+        }
+
+        function toggleCustomHari() {
+            const isCustom = document.getElementById('radioCustomHari').checked;
+            const container = document.getElementById('customHariContainer');
+            if (isCustom) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        // Action Library Database
+        const actionLibrary = [
+            // KULINER - PINGGIR JALAN
+            { bisnis: "kuliner", lokasi: "pinggir_jalan", status: "gap_traffic",
+              icon: "🚦", title: "Traffic Drop: Tarik Mata Pengendara",
+              desc: "Masalah: Kurang orang yang berhenti dan mampir.",
+              actions: ["Pasang spanduk promo dadakan di depan jalan (Misal: 'Beli 1 Gratis Es Teh').", "Nyalakan lampu penerangan maksimal & musik agar terlihat ramai.", "Minta staf standby di depan untuk menyapa atau membagikan tester mini/brosur ke pejalan/motor berhenti."] },
+            { bisnis: "kuliner", lokasi: "pinggir_jalan", status: "gap_aov",
+              icon: "🍟", title: "AOV Drop: Maksimalkan Isi Dompet",
+              desc: "Masalah: Pengunjung lumayan, tapi belanjanya sedikit.",
+              actions: ["Wajibkan kasir melakukan upselling (Tawarkan Extra Topping/Porsi Besar).", "Buat promo Bundling khusus sore ini (Makan + Minum lebih hemat 2rb).", "Batasi menu hemat, pajang menu premium di area kasir (Eye-level)."] },
+            
+            // KULINER - GANG
+            { bisnis: "kuliner", lokasi: "gang", status: "gap_traffic",
+              icon: "🏘️", title: "Traffic Drop: Jemput Bola Warga Sekitar",
+              desc: "Masalah: Tetangga atau anak kos sedang tidak keluar rumah.",
+              actions: ["Broadcast promo ke Grup WA RT/RW atau pelanggan loyal (Misal: 'Free Ongkir area radius 1km').", "Sebar brosur / voucher diskon ke pintu kos-kosan/rumah sekitar.", "Tawarkan promo 'Jam Nanggung' (diskon jam 3-5 sore) khusus makan di tempat."] },
+            { bisnis: "kuliner", lokasi: "gang", status: "gap_aov",
+              icon: "🥤", title: "AOV Drop: Naikkan Nilai Keranjang Warga",
+              desc: "Masalah: Tetangga beli, tapi cuma beli lauk atau porsi kecil.",
+              actions: ["Tawarkan paket keluarga (Paket Makan 4 Orang) karena targetnya warga rumah.", "Tawarkan snack kering/krupuk dan minuman dingin setiap closing kasir.", "Minimal Order: 'Beli 3 porsi gratis ongkir kerumah'."] },
+
+            // KULINER - RUKO/MALL
+            { bisnis: "kuliner", lokasi: "ruko", status: "gap_traffic",
+              icon: "🏢", title: "Traffic Drop: Sasar Pegawai Pulang Kerja",
+              desc: "Masalah: Area ruko sepi saat jam pulang.",
+              actions: ["Siapkan Paket Makan Malam Takeaway praktis untuk orang kantoran pulang.", "Kerjasama kilat: Titip flyer diskon ke satpam/resepsionis ruko sebelah.", "Gunakan Flash Sale di GoFood/GrabFood untuk jemput radius perkantoran."] },
+            { bisnis: "kuliner", lokasi: "mall", status: "gap_traffic",
+              icon: "🏬", title: "Traffic Drop: Tarik Pengunjung Lorong",
+              desc: "Masalah: Pengunjung mall hanya lewat depan outlet.",
+              actions: ["Bagikan tester makanan/minuman tepat di depan outlet.", "Tulis papan stand promo besar 'Khusus Jam 16:00 - 18:00 Diskon 20%'.", "Kencangkan aroma masakan/produk untuk menarik indra penciuman orang lewat."] },
+            
+            // DEFAULT FALLBACK AOV RUKO/MALL
+            { bisnis: "kuliner", lokasi: "ruko", status: "gap_aov",
+              icon: "💸", title: "AOV Drop: Paket Pulang Kantor",
+              desc: "Masalah: Karyawan hanya beli minuman atau cemilan.",
+              actions: ["Tawarkan paket Bundling (Kopi + Roti/Snack) jadi satu harga.", "Promosikan Add-ons di depan kasir (kasir wajib menawari)."] },
+            { bisnis: "kuliner", lokasi: "mall", status: "gap_aov",
+              icon: "🛍️", title: "AOV Drop: Upsize & Add-on",
+              desc: "Masalah: Rata-rata orang beli paket paling murah.",
+              actions: ["Gunakan trik Decoy Pricing, buat paket medium dan large beda harga tipis (Cuma nambah Rp 3.000).", "Tawarkan menu pencuci mulut (dessert) setelah mereka pesan makanan utama."] },
+
+            // RETAIL / JASA (Generik)
+            { bisnis: "retail", lokasi: "pinggir_jalan", status: "gap_traffic",
+              icon: "📢", title: "Traffic Drop: Flash Sale Etalase",
+              desc: "Masalah: Tidak ada yang mampir ke toko.",
+              actions: ["Gelar produk diskon/cuci gudang di bagian terdepan toko/trotoar.", "Sebarkan flyer diskon hari ini ke pejalan kaki."] },
+            { bisnis: "jasa", lokasi: "pinggir_jalan", status: "gap_traffic",
+              icon: "✂️", title: "Traffic Drop: Happy Hour Jasa",
+              desc: "Masalah: Kapasitas nganggur (Idle).",
+              actions: ["Tulis di papan besar: 'Happy Hour Diskon 20% Sampai Jam 6 Sore'.", "Follow up via WA database pelanggan yang sudah lama tidak cuci/potong."] },
+            { bisnis: "retail", lokasi: "pinggir_jalan", status: "gap_aov",
+              icon: "🛒", title: "AOV Drop: Cross-Selling",
+              desc: "Masalah: Keranjang belanja kecil.",
+              actions: ["Pajang barang-barang receh/impulsif (baterai, permen, aksesoris) persis di meja kasir.", "Tawarkan promo: Belanja Rp 100rb, bisa tebus murah produk X seharga Rp 5rb."] },
+            { bisnis: "jasa", lokasi: "pinggir_jalan", status: "gap_aov",
+              icon: "🧴", title: "AOV Drop: Layanan Tambahan",
+              desc: "Masalah: Pelanggan hanya ambil paket jasa termurah.",
+              actions: ["Tawarkan layanan ekstra (misal: creambath, cuci helm, coating) dengan harga miring.", "Jual produk perawatan mandiri di kasir (misal: pomade, sabun cuci)."] }
+        ];
+
+        function getAction(bisnis, lokasi, status) {
+            let found = actionLibrary.find(item => item.bisnis === bisnis && item.lokasi === lokasi && item.status === status);
+            if (!found) found = actionLibrary.find(item => item.bisnis === bisnis && item.lokasi === "pinggir_jalan" && item.status === status);
+            if (!found) found = actionLibrary.find(item => item.bisnis === "kuliner" && item.lokasi === "pinggir_jalan" && item.status === status);
+            return found;
+        }
+
+        function hitungTarget() {
+            globalBisnis = document.getElementById('modelBisnis').value;
+            globalLokasi = document.getElementById('lokasiToko').value;
+            const targetBulananStr = document.getElementById('targetBulanan').value.replace(/\./g, '');
+            const aovStr = document.getElementById('aov').value.replace(/\./g, '');
+            
+            if (!targetBulananStr || !aovStr) {
+                alert("Mohon isi Target Omset dan AOV terlebih dahulu.");
+                return;
+            }
+
+            const targetBulanan = parseFloat(targetBulananStr);
+            globalAOV = parseFloat(aovStr);
+
+            let hariKerja = 30;
+            const radios = document.getElementsByName('hariKerja');
+            for (let radio of radios) {
+                if (radio.checked) {
+                    if (radio.value === 'custom') {
+                        let customVal = document.getElementById('customHari').value;
+                        if (!customVal || customVal <= 0 || customVal > 31) {
+                            alert("Masukkan jumlah hari kerja yang valid (1-31).");
+                            return;
+                        }
+                        hariKerja = parseInt(customVal);
+                    } else {
+                        hariKerja = parseInt(radio.value);
+                    }
+                }
+            }
+
+            const jamBuka = parseInt(document.getElementById('jamBuka').value);
+
+            globalTargetHarian = targetBulanan / hariKerja;
+            globalTargetPembeli = globalTargetHarian / globalAOV;
+            const paceJam = globalTargetPembeli / jamBuka;
+
+            document.getElementById('outOmzetHarian').innerText = 'Rp ' + Math.round(globalTargetHarian).toLocaleString('id-ID');
+            document.getElementById('outPembeliHarian').innerText = Math.ceil(globalTargetPembeli);
+            document.getElementById('outPaceJam').innerText = Math.ceil(paceJam);
+
+            document.getElementById('gapResult').classList.add('hidden');
+            document.getElementById('omzetSore').value = '';
+            document.getElementById('pembeliSore').value = '';
+
+            const resultSection = document.getElementById('resultSection');
+            resultSection.classList.remove('hidden');
+            
+            setTimeout(() => {
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function hitungGap() {
+            const omzetSoreStr = document.getElementById('omzetSore').value.replace(/\./g, '');
+            const pembeliSoreStr = document.getElementById('pembeliSore').value;
+
+            if (!omzetSoreStr || !pembeliSoreStr) {
+                alert("Masukkan capaian Omset dan Jumlah Pembeli sore ini.");
+                return;
+            }
+
+            const currentOmzet = parseFloat(omzetSoreStr);
+            const currentPembeli = parseFloat(pembeliSoreStr);
+            
+            let gapOmzet = globalTargetHarian - currentOmzet;
+            const skenarioContainer = document.getElementById('skenarioAksi');
+            const gapResult = document.getElementById('gapResult');
+            
+            if (gapOmzet <= 0) {
+                document.getElementById('outGapOmzet').innerText = "TERCAPAI!";
+                document.getElementById('outGapOmzet').classList.replace('text-red-700', 'text-green-600');
+                document.getElementById('outKurangPembeli').innerText = "0";
+                
+                skenarioContainer.innerHTML = `
+                    <div class="bg-gradient-to-r from-green-50 to-white border border-green-200 p-6 rounded-2xl shadow-sm">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">🎉</span>
+                            <h3 class="font-bold text-green-800 text-lg">Luar Biasa! Target Harian Sudah Tercapai.</h3>
+                        </div>
+                        <p class="text-sm text-green-700 ml-9">Lakukan maintain pelayanan di sisa jam buka. Jangan biarkan kualitas turun karena kelelahan, dan gunakan sisa waktu untuk bersih-bersih lebih awal.</p>
+                    </div>
+                `;
+            } else {
+                let kurangPembeli = Math.ceil(gapOmzet / globalAOV);
+                document.getElementById('outGapOmzet').innerText = 'Rp ' + Math.round(gapOmzet).toLocaleString('id-ID');
+                document.getElementById('outGapOmzet').classList.replace('text-green-600', 'text-red-700');
+                document.getElementById('outKurangPembeli').innerText = kurangPembeli;
+
+                const currentAOV = currentOmzet / (currentPembeli || 1);
+                let issues = [];
+                
+                if (currentPembeli < globalTargetPembeli) issues.push("gap_traffic");
+                if (currentAOV < globalAOV) issues.push("gap_aov");
+                if (issues.length === 0) issues.push("gap_traffic");
+
+                let htmlContent = "";
+                issues.forEach(status => {
+                    const actionData = getAction(globalBisnis, globalLokasi, status);
+                    const isTraffic = status === 'gap_traffic';
+                    
+                    let lis = actionData.actions.map(a => `
+                        <li class="flex items-start gap-2 mb-2">
+                            <span class="text-${isTraffic ? 'vibrant' : 'gold'} mt-0.5">▪</span>
+                            <span class="text-charcoal">${a}</span>
+                        </li>
+                    `).join("");
+
+                    htmlContent += `
+                        <div class="bg-white border-l-4 ${isTraffic ? 'border-vibrant' : 'border-gold'} p-6 rounded-2xl shadow-md mt-4 relative overflow-hidden group hover:shadow-lg transition-all">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-${isTraffic ? 'vibrant' : 'gold'}/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                            <h3 class="font-extrabold text-navy text-lg flex items-center gap-3 mb-2"><span class="text-2xl">${actionData.icon}</span> ${actionData.title}</h3>
+                            <p class="text-sm text-gray-500 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100 italic">${actionData.desc}</p>
+                            
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Rekomendasi Aksi Cepat:</h4>
+                            <ul class="text-sm">
+                                ${lis}
+                            </ul>
+                        </div>
+                    `;
+                });
+                skenarioContainer.innerHTML = htmlContent;
+            }
+
+            gapResult.classList.remove('hidden');
+            setTimeout(() => { gapResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+        }
+    </script>
+</body>
+</html>
